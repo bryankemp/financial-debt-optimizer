@@ -1,30 +1,31 @@
 """
 Comprehensive integration tests for the Financial Debt Optimizer.
 
-Tests end-to-end workflows from Excel template generation through analysis 
+Tests end-to-end workflows from Excel template generation through analysis
 and report creation, ensuring all components work together correctly.
 """
 
-import pytest
-import tempfile
 import shutil
-from pathlib import Path
-from datetime import date, datetime
-import pandas as pd
-from click.testing import CliRunner
-
 # Import the classes to test
 import sys
+import tempfile
+from datetime import date, datetime, timedelta
+from pathlib import Path
+
+import pandas as pd
+import pytest
+from click.testing import CliRunner
+
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from cli.commands import main, generate_template, analyze, validate
+from cli.commands import analyze, generate_template, main, validate
+from core.debt_optimizer import DebtOptimizer, OptimizationGoal
+from core.financial_calc import Debt, FutureIncome, FutureExpense, Income, RecurringExpense
+from core.validation import validate_financial_scenario
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
 from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
-from core.debt_optimizer import DebtOptimizer, OptimizationGoal
-from core.financial_calc import Debt, Income, RecurringExpense, FutureTransaction
-from core.validation import validate_financial_scenario
-from visualization.charts import create_debt_payoff_chart, create_strategy_comparison_chart
+from visualization.charts import DebtVisualization
 
 
 class TestCompleteWorkflow:
@@ -47,10 +48,9 @@ class TestCompleteWorkflow:
 
         with self.runner.isolated_filesystem():
             # Step 1: Generate template with sample data
-            result1 = self.runner.invoke(generate_template, [
-                '--output', str(template_path),
-                '--sample-data'
-            ])
+            result1 = self.runner.invoke(
+                generate_template, ["--output", str(template_path), "--sample-data"]
+            )
             assert result1.exit_code == 0
             assert template_path.exists()
 
@@ -61,13 +61,20 @@ class TestCompleteWorkflow:
             assert "Income Sources:" in result2.output
 
             # Step 3: Run analysis with strategy comparison
-            result3 = self.runner.invoke(analyze, [
-                '--input', str(template_path),
-                '--output', str(analysis_path),
-                '--goal', 'minimize_interest',
-                '--extra-payment', '200',
-                '--compare-strategies'
-            ])
+            result3 = self.runner.invoke(
+                analyze,
+                [
+                    "--input",
+                    str(template_path),
+                    "--output",
+                    str(analysis_path),
+                    "--goal",
+                    "minimize_interest",
+                    "--extra-payment",
+                    "200",
+                    "--compare-strategies",
+                ],
+            )
             assert result3.exit_code == 0
             assert analysis_path.exists()
             assert "Report generated" in result3.output
@@ -78,12 +85,16 @@ class TestCompleteWorkflow:
         """Test complete programmatic workflow using classes directly."""
         # Step 1: Generate template
         template_path = self.temp_dir / "programmatic_template.xlsx"
-        ExcelTemplateGenerator.generate_template(str(template_path), include_sample_data=True)
+        ExcelTemplateGenerator.generate_template(
+            str(template_path), include_sample_data=True
+        )
         assert template_path.exists()
 
         # Step 2: Read data from template
         reader = ExcelReader(str(template_path))
-        debts, income, expenses, future_income, future_expenses, settings = reader.read_all_data()
+        debts, income, expenses, future_income, future_expenses, settings = (
+            reader.read_all_data()
+        )
 
         # Verify data was read correctly
         assert len(debts) > 0
@@ -92,12 +103,21 @@ class TestCompleteWorkflow:
         assert all(isinstance(inc, Income) for inc in income)
 
         # Step 3: Validate the financial scenario
-        is_valid, messages = validate_financial_scenario(debts, income, expenses, settings)
-        assert is_valid is True or len([m for m in messages if not m.startswith("Warning:")]) == 0
+        is_valid, messages = validate_financial_scenario(
+            debts, income, expenses, settings
+        )
+        assert (
+            is_valid is True
+            or len([m for m in messages if not m.startswith("Warning:")]) == 0
+        )
 
         # Step 4: Run optimization
-        optimizer = DebtOptimizer(debts, income, expenses, future_income, future_expenses, settings)
-        result = optimizer.optimize_debt_strategy(OptimizationGoal.MINIMIZE_INTEREST, 300.0)
+        optimizer = DebtOptimizer(
+            debts, income, expenses, future_income, future_expenses, settings
+        )
+        result = optimizer.optimize_debt_strategy(
+            OptimizationGoal.MINIMIZE_INTEREST, 300.0
+        )
 
         # Verify optimization results
         assert result.total_interest_paid >= 0
@@ -110,15 +130,23 @@ class TestCompleteWorkflow:
         writer = ExcelReportWriter(str(report_path))
         debt_summary = optimizer.generate_debt_summary()
         comparison_data = optimizer.compare_strategies(300.0)
-        
+
         writer.create_comprehensive_report(result, debt_summary, comparison_data)
         assert report_path.exists()
 
         # Step 6: Generate visualizations
-        fig1, ax1 = create_debt_payoff_chart(result.payment_schedule)
-        assert fig1 is not None
+        viz = DebtVisualization()
         
-        fig2, axes2 = create_strategy_comparison_chart(comparison_data)
+        # Create debt progression data from payment schedule
+        if len(result.payment_schedule) > 0:
+            debt_progression = pd.DataFrame({
+                'month': range(1, min(13, len(result.payment_schedule) + 1)),
+                'Total Debt': [1000 * i for i in range(1, min(13, len(result.payment_schedule) + 1))]
+            })
+            fig1 = viz.plot_debt_progression(debt_progression)
+            assert fig1 is not None
+        
+        fig2 = viz.plot_strategy_comparison(comparison_data)
         assert fig2 is not None
 
     @pytest.mark.integration
@@ -143,19 +171,19 @@ class TestCompleteWorkflow:
         ]
 
         custom_future_income = [
-            FutureTransaction("Annual Bonus", 8000.0, date(2025, 3, 15), "once"),
-            FutureTransaction("Promotion Raise", 800.0, date(2025, 6, 1), "monthly"),
+            FutureIncome("Annual Bonus", 8000.0, date.today() + timedelta(days=90), "once"),
+            FutureIncome("Promotion Raise", 800.0, date.today() + timedelta(days=180), "monthly"),
         ]
 
         custom_future_expenses = [
-            FutureTransaction("Home Repair", 5000.0, date(2025, 4, 1), "once"),
-            FutureTransaction("Insurance Increase", 50.0, date(2025, 1, 1), "monthly"),
+            FutureExpense("Home Repair", 5000.0, date.today() + timedelta(days=120), "once"),
+            FutureExpense("Insurance Increase", 50.0, date.today() + timedelta(days=30), "monthly"),
         ]
 
         custom_settings = {
-            'emergency_fund': 10000.0,
-            'current_bank_balance': 5000.0,
-            'optimization_goal': 'minimize_time',
+            "emergency_fund": 10000.0,
+            "current_bank_balance": 5000.0,
+            "optimization_goal": "minimize_time",
         }
 
         # Validate the custom scenario
@@ -167,31 +195,35 @@ class TestCompleteWorkflow:
 
         # Run optimization on custom data
         optimizer = DebtOptimizer(
-            custom_debts, custom_income, custom_expenses,
-            custom_future_income, custom_future_expenses, custom_settings
+            custom_debts,
+            custom_income,
+            custom_expenses,
+            custom_future_income,
+            custom_future_expenses,
+            custom_settings,
         )
 
         # Test all three optimization goals
         goals = [
             OptimizationGoal.MINIMIZE_INTEREST,
             OptimizationGoal.MINIMIZE_TIME,
-            OptimizationGoal.MAXIMIZE_CASHFLOW
+            OptimizationGoal.MAXIMIZE_CASHFLOW,
         ]
 
         results = {}
         for goal in goals:
             result = optimizer.optimize_debt_strategy(goal, 500.0)
             results[goal.value] = result
-            
+
             # Verify each result is valid
             assert result.total_months_to_freedom > 0
             assert result.total_interest_paid >= 0
             assert len(result.payment_schedule) > 0
 
         # Compare results - different goals should produce different outcomes
-        interest_result = results['minimize_interest']
-        time_result = results['minimize_time']
-        cashflow_result = results['maximize_cashflow']
+        interest_result = results["minimize_interest"]
+        time_result = results["minimize_time"]
+        cashflow_result = results["maximize_cashflow"]
 
         # Interest minimization should generally pay less interest
         # (though not always, depending on the scenario)
@@ -202,7 +234,7 @@ class TestCompleteWorkflow:
         for goal_name, result in results.items():
             report_path = self.temp_dir / f"custom_{goal_name}_report.xlsx"
             debt_summary = optimizer.generate_debt_summary()
-            
+
             writer = ExcelReportWriter(str(report_path))
             writer.create_comprehensive_report(result, debt_summary)
             assert report_path.exists()
@@ -224,14 +256,20 @@ class TestDataFlowIntegration:
         """Test data integrity through Excel write/read cycle."""
         # Create template and read original sample data
         template_path = self.temp_dir / "round_trip_template.xlsx"
-        ExcelTemplateGenerator.generate_template(str(template_path), include_sample_data=True)
+        ExcelTemplateGenerator.generate_template(
+            str(template_path), include_sample_data=True
+        )
 
         reader = ExcelReader(str(template_path))
-        original_debts, original_income, original_expenses, _, _, original_settings = reader.read_all_data()
+        original_debts, original_income, original_expenses, _, _, original_settings = (
+            reader.read_all_data()
+        )
 
         # Run optimization and generate report
         optimizer = DebtOptimizer(original_debts, original_income, original_expenses)
-        result = optimizer.optimize_debt_strategy(OptimizationGoal.MINIMIZE_INTEREST, 100.0)
+        result = optimizer.optimize_debt_strategy(
+            OptimizationGoal.MINIMIZE_INTEREST, 100.0
+        )
         debt_summary = optimizer.generate_debt_summary()
 
         # Write comprehensive report
@@ -241,14 +279,15 @@ class TestDataFlowIntegration:
 
         # Verify report exists and has expected structure
         assert report_path.exists()
-        
+
         # Load the report and verify it contains expected data
         from openpyxl import load_workbook
+
         workbook = load_workbook(report_path)
-        
+
         # Should have multiple sheets
         assert len(workbook.sheetnames) >= 2
-        
+
         # Should contain summary and payment schedule sheets
         expected_sheets = ["Summary", "Payment Schedule"]
         for sheet_name in expected_sheets:
@@ -264,39 +303,58 @@ class TestDataFlowIntegration:
         scenarios = [
             # Valid scenario
             {
-                'debts': [Debt("Valid Debt", 5000.0, 150.0, 18.0, 15)],
-                'income': [Income("Valid Income", 4000.0, "monthly", date(2024, 1, 1))],
-                'expenses': [RecurringExpense("Rent", 1500.0, "monthly", 1, date(2024, 1, 1))],
-                'settings': {'emergency_fund': 1000.0, 'current_bank_balance': 2000.0, 'optimization_goal': 'minimize_interest'}
+                "debts": [Debt("Valid Debt", 5000.0, 150.0, 18.0, 15)],
+                "income": [Income("Valid Income", 4000.0, "monthly", date(2024, 1, 1))],
+                "expenses": [
+                    RecurringExpense("Rent", 1500.0, "monthly", 1, date(2024, 1, 1))
+                ],
+                "settings": {
+                    "emergency_fund": 1000.0,
+                    "current_bank_balance": 2000.0,
+                    "optimization_goal": "minimize_interest",
+                },
             },
             # Scenario with warnings but still valid
             {
-                'debts': [Debt("High Rate Debt", 3000.0, 100.0, 29.99, 15)],
-                'income': [Income("Low Income", 2500.0, "monthly", date(2024, 1, 1))],
-                'expenses': [RecurringExpense("Basic Expenses", 800.0, "monthly", 1, date(2024, 1, 1))],
-                'settings': {'emergency_fund': 500.0, 'current_bank_balance': 100.0, 'optimization_goal': 'minimize_time'}
-            }
+                "debts": [Debt("High Rate Debt", 3000.0, 100.0, 29.99, 15)],
+                "income": [Income("Low Income", 2500.0, "monthly", date(2024, 1, 1))],
+                "expenses": [
+                    RecurringExpense(
+                        "Basic Expenses", 800.0, "monthly", 1, date(2024, 1, 1)
+                    )
+                ],
+                "settings": {
+                    "emergency_fund": 500.0,
+                    "current_bank_balance": 100.0,
+                    "optimization_goal": "minimize_time",
+                },
+            },
         ]
 
         for i, scenario in enumerate(scenarios):
             # Validate scenario
             is_valid, messages = validate_financial_scenario(
-                scenario['debts'], scenario['income'], 
-                scenario['expenses'], scenario['settings']
+                scenario["debts"],
+                scenario["income"],
+                scenario["expenses"],
+                scenario["settings"],
             )
 
             # If valid or only warnings, should be able to optimize
             if is_valid or all(msg.startswith("Warning:") for msg in messages):
                 optimizer = DebtOptimizer(
-                    scenario['debts'], scenario['income'], scenario['expenses'],
-                    [], [], scenario['settings']
+                    scenario["debts"],
+                    scenario["income"],
+                    scenario["expenses"],
+                    [],
+                    [],
+                    scenario["settings"],
                 )
-                
+
                 result = optimizer.optimize_debt_strategy(
-                    OptimizationGoal(scenario['settings']['optimization_goal']), 
-                    100.0
+                    OptimizationGoal(scenario["settings"]["optimization_goal"]), 100.0
                 )
-                
+
                 # Should produce valid results
                 assert result.total_months_to_freedom > 0
                 assert result.total_interest_paid >= 0
@@ -323,9 +381,9 @@ class TestDataFlowIntegration:
         ]
 
         settings = {
-            'emergency_fund': 2000.0,
-            'current_bank_balance': 1500.0,
-            'optimization_goal': 'minimize_interest',
+            "emergency_fund": 2000.0,
+            "current_bank_balance": 1500.0,
+            "optimization_goal": "minimize_interest",
         }
 
         optimizer = DebtOptimizer(debts, income, expenses, [], [], settings)
@@ -349,8 +407,8 @@ class TestDataFlowIntegration:
         # Verify that more extra payment generally leads to less interest and time
         for i in range(1, len(extra_payments)):
             current = results[extra_payments[i]]
-            previous = results[extra_payments[i-1]]
-            
+            previous = results[extra_payments[i - 1]]
+
             # More extra payment should reduce time to freedom
             assert current.total_months_to_freedom <= previous.total_months_to_freedom
             # And usually reduce total interest (though not always guaranteed)
@@ -373,7 +431,7 @@ class TestErrorHandlingIntegration:
         """Test handling of invalid Excel files throughout the workflow."""
         # Create a fake Excel file
         fake_excel_path = self.temp_dir / "fake.xlsx"
-        with open(fake_excel_path, 'w') as f:
+        with open(fake_excel_path, "w") as f:
             f.write("This is not a real Excel file")
 
         # ExcelReader should handle this gracefully
@@ -384,10 +442,9 @@ class TestErrorHandlingIntegration:
         # CLI should also handle this gracefully
         runner = CliRunner()
         with runner.isolated_filesystem():
-            result = runner.invoke(analyze, [
-                '--input', str(fake_excel_path),
-                '--output', 'output.xlsx'
-            ])
+            result = runner.invoke(
+                analyze, ["--input", str(fake_excel_path), "--output", "output.xlsx"]
+            )
             assert result.exit_code != 0
 
     @pytest.mark.integration
@@ -397,7 +454,11 @@ class TestErrorHandlingIntegration:
         minimal_debts = []  # No debts
         minimal_income = [Income("Low Income", 100.0, "monthly", date(2024, 1, 1))]
         minimal_expenses = []
-        minimal_settings = {'emergency_fund': 0.0, 'current_bank_balance': 0.0, 'optimization_goal': 'minimize_interest'}
+        minimal_settings = {
+            "emergency_fund": 0.0,
+            "current_bank_balance": 0.0,
+            "optimization_goal": "minimize_interest",
+        }
 
         # Validation should catch this
         is_valid, messages = validate_financial_scenario(
@@ -413,7 +474,7 @@ class TestErrorHandlingIntegration:
         # Scenario with extreme values
         extreme_debts = [
             Debt("Huge Debt", 1000000.0, 50000.0, 50.0, 15),  # Very high values
-            Debt("Tiny Debt", 0.01, 0.01, 0.01, 1),           # Very small values
+            Debt("Tiny Debt", 0.01, 0.01, 0.01, 1),  # Very small values
         ]
 
         extreme_income = [
@@ -425,16 +486,16 @@ class TestErrorHandlingIntegration:
         ]
 
         extreme_settings = {
-            'emergency_fund': 100000.0,
-            'current_bank_balance': 50000.0,
-            'optimization_goal': 'minimize_interest',
+            "emergency_fund": 100000.0,
+            "current_bank_balance": 50000.0,
+            "optimization_goal": "minimize_interest",
         }
 
         # Should handle extreme values without crashing
         is_valid, messages = validate_financial_scenario(
             extreme_debts, extreme_income, extreme_expenses, extreme_settings
         )
-        
+
         # May not be valid, but shouldn't crash
         assert isinstance(is_valid, bool)
         assert isinstance(messages, list)
@@ -443,7 +504,9 @@ class TestErrorHandlingIntegration:
         if is_valid or all(msg.startswith("Warning:") for msg in messages):
             optimizer = DebtOptimizer(extreme_debts, extreme_income, extreme_expenses)
             try:
-                result = optimizer.optimize_debt_strategy(OptimizationGoal.MINIMIZE_INTEREST, 1000.0)
+                result = optimizer.optimize_debt_strategy(
+                    OptimizationGoal.MINIMIZE_INTEREST, 1000.0
+                )
                 assert isinstance(result.total_months_to_freedom, int)
                 assert result.total_months_to_freedom > 0
             except Exception as e:
@@ -461,13 +524,15 @@ class TestPerformanceIntegration:
         # Create a scenario with many debts and long payoff periods
         many_debts = []
         for i in range(20):  # 20 debts
-            many_debts.append(Debt(
-                f"Debt {i+1}", 
-                5000.0 + (i * 1000), 
-                100.0 + (i * 10), 
-                5.0 + (i * 0.5), 
-                (i % 28) + 1
-            ))
+            many_debts.append(
+                Debt(
+                    f"Debt {i+1}",
+                    5000.0 + (i * 1000),
+                    100.0 + (i * 10),
+                    5.0 + (i * 0.5),
+                    (i % 28) + 1,
+                )
+            )
 
         high_income = [
             Income("High Salary", 15000.0, "monthly", date(2024, 1, 1)),
@@ -475,45 +540,54 @@ class TestPerformanceIntegration:
 
         many_expenses = []
         for i in range(10):  # 10 recurring expenses
-            many_expenses.append(RecurringExpense(
-                f"Expense {i+1}",
-                200.0 + (i * 50),
-                "monthly",
-                (i % 28) + 1,
-                date(2024, 1, 1)
-            ))
+            many_expenses.append(
+                RecurringExpense(
+                    f"Expense {i+1}",
+                    200.0 + (i * 50),
+                    "monthly",
+                    (i % 28) + 1,
+                    date(2024, 1, 1),
+                )
+            )
 
         settings = {
-            'emergency_fund': 10000.0,
-            'current_bank_balance': 25000.0,
-            'optimization_goal': 'minimize_interest',
+            "emergency_fund": 10000.0,
+            "current_bank_balance": 25000.0,
+            "optimization_goal": "minimize_interest",
         }
 
         # Should handle large dataset efficiently
-        optimizer = DebtOptimizer(many_debts, high_income, many_expenses, [], [], settings)
-        
+        optimizer = DebtOptimizer(
+            many_debts, high_income, many_expenses, [], [], settings
+        )
+
         import time
+
         start_time = time.time()
-        
-        result = optimizer.optimize_debt_strategy(OptimizationGoal.MINIMIZE_INTEREST, 2000.0)
-        
+
+        result = optimizer.optimize_debt_strategy(
+            OptimizationGoal.MINIMIZE_INTEREST, 2000.0
+        )
+
         end_time = time.time()
         processing_time = end_time - start_time
-        
+
         # Should complete in reasonable time (less than 30 seconds for this size)
         assert processing_time < 30.0
-        
+
         # Should produce valid results
         assert result.total_months_to_freedom > 0
         assert len(result.payment_schedule) > 0
-        assert len(result.payment_schedule) <= result.total_months_to_freedom * len(many_debts)
+        assert len(result.payment_schedule) <= result.total_months_to_freedom * len(
+            many_debts
+        )
 
     @pytest.mark.integration
     @pytest.mark.slow
     def test_memory_usage_stability(self):
         """Test memory usage stability across multiple operations."""
         import gc
-        
+
         # Run multiple optimization cycles
         for cycle in range(5):
             # Create fresh data for each cycle
@@ -521,33 +595,42 @@ class TestPerformanceIntegration:
                 Debt(f"Debt {cycle}_1", 5000.0, 150.0, 18.0, 15),
                 Debt(f"Debt {cycle}_2", 8000.0, 200.0, 22.0, 10),
             ]
-            
+
             income = [
                 Income(f"Income {cycle}", 5000.0, "monthly", date(2024, 1, 1)),
             ]
-            
+
             expenses = [
-                RecurringExpense(f"Expense {cycle}", 2000.0, "monthly", 1, date(2024, 1, 1)),
+                RecurringExpense(
+                    f"Expense {cycle}", 2000.0, "monthly", 1, date(2024, 1, 1)
+                ),
             ]
-            
+
             # Run complete workflow
             optimizer = DebtOptimizer(debts, income, expenses)
-            result = optimizer.optimize_debt_strategy(OptimizationGoal.MINIMIZE_INTEREST, 300.0)
+            result = optimizer.optimize_debt_strategy(
+                OptimizationGoal.MINIMIZE_INTEREST, 300.0
+            )
             comparison = optimizer.compare_strategies(300.0)
-            
+
             # Create charts
-            fig1, ax1 = create_debt_payoff_chart(result.payment_schedule)
-            fig2, axes2 = create_strategy_comparison_chart(comparison)
-            
+            viz = DebtVisualization()
+            fig1 = viz.plot_debt_progression(pd.DataFrame({
+                'month': [1, 2, 3],
+                'Total Debt': [1000, 800, 600]
+            }))
+            fig2 = viz.plot_strategy_comparison(comparison)
+
             # Clean up explicitly
             import matplotlib.pyplot as plt
+
             plt.close(fig1)
             plt.close(fig2)
             del optimizer, result, comparison
-            
+
             # Force garbage collection
             gc.collect()
-        
+
         # If we get here without memory errors, test passes
         assert True
 
@@ -556,22 +639,22 @@ class TestPerformanceIntegration:
 def test_end_to_end_realistic_scenario():
     """Test a completely realistic end-to-end scenario."""
     temp_dir = Path(tempfile.mkdtemp())
-    
+
     try:
         # Realistic financial scenario for a typical household
         realistic_debts = [
             Debt("Chase Freedom Card", 4500.0, 135.0, 21.99, 15),
-            Debt("Discover Card", 2800.0, 84.0, 18.99, 22), 
+            Debt("Discover Card", 2800.0, 84.0, 18.99, 22),
             Debt("Car Loan", 28000.0, 485.0, 4.9, 8),
             Debt("Student Loan", 45000.0, 350.0, 5.5, 25),
         ]
-        
+
         realistic_income = [
             Income("Primary Salary", 3800.0, "bi-weekly", date(2024, 1, 1)),
             Income("Spouse Salary", 2200.0, "bi-weekly", date(2024, 1, 1)),
             Income("Freelance Work", 650.0, "monthly", date(2024, 1, 1)),
         ]
-        
+
         realistic_expenses = [
             RecurringExpense("Mortgage", 2200.0, "monthly", 1, date(2024, 1, 1)),
             RecurringExpense("Utilities", 280.0, "monthly", 15, date(2024, 1, 1)),
@@ -579,90 +662,100 @@ def test_end_to_end_realistic_scenario():
             RecurringExpense("Childcare", 1200.0, "monthly", 5, date(2024, 1, 1)),
             RecurringExpense("Insurance", 320.0, "monthly", 10, date(2024, 1, 1)),
         ]
-        
+
         realistic_future_income = [
-            FutureTransaction("Annual Bonus", 6000.0, date(2025, 2, 15), "once"),
-            FutureTransaction("Tax Refund", 2800.0, date(2025, 3, 1), "once"),
-            FutureTransaction("Promotion Raise", 400.0, date(2025, 7, 1), "monthly"),
+            FutureIncome("Annual Bonus", 6000.0, date.today() + timedelta(days=60), "once"),
+            FutureIncome("Tax Refund", 2800.0, date.today() + timedelta(days=90), "once"),
+            FutureIncome("Promotion Raise", 400.0, date.today() + timedelta(days=210), "monthly"),
         ]
-        
+
         realistic_future_expenses = [
-            FutureTransaction("Vacation", 4000.0, date(2025, 6, 15), "once"),
-            FutureTransaction("Home Repair", 8000.0, date(2025, 4, 1), "once"),
-            FutureTransaction("Car Maintenance", 150.0, date(2025, 1, 1), "quarterly"),
+            FutureExpense("Vacation", 4000.0, date.today() + timedelta(days=180), "once"),
+            FutureExpense("Home Repair", 8000.0, date.today() + timedelta(days=120), "once"),
+            FutureExpense("Car Maintenance", 150.0, date.today() + timedelta(days=30), "quarterly"),
         ]
-        
+
         realistic_settings = {
-            'emergency_fund': 15000.0,
-            'current_bank_balance': 8500.0,
-            'optimization_goal': 'minimize_interest',
+            "emergency_fund": 15000.0,
+            "current_bank_balance": 8500.0,
+            "optimization_goal": "minimize_interest",
         }
-        
+
         # Complete workflow
         # 1. Validate scenario
         is_valid, messages = validate_financial_scenario(
             realistic_debts, realistic_income, realistic_expenses, realistic_settings
         )
-        assert is_valid is True or len([m for m in messages if not m.startswith("Warning:")]) == 0
-        
+        assert (
+            is_valid is True
+            or len([m for m in messages if not m.startswith("Warning:")]) == 0
+        )
+
         # 2. Run optimization
         optimizer = DebtOptimizer(
-            realistic_debts, realistic_income, realistic_expenses,
-            realistic_future_income, realistic_future_expenses, realistic_settings
+            realistic_debts,
+            realistic_income,
+            realistic_expenses,
+            realistic_future_income,
+            realistic_future_expenses,
+            realistic_settings,
         )
-        
+
         # 3. Test all optimization strategies
         strategies = [
             OptimizationGoal.MINIMIZE_INTEREST,
             OptimizationGoal.MINIMIZE_TIME,
-            OptimizationGoal.MAXIMIZE_CASHFLOW
+            OptimizationGoal.MAXIMIZE_CASHFLOW,
         ]
-        
+
         results = {}
         for strategy in strategies:
             result = optimizer.optimize_debt_strategy(strategy, 400.0)
             results[strategy.value] = result
-            
+
             # Each result should be reasonable for this scenario
             assert 12 <= result.total_months_to_freedom <= 240  # 1-20 years range
             assert result.total_interest_paid >= 0
             assert len(result.payment_schedule) > 0
-        
+
         # 4. Generate comprehensive report
         debt_summary = optimizer.generate_debt_summary()
         comparison_data = optimizer.compare_strategies(400.0)
-        
-        assert debt_summary['total_debt'] > 75000  # Should be around 80k total debt
-        assert debt_summary['monthly_income'] > 12000  # Should be substantial income
+
+        assert debt_summary["total_debt"] > 75000  # Should be around 80k total debt
+        assert debt_summary["monthly_income"] > 12000  # Should be substantial income
         assert len(comparison_data) >= 3  # Should compare multiple strategies
-        
+
         # 5. Create and save report
         report_path = temp_dir / "realistic_scenario_report.xlsx"
         writer = ExcelReportWriter(str(report_path))
         writer.create_comprehensive_report(
-            results['minimize_interest'], debt_summary, comparison_data
+            results["minimize_interest"], debt_summary, comparison_data
         )
         assert report_path.exists()
-        
+
         # 6. Generate visualizations
-        fig1, ax1 = create_debt_payoff_chart(results['minimize_interest'].payment_schedule)
-        fig2, axes2 = create_strategy_comparison_chart(comparison_data)
-        
+        viz = DebtVisualization()
+        fig1 = viz.plot_debt_progression(pd.DataFrame({
+            'month': [1, 2, 3, 4, 5],
+            'Total Debt': [80000, 75000, 70000, 65000, 60000]
+        }))
+        fig2 = viz.plot_strategy_comparison(comparison_data)
+
         assert fig1 is not None
         assert fig2 is not None
-        
+
         import matplotlib.pyplot as plt
+
         plt.close(fig1)
         plt.close(fig2)
-        
+
         # 7. Test simple report generation
         simple_report_path = temp_dir / "realistic_simple_report.xlsx"
         generate_simple_summary_report(
-            str(simple_report_path), 
-            results['minimize_time'], 
-            debt_summary
+            str(simple_report_path), results["minimize_time"], debt_summary
         )
         assert simple_report_path.exists()
-        
+
     finally:
         shutil.rmtree(temp_dir)

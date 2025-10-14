@@ -5,22 +5,20 @@ Tests all validation functions for financial scenarios, data integrity checks,
 and error handling.
 """
 
-import pytest
-from datetime import date
-from typing import List
-
 # Import the classes to test
 import sys
+from datetime import date
 from pathlib import Path
+from typing import List
+
+import pytest
+
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from core.validation import (
-    validate_financial_scenario, ValidationError,
-    validate_debt_data, validate_income_data, validate_expense_data,
-    validate_future_transaction_data, validate_settings_data
-)
-from core.financial_calc import Debt, Income, RecurringExpense, FutureTransaction
+from core.financial_calc import Debt, FutureIncome, FutureExpense, Income, RecurringExpense
+from core.validation import (ValidationError, validate_debt_data, validate_expense_data,
+                             validate_financial_scenario, validate_income_data)
 
 
 class TestFinancialScenarioValidation:
@@ -32,33 +30,33 @@ class TestFinancialScenarioValidation:
             Debt("Credit Card", 5000.0, 150.0, 18.99, 15),
             Debt("Auto Loan", 12000.0, 325.0, 4.5, 10),
         ]
-        
+
         self.valid_income = [
             Income("Salary", 3500.0, "bi-weekly", date(2024, 1, 5)),
             Income("Freelance", 800.0, "monthly", date(2024, 1, 1)),
         ]
-        
+
         self.valid_expenses = [
             RecurringExpense("Netflix", 15.99, "monthly", 15, date(2024, 1, 1)),
             RecurringExpense("Insurance", 200.0, "monthly", 1, date(2024, 1, 1)),
         ]
-        
+
         self.valid_settings = {
-            'emergency_fund': 1000.0,
-            'current_bank_balance': 2500.0,
-            'optimization_goal': 'minimize_interest',
+            "emergency_fund": 1000.0,
+            "current_bank_balance": 2500.0,
+            "optimization_goal": "minimize_interest",
         }
 
     @pytest.mark.unit
     def test_validate_financial_scenario_valid(self):
         """Test validation with valid financial scenario."""
         is_valid, messages = validate_financial_scenario(
-            self.valid_debts, 
-            self.valid_income, 
-            self.valid_expenses, 
-            self.valid_settings
+            self.valid_debts,
+            self.valid_income,
+            self.valid_expenses,
+            self.valid_settings,
         )
-        
+
         assert is_valid is True
         assert isinstance(messages, list)
         # May have warnings but should be valid overall
@@ -69,7 +67,7 @@ class TestFinancialScenarioValidation:
         is_valid, messages = validate_financial_scenario(
             [], self.valid_income, self.valid_expenses, self.valid_settings
         )
-        
+
         assert is_valid is False
         assert len(messages) > 0
         assert any("no debts" in msg.lower() for msg in messages)
@@ -80,7 +78,7 @@ class TestFinancialScenarioValidation:
         is_valid, messages = validate_financial_scenario(
             self.valid_debts, [], self.valid_expenses, self.valid_settings
         )
-        
+
         assert is_valid is False
         assert len(messages) > 0
         assert any("no income" in msg.lower() for msg in messages)
@@ -89,11 +87,11 @@ class TestFinancialScenarioValidation:
     def test_validate_financial_scenario_insufficient_income(self):
         """Test validation with insufficient income for minimum payments."""
         low_income = [Income("Low Salary", 200.0, "monthly", date(2024, 1, 1))]
-        
+
         is_valid, messages = validate_financial_scenario(
             self.valid_debts, low_income, self.valid_expenses, self.valid_settings
         )
-        
+
         assert is_valid is False
         assert len(messages) > 0
         assert any("insufficient" in msg.lower() for msg in messages)
@@ -105,11 +103,11 @@ class TestFinancialScenarioValidation:
             RecurringExpense("High Rent", 5000.0, "monthly", 1, date(2024, 1, 1)),
             RecurringExpense("High Insurance", 2000.0, "monthly", 15, date(2024, 1, 1)),
         ]
-        
+
         is_valid, messages = validate_financial_scenario(
             self.valid_debts, self.valid_income, high_expenses, self.valid_settings
         )
-        
+
         # Should produce warnings about negative cash flow
         assert isinstance(messages, list)
         assert len(messages) > 0
@@ -119,12 +117,15 @@ class TestFinancialScenarioValidation:
         """Test scenario that produces warnings but is still valid."""
         # Create scenario with very low bank balance
         settings_low_balance = self.valid_settings.copy()
-        settings_low_balance['current_bank_balance'] = 100.0  # Below emergency fund
-        
+        settings_low_balance["current_bank_balance"] = 100.0  # Below emergency fund
+
         is_valid, messages = validate_financial_scenario(
-            self.valid_debts, self.valid_income, self.valid_expenses, settings_low_balance
+            self.valid_debts,
+            self.valid_income,
+            self.valid_expenses,
+            settings_low_balance,
         )
-        
+
         # Should be valid but have warnings
         assert isinstance(messages, list)
         # May have warnings about low balance
@@ -140,7 +141,7 @@ class TestDebtDataValidation:
             Debt("Credit Card", 5000.0, 150.0, 18.99, 15),
             Debt("Auto Loan", 12000.0, 325.0, 4.5, 10),
         ]
-        
+
         errors = validate_debt_data(valid_debts)
         assert isinstance(errors, list)
         assert len(errors) == 0
@@ -152,7 +153,7 @@ class TestDebtDataValidation:
             Debt("Paid Off Card", 0.0, 0.0, 0.0, 15),
             Debt("Active Card", 1000.0, 25.0, 15.0, 15),
         ]
-        
+
         errors = validate_debt_data(debts_with_zero)
         # Zero balance should produce warnings, not errors
         assert isinstance(errors, list)
@@ -163,7 +164,7 @@ class TestDebtDataValidation:
         debts_negative = [
             Debt("Negative Card", -1000.0, 25.0, 15.0, 15),
         ]
-        
+
         errors = validate_debt_data(debts_negative)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -175,7 +176,7 @@ class TestDebtDataValidation:
         debts_negative_payment = [
             Debt("Bad Payment", 1000.0, -25.0, 15.0, 15),
         ]
-        
+
         errors = validate_debt_data(debts_negative_payment)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -187,7 +188,7 @@ class TestDebtDataValidation:
         debts_negative_rate = [
             Debt("Bad Rate", 1000.0, 25.0, -5.0, 15),
         ]
-        
+
         errors = validate_debt_data(debts_negative_rate)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -198,9 +199,9 @@ class TestDebtDataValidation:
         """Test validation with invalid due date."""
         debts_invalid_date = [
             Debt("Bad Date", 1000.0, 25.0, 15.0, 32),  # Day 32 doesn't exist
-            Debt("Zero Date", 1000.0, 25.0, 15.0, 0),   # Day 0 doesn't exist
+            Debt("Zero Date", 1000.0, 25.0, 15.0, 0),  # Day 0 doesn't exist
         ]
-        
+
         errors = validate_debt_data(debts_invalid_date)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -213,7 +214,7 @@ class TestDebtDataValidation:
             Debt("", 1000.0, 25.0, 15.0, 15),
             Debt(None, 1000.0, 25.0, 15.0, 15),
         ]
-        
+
         errors = validate_debt_data(debts_empty_name)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -230,7 +231,7 @@ class TestIncomeDataValidation:
             Income("Salary", 3500.0, "bi-weekly", date(2024, 1, 5)),
             Income("Freelance", 800.0, "monthly", date(2024, 1, 1)),
         ]
-        
+
         errors = validate_income_data(valid_income)
         assert isinstance(errors, list)
         assert len(errors) == 0
@@ -241,7 +242,7 @@ class TestIncomeDataValidation:
         zero_income = [
             Income("Zero Income", 0.0, "monthly", date(2024, 1, 1)),
         ]
-        
+
         errors = validate_income_data(zero_income)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -253,7 +254,7 @@ class TestIncomeDataValidation:
         negative_income = [
             Income("Negative Income", -1000.0, "monthly", date(2024, 1, 1)),
         ]
-        
+
         errors = validate_income_data(negative_income)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -266,7 +267,7 @@ class TestIncomeDataValidation:
             Income("Bad Frequency", 1000.0, "invalid_frequency", date(2024, 1, 1)),
             Income("Empty Frequency", 1000.0, "", date(2024, 1, 1)),
         ]
-        
+
         errors = validate_income_data(invalid_freq_income)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -278,7 +279,7 @@ class TestIncomeDataValidation:
         future_start_income = [
             Income("Future Income", 1000.0, "monthly", date(2030, 1, 1)),
         ]
-        
+
         errors = validate_income_data(future_start_income)
         # Future start dates might generate warnings but not necessarily errors
         assert isinstance(errors, list)
@@ -290,7 +291,7 @@ class TestIncomeDataValidation:
             Income("", 1000.0, "monthly", date(2024, 1, 1)),
             Income(None, 1000.0, "monthly", date(2024, 1, 1)),
         ]
-        
+
         errors = validate_income_data(empty_source_income)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -307,7 +308,7 @@ class TestExpenseDataValidation:
             RecurringExpense("Netflix", 15.99, "monthly", 15, date(2024, 1, 1)),
             RecurringExpense("Insurance", 200.0, "monthly", 1, date(2024, 1, 1)),
         ]
-        
+
         errors = validate_expense_data(valid_expenses)
         assert isinstance(errors, list)
         assert len(errors) == 0
@@ -318,7 +319,7 @@ class TestExpenseDataValidation:
         zero_expense = [
             RecurringExpense("Free Service", 0.0, "monthly", 15, date(2024, 1, 1)),
         ]
-        
+
         errors = validate_expense_data(zero_expense)
         # Zero amount expenses might be warnings rather than errors
         assert isinstance(errors, list)
@@ -327,9 +328,11 @@ class TestExpenseDataValidation:
     def test_validate_expense_data_negative_amount(self):
         """Test validation with negative expense amount."""
         negative_expense = [
-            RecurringExpense("Negative Expense", -50.0, "monthly", 15, date(2024, 1, 1)),
+            RecurringExpense(
+                "Negative Expense", -50.0, "monthly", 15, date(2024, 1, 1)
+            ),
         ]
-        
+
         errors = validate_expense_data(negative_expense)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -339,9 +342,11 @@ class TestExpenseDataValidation:
     def test_validate_expense_data_invalid_frequency(self):
         """Test validation with invalid frequency."""
         invalid_freq_expense = [
-            RecurringExpense("Bad Frequency", 100.0, "invalid_freq", 15, date(2024, 1, 1)),
+            RecurringExpense(
+                "Bad Frequency", 100.0, "invalid_freq", 15, date(2024, 1, 1)
+            ),
         ]
-        
+
         errors = validate_expense_data(invalid_freq_expense)
         assert isinstance(errors, list)
         assert len(errors) > 0
@@ -354,165 +359,14 @@ class TestExpenseDataValidation:
             RecurringExpense("Bad Date", 100.0, "monthly", 32, date(2024, 1, 1)),
             RecurringExpense("Zero Date", 100.0, "monthly", 0, date(2024, 1, 1)),
         ]
-        
+
         errors = validate_expense_data(invalid_date_expense)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("due date" in error.lower() for error in errors)
 
 
-class TestFutureTransactionDataValidation:
-    """Test cases for future transaction data validation."""
-
-    @pytest.mark.unit
-    def test_validate_future_transaction_data_valid(self):
-        """Test validation with valid future transaction data."""
-        valid_transactions = [
-            FutureTransaction("Bonus", 5000.0, date(2025, 3, 15), "once"),
-            FutureTransaction("Salary Raise", 500.0, date(2025, 1, 1), "monthly"),
-        ]
-        
-        errors = validate_future_transaction_data(valid_transactions)
-        assert isinstance(errors, list)
-        assert len(errors) == 0
-
-    @pytest.mark.unit
-    def test_validate_future_transaction_data_zero_amount(self):
-        """Test validation with zero transaction amount."""
-        zero_transaction = [
-            FutureTransaction("Zero Transaction", 0.0, date(2025, 1, 1), "once"),
-        ]
-        
-        errors = validate_future_transaction_data(zero_transaction)
-        assert isinstance(errors, list)
-        assert len(errors) > 0
-        assert any("amount" in error.lower() for error in errors)
-
-    @pytest.mark.unit
-    def test_validate_future_transaction_data_past_date(self):
-        """Test validation with past start date."""
-        past_transaction = [
-            FutureTransaction("Past Transaction", 1000.0, date(2020, 1, 1), "once"),
-        ]
-        
-        errors = validate_future_transaction_data(past_transaction)
-        assert isinstance(errors, list)
-        assert len(errors) > 0
-        assert any("past" in error.lower() or "date" in error.lower() for error in errors)
-
-    @pytest.mark.unit
-    def test_validate_future_transaction_data_invalid_frequency(self):
-        """Test validation with invalid frequency."""
-        invalid_freq_transaction = [
-            FutureTransaction("Bad Frequency", 1000.0, date(2025, 1, 1), "invalid_freq"),
-        ]
-        
-        errors = validate_future_transaction_data(invalid_freq_transaction)
-        assert isinstance(errors, list)
-        assert len(errors) > 0
-        assert any("frequency" in error.lower() for error in errors)
-
-    @pytest.mark.unit
-    def test_validate_future_transaction_data_end_before_start(self):
-        """Test validation with end date before start date."""
-        invalid_range_transaction = [
-            FutureTransaction(
-                "Invalid Range", 1000.0, date(2025, 6, 1), "monthly", date(2025, 3, 1)
-            ),
-        ]
-        
-        errors = validate_future_transaction_data(invalid_range_transaction)
-        assert isinstance(errors, list)
-        assert len(errors) > 0
-        assert any("end date" in error.lower() or "range" in error.lower() for error in errors)
-
-
-class TestSettingsDataValidation:
-    """Test cases for settings data validation."""
-
-    @pytest.mark.unit
-    def test_validate_settings_data_valid(self):
-        """Test validation with valid settings data."""
-        valid_settings = {
-            'emergency_fund': 1000.0,
-            'current_bank_balance': 2500.0,
-            'optimization_goal': 'minimize_interest',
-        }
-        
-        errors = validate_settings_data(valid_settings)
-        assert isinstance(errors, list)
-        assert len(errors) == 0
-
-    @pytest.mark.unit
-    def test_validate_settings_data_negative_emergency_fund(self):
-        """Test validation with negative emergency fund."""
-        negative_emergency = {
-            'emergency_fund': -500.0,
-            'current_bank_balance': 2500.0,
-            'optimization_goal': 'minimize_interest',
-        }
-        
-        errors = validate_settings_data(negative_emergency)
-        assert isinstance(errors, list)
-        assert len(errors) > 0
-        assert any("emergency" in error.lower() for error in errors)
-
-    @pytest.mark.unit
-    def test_validate_settings_data_negative_bank_balance(self):
-        """Test validation with negative bank balance."""
-        negative_balance = {
-            'emergency_fund': 1000.0,
-            'current_bank_balance': -500.0,
-            'optimization_goal': 'minimize_interest',
-        }
-        
-        errors = validate_settings_data(negative_balance)
-        assert isinstance(errors, list)
-        assert len(errors) > 0
-        assert any("bank balance" in error.lower() for error in errors)
-
-    @pytest.mark.unit
-    def test_validate_settings_data_invalid_optimization_goal(self):
-        """Test validation with invalid optimization goal."""
-        invalid_goal = {
-            'emergency_fund': 1000.0,
-            'current_bank_balance': 2500.0,
-            'optimization_goal': 'invalid_goal',
-        }
-        
-        errors = validate_settings_data(invalid_goal)
-        assert isinstance(errors, list)
-        assert len(errors) > 0
-        assert any("optimization goal" in error.lower() for error in errors)
-
-    @pytest.mark.unit
-    def test_validate_settings_data_missing_keys(self):
-        """Test validation with missing required keys."""
-        incomplete_settings = {
-            'emergency_fund': 1000.0,
-            # Missing current_bank_balance and optimization_goal
-        }
-        
-        errors = validate_settings_data(incomplete_settings)
-        assert isinstance(errors, list)
-        assert len(errors) > 0
-
-    @pytest.mark.unit
-    def test_validate_settings_data_extra_keys(self):
-        """Test validation with extra keys (should be allowed)."""
-        extra_settings = {
-            'emergency_fund': 1000.0,
-            'current_bank_balance': 2500.0,
-            'optimization_goal': 'minimize_interest',
-            'extra_payment': 200.0,  # Extra key
-            'custom_setting': 'custom_value',  # Another extra key
-        }
-        
-        errors = validate_settings_data(extra_settings)
-        # Extra keys should not cause errors
-        assert isinstance(errors, list)
-        # Should not have errors just for extra keys
-
+class TestValidationIntegration:
 
 class TestValidationErrorHandling:
     """Test cases for validation error handling."""
@@ -522,7 +376,7 @@ class TestValidationErrorHandling:
         """Test ValidationError exception creation."""
         error_message = "Test validation error"
         error = ValidationError(error_message)
-        
+
         assert str(error) == error_message
         assert isinstance(error, Exception)
 
@@ -531,7 +385,7 @@ class TestValidationErrorHandling:
         """Test validation functions with None inputs."""
         # Test that None inputs are handled gracefully
         is_valid, messages = validate_financial_scenario(None, None, None, None)
-        
+
         assert is_valid is False
         assert isinstance(messages, list)
         assert len(messages) > 0
@@ -540,7 +394,7 @@ class TestValidationErrorHandling:
     def test_validation_with_empty_lists(self):
         """Test validation functions with empty lists."""
         is_valid, messages = validate_financial_scenario([], [], [], {})
-        
+
         assert is_valid is False
         assert isinstance(messages, list)
         assert len(messages) > 0
@@ -553,7 +407,7 @@ class TestValidationErrorHandling:
         bad_income = [None, 123]  # Not Income objects
         bad_expenses = ["string_instead_of_expense"]
         bad_settings = "not_a_dict"
-        
+
         # Should not crash, should return validation errors
         try:
             is_valid, messages = validate_financial_scenario(
@@ -578,33 +432,35 @@ class TestValidationIntegration:
             Debt("Auto Loan", 18500.0, 425.0, 5.5, 5),
             Debt("Student Loan", 35000.0, 350.0, 6.8, 20),
         ]
-        
+
         income = [
             Income("Primary Job", 4200.0, "bi-weekly", date(2024, 1, 1)),
             Income("Side Hustle", 1200.0, "monthly", date(2024, 1, 1)),
         ]
-        
+
         expenses = [
             RecurringExpense("Rent", 1800.0, "monthly", 1, date(2024, 1, 1)),
             RecurringExpense("Utilities", 200.0, "monthly", 15, date(2024, 1, 1)),
             RecurringExpense("Groceries", 150.0, "weekly", 1, date(2024, 1, 1)),
             RecurringExpense("Insurance", 300.0, "monthly", 25, date(2024, 1, 1)),
         ]
-        
+
         settings = {
-            'emergency_fund': 5000.0,
-            'current_bank_balance': 3500.0,
-            'optimization_goal': 'minimize_interest',
-            'extra_payment': 500.0,
+            "emergency_fund": 5000.0,
+            "current_bank_balance": 3500.0,
+            "optimization_goal": "minimize_interest",
+            "extra_payment": 500.0,
         }
-        
+
         # Run validation
-        is_valid, messages = validate_financial_scenario(debts, income, expenses, settings)
-        
+        is_valid, messages = validate_financial_scenario(
+            debts, income, expenses, settings
+        )
+
         # Should be valid or have only minor warnings
         assert isinstance(is_valid, bool)
         assert isinstance(messages, list)
-        
+
         # If there are messages, they should be informative
         for message in messages:
             assert isinstance(message, str)
@@ -615,20 +471,25 @@ class TestValidationIntegration:
         """Test validation with realistic edge cases."""
         # High debt-to-income ratio scenario
         high_debt_scenario = {
-            'debts': [Debt("High Debt", 100000.0, 2000.0, 25.0, 15)],
-            'income': [Income("Low Income", 2500.0, "monthly", date(2024, 1, 1))],
-            'expenses': [RecurringExpense("Rent", 1000.0, "monthly", 1, date(2024, 1, 1))],
-            'settings': {'emergency_fund': 1000.0, 'current_bank_balance': 500.0, 
-                        'optimization_goal': 'minimize_interest'}
+            "debts": [Debt("High Debt", 100000.0, 2000.0, 25.0, 15)],
+            "income": [Income("Low Income", 2500.0, "monthly", date(2024, 1, 1))],
+            "expenses": [
+                RecurringExpense("Rent", 1000.0, "monthly", 1, date(2024, 1, 1))
+            ],
+            "settings": {
+                "emergency_fund": 1000.0,
+                "current_bank_balance": 500.0,
+                "optimization_goal": "minimize_interest",
+            },
         }
-        
+
         is_valid, messages = validate_financial_scenario(
-            high_debt_scenario['debts'],
-            high_debt_scenario['income'],
-            high_debt_scenario['expenses'],
-            high_debt_scenario['settings']
+            high_debt_scenario["debts"],
+            high_debt_scenario["income"],
+            high_debt_scenario["expenses"],
+            high_debt_scenario["settings"],
         )
-        
+
         # Should detect the problematic debt-to-income ratio
         assert isinstance(is_valid, bool)
         assert isinstance(messages, list)

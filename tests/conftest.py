@@ -2,20 +2,22 @@
 Shared pytest fixtures and configuration for Financial Debt Optimizer tests.
 """
 
-import pytest
-import tempfile
+import os
 import shutil
-from pathlib import Path
-from datetime import date
-from typing import List
-
 # Add src to Python path for testing
 import sys
-import os
+import tempfile
+from datetime import date
+from pathlib import Path
+from typing import List
+
+import pytest
+
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from core.financial_calc import Debt, Income, RecurringExpense, FutureIncome, FutureExpense
+from core.financial_calc import (Debt, FutureExpense, FutureIncome, Income,
+                                 RecurringExpense)
 from excel_io.excel_reader import ExcelTemplateGenerator
 
 
@@ -68,7 +70,9 @@ def sample_future_expenses() -> List[FutureExpense]:
     return [
         FutureExpense("Car Repair", 800.00, date(2025, 2, 15), "once"),
         FutureExpense("Home Improvement", 2500.00, date(2025, 5, 1), "once"),
-        FutureExpense("Insurance Increase", 25.00, date(2025, 1, 1), "monthly", date(2025, 12, 31)),
+        FutureExpense(
+            "Insurance Increase", 25.00, date(2025, 1, 1), "monthly", date(2025, 12, 31)
+        ),
         FutureExpense("Annual Fee", 99.00, date(2025, 1, 1), "annually"),
     ]
 
@@ -77,10 +81,10 @@ def sample_future_expenses() -> List[FutureExpense]:
 def sample_settings() -> dict:
     """Fixture providing sample settings for testing."""
     return {
-        'emergency_fund': 1000.0,
-        'current_bank_balance': 2500.0,
-        'optimization_goal': 'minimize_interest',
-        'extra_payment': 200.0,
+        "emergency_fund": 1000.0,
+        "current_bank_balance": 2500.0,
+        "optimization_goal": "minimize_interest",
+        "extra_payment": 200.0,
     }
 
 
@@ -96,7 +100,9 @@ def temp_dir():
 def sample_excel_template(temp_dir):
     """Fixture providing a sample Excel template file for testing."""
     template_path = temp_dir / "test_template.xlsx"
-    ExcelTemplateGenerator.generate_template(str(template_path), include_sample_data=True)
+    ExcelTemplateGenerator.generate_template(
+        str(template_path), include_sample_data=True
+    )
     return template_path
 
 
@@ -104,7 +110,9 @@ def sample_excel_template(temp_dir):
 def empty_excel_template(temp_dir):
     """Fixture providing an empty Excel template file for testing."""
     template_path = temp_dir / "empty_template.xlsx"
-    ExcelTemplateGenerator.generate_template(str(template_path), include_sample_data=False)
+    ExcelTemplateGenerator.generate_template(
+        str(template_path), include_sample_data=False
+    )
     return template_path
 
 
