@@ -15,8 +15,8 @@ sys.path.insert(0, os.path.abspath('../src'))
 project = 'Financial Debt Optimizer'
 copyright = '2025, Bryan Kemp'
 author = 'Bryan Kemp'
-release = '1.1.0'
-version = '1.1.0'
+release = '1.1.1'
+version = '1.1.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -54,7 +54,6 @@ html_theme_options = {
     'canonical_url': '',
     'analytics_id': '',
     'logo_only': False,
-    'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
     'vcs_pageview_mode': '',
@@ -81,6 +80,14 @@ autodoc_default_options = {
     'undoc-members': True,
     'exclude-members': '__weakref__'
 }
+
+# Configure autodoc to handle import errors gracefully
+autodoc_mock_imports = ['pandas', 'numpy', 'matplotlib', 'xlsxwriter', 'openpyxl', 'click']
+autodoc_typehints = 'description'
+nitpicky = False
+
+# Suppress autodoc warnings for missing modules
+suppress_warnings = ['autodoc.import_object']
 
 # -- Options for napoleon extension -----------------------------------------
 napoleon_google_docstring = True

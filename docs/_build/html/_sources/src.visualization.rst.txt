@@ -9,10 +9,7 @@ src.visualization package
 Submodules
 ----------
 
-src.visualization.charts module
--------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: src.visualization.charts
-   :members:
-   :show-inheritance:
-   :undoc-members:
+   src.visualization.charts

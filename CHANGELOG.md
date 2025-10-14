@@ -5,6 +5,21 @@ All notable changes to the Financial Debt Optimizer project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-01-14
+
+### Fixed
+- **Resolved all Sphinx documentation warnings** for clean builds
+- **Fixed unsupported theme options** in Read the Docs configuration
+- **Improved autodoc configuration** to handle imports gracefully
+- **Regenerated API documentation** with proper module structure
+- **Enhanced documentation build reliability** for CI/CD pipelines
+
+### Technical
+- Removed unsupported `display_version` theme option
+- Added proper autodoc mock imports for dependencies
+- Configured Sphinx to suppress import warnings appropriately
+- Regenerated all API documentation files with correct structure
+
 ## [1.1.0] - 2025-01-14
 
 ### Added

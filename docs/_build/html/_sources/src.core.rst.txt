@@ -9,34 +9,10 @@ src.core package
 Submodules
 ----------
 
-src.core.debt\_optimizer module
--------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: src.core.debt_optimizer
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-src.core.financial\_calc module
--------------------------------
-
-.. automodule:: src.core.financial_calc
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-src.core.logging\_config module
--------------------------------
-
-.. automodule:: src.core.logging_config
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-src.core.validation module
---------------------------
-
-.. automodule:: src.core.validation
-   :members:
-   :show-inheritance:
-   :undoc-members:
+   src.core.debt_optimizer
+   src.core.financial_calc
+   src.core.logging_config
+   src.core.validation

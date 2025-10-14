@@ -9,18 +9,8 @@ src.excel\_io package
 Submodules
 ----------
 
-src.excel\_io.excel\_reader module
-----------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: src.excel_io.excel_reader
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-src.excel\_io.excel\_writer module
-----------------------------------
-
-.. automodule:: src.excel_io.excel_writer
-   :members:
-   :show-inheritance:
-   :undoc-members:
+   src.excel_io.excel_reader
+   src.excel_io.excel_writer

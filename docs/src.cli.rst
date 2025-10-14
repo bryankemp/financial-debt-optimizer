@@ -9,10 +9,7 @@ src.cli package
 Submodules
 ----------
 
-src.cli.commands module
------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: src.cli.commands
-   :members:
-   :show-inheritance:
-   :undoc-members:
+   src.cli.commands

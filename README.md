@@ -1,4 +1,4 @@
-# Financial Debt Optimizer 1.1
+# Financial Debt Optimizer 1.1.1
 
 [![PyPI Version](https://img.shields.io/pypi/v/financial-debt-optimizer.svg)](https://pypi.org/project/financial-debt-optimizer/)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
