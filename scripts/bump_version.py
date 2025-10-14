@@ -348,26 +348,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
             # Check if changes are only in expected files (test reports, formatting)
             changed_files = []
-            for line in result.stdout.strip().split('\n'):
+            for line in result.stdout.strip().split("\n"):
                 if line.strip():
                     # Extract filename from git status output
-                    file_path = line[3:].strip()  # Skip status indicators
-                    changed_files.append(file_path)
+                    # Handle both " M filename" and "M filename" formats
+                    parts = line.strip().split(None, 1)
+                    if len(parts) >= 2:
+                        file_path = parts[1]
+                        changed_files.append(file_path)
 
             # Define expected files that can be modified during release workflow
             expected_files = {
-                'docs/test_coverage.rst',
-                'docs/test_report.rst',
+                "docs/test_coverage.rst",
+                "docs/test_report.rst",
                 # Allow any .py files that might have been reformatted
             }
-            
+
             # Check if all changes are in expected files or Python files (formatting)
             unexpected_changes = []
             for file_path in changed_files:
-                if (file_path not in expected_files and 
-                    not file_path.endswith('.py') and 
-                    not file_path.startswith('tests/') and
-                    not file_path.startswith('src/')):
+                if (
+                    file_path not in expected_files
+                    and not file_path.endswith(".py")
+                ):
                     unexpected_changes.append(file_path)
 
             if unexpected_changes:
@@ -376,13 +379,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
                     print(f"  - {file_path}")
                 print("Commit or stash unexpected changes before bumping version.")
                 return False
-            
+
             if changed_files:
-                print("ℹ️  Found expected changes (test reports and/or code formatting):")
+                print(
+                    "ℹ️  Found expected changes (test reports and/or code formatting):"
+                )
                 for file_path in changed_files:
                     print(f"  - {file_path}")
-                print("✅ These changes will be committed as part of the release process")
-                
+                print(
+                    "✅ These changes will be committed as part of the release process"
+                )
+
             return True
 
         except subprocess.CalledProcessError as e:
@@ -394,7 +401,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
     def commit_pre_release_changes(self) -> bool:
         """Commit any pre-release changes (test reports, formatting).
-        
+
         Returns:
             True if commit was successful or no changes needed, False otherwise
         """
@@ -407,44 +414,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
                 text=True,
                 check=True,
             )
-            
+
             if not result.stdout.strip():
                 return True  # No changes to commit
-                
+
             # Get list of changed files
             changed_files = []
-            for line in result.stdout.strip().split('\n'):
+            for line in result.stdout.strip().split("\n"):
                 if line.strip():
-                    file_path = line[3:].strip()
-                    changed_files.append(file_path)
-                    
+                    # Extract filename from git status output
+                    # Handle both " M filename" and "M filename" formats
+                    parts = line.strip().split(None, 1)
+                    if len(parts) >= 2:
+                        file_path = parts[1]
+                        changed_files.append(file_path)
+
             # Filter for expected pre-release changes
             pre_release_files = []
             for file_path in changed_files:
-                if (file_path in {'docs/test_coverage.rst', 'docs/test_report.rst'} or
-                    file_path.endswith('.py') and 
-                    (file_path.startswith('src/') or file_path.startswith('tests/'))):
+                if (
+                    file_path in {"docs/test_coverage.rst", "docs/test_report.rst"}
+                    or file_path.endswith(".py")
+                    and (file_path.startswith("src/") or file_path.startswith("tests/"))
+                ):
                     pre_release_files.append(file_path)
-            
+
             if not pre_release_files:
                 return True  # No pre-release files to commit
-                
+
             # Add and commit pre-release changes
             subprocess.run(
-                ["git", "add"] + pre_release_files,
-                cwd=self.project_root,
-                check=True
+                ["git", "add"] + pre_release_files, cwd=self.project_root, check=True
             )
-            
+
             subprocess.run(
-                ["git", "commit", "-m", "chore: update test reports and code formatting for release"],
+                [
+                    "git",
+                    "commit",
+                    "-m",
+                    "chore: update test reports and code formatting for release",
+                ],
                 cwd=self.project_root,
                 check=True,
             )
-            
+
             print(f"✅ Committed pre-release changes: {len(pre_release_files)} files")
             return True
-            
+
         except subprocess.CalledProcessError as e:
             print(f"❌ Failed to commit pre-release changes: {e}")
             return False
