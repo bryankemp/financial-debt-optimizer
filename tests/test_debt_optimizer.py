@@ -18,8 +18,13 @@ src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
 from core.debt_optimizer import DebtOptimizer, OptimizationGoal, OptimizationResult
-from core.financial_calc import (Debt, FutureExpense, FutureIncome, Income,
-                                 RecurringExpense)
+from core.financial_calc import (
+    Debt,
+    FutureExpense,
+    FutureIncome,
+    Income,
+    RecurringExpense,
+)
 
 
 class TestDebtOptimizer:

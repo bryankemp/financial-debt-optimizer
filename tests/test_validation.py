@@ -16,10 +16,20 @@ import pytest
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from core.financial_calc import (Debt, FutureExpense, FutureIncome, Income,
-                                 RecurringExpense)
-from core.validation import (ValidationError, validate_debt_data, validate_expense_data,
-                             validate_financial_scenario, validate_income_data)
+from core.financial_calc import (
+    Debt,
+    FutureExpense,
+    FutureIncome,
+    Income,
+    RecurringExpense,
+)
+from core.validation import (
+    ValidationError,
+    validate_debt_data,
+    validate_expense_data,
+    validate_financial_scenario,
+    validate_income_data,
+)
 
 
 class TestFinancialScenarioValidation:

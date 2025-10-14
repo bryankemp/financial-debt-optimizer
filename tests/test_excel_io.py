@@ -6,6 +6,7 @@ for reading, writing, and generating Excel files.
 """
 
 import shutil
+
 # Import the classes to test
 import sys
 import tempfile
@@ -20,8 +21,13 @@ src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
 from core.debt_optimizer import DebtOptimizer, OptimizationGoal, OptimizationResult
-from core.financial_calc import (Debt, FutureExpense, FutureIncome, Income,
-                                 RecurringExpense)
+from core.financial_calc import (
+    Debt,
+    FutureExpense,
+    FutureIncome,
+    Income,
+    RecurringExpense,
+)
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
 from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
 

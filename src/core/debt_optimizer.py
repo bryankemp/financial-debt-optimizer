@@ -5,9 +5,15 @@ from typing import Any, Dict, List, Tuple
 
 import pandas as pd
 
-from .financial_calc import (Debt, DebtAnalyzer, FutureIncome, Income, RecurringExpense,
-                             calculate_total_monthly_income,
-                             generate_amortization_schedule)
+from .financial_calc import (
+    Debt,
+    DebtAnalyzer,
+    FutureIncome,
+    Income,
+    RecurringExpense,
+    calculate_total_monthly_income,
+    generate_amortization_schedule,
+)
 
 
 class OptimizationGoal(Enum):
