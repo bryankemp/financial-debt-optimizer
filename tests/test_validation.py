@@ -366,8 +366,6 @@ class TestExpenseDataValidation:
         assert any("due date" in error.lower() for error in errors)
 
 
-class TestValidationIntegration:
-
 class TestValidationErrorHandling:
     """Test cases for validation error handling."""
 
