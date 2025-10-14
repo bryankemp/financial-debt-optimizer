@@ -1,6 +1,6 @@
 """Version information for Financial Debt Optimizer."""
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __title__ = "Financial Debt Optimizer"
 __description__ = "A comprehensive tool for analyzing and optimizing debt repayment strategies"
 __author__ = "Bryan Kemp"

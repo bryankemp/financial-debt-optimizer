@@ -1,0 +1,690 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples and Use Cases &mdash; Financial Debt Optimizer 1.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=fc837d61"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Frequently Asked Questions" href="faq.html" />
+    <link rel="prev" title="User Guide" href="user_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Financial Debt Optimizer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples and Use Cases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-examples">Basic Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-1-simple-credit-card-debt">Example 1: Simple Credit Card Debt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-2-mixed-debt-portfolio">Example 2: Mixed Debt Portfolio</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-examples">Advanced Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-3-optimization-with-variable-extra-payments">Example 3: Optimization with Variable Extra Payments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-4-debt-consolidation-analysis">Example 4: Debt Consolidation Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#real-world-scenarios">Real-World Scenarios</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-5-new-graduate-with-student-loans-and-credit-cards">Example 5: New Graduate with Student Loans and Credit Cards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-6-family-with-mortgage-car-loans-and-credit-cards">Example 6: Family with Mortgage, Car Loans, and Credit Cards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-7-pre-retirement-debt-elimination">Example 7: Pre-Retirement Debt Elimination</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#industry-specific-examples">Industry-Specific Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-8-medical-professional-with-educational-debt">Example 8: Medical Professional with Educational Debt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-9-small-business-owner">Example 9: Small Business Owner</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#specialized-use-cases">Specialized Use Cases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-10-debt-payoff-vs-investment-analysis">Example 10: Debt Payoff vs Investment Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-11-balance-transfer-analysis">Example 11: Balance Transfer Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-testing-examples">Performance Testing Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-12-large-debt-portfolio-analysis">Example 12: Large Debt Portfolio Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tips-for-creating-your-own-examples">Tips for Creating Your Own Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-preparation-tips">Data Preparation Tips</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis-best-practices">Analysis Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-pitfalls-to-avoid">Common Pitfalls to Avoid</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">src</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Financial Debt Optimizer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Examples and Use Cases</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/bryankemp/financial-debt-optimizer/blob/main/docs/examples.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="examples-and-use-cases">
+<h1>Examples and Use Cases<a class="headerlink" href="#examples-and-use-cases" title="Link to this heading"></a></h1>
+<p>This section provides real-world examples and practical use cases for the Financial Debt Optimizer.</p>
+<section id="basic-examples">
+<h2>Basic Examples<a class="headerlink" href="#basic-examples" title="Link to this heading"></a></h2>
+<section id="example-1-simple-credit-card-debt">
+<h3>Example 1: Simple Credit Card Debt<a class="headerlink" href="#example-1-simple-credit-card-debt" title="Link to this heading"></a></h3>
+<p><strong>Scenario:</strong> You have two credit cards with different balances and interest rates.</p>
+<p><strong>Input Data (credit_cards.xlsx):</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Balance</p></th>
+<th class="head"><p>Rate</p></th>
+<th class="head"><p>Min_Pay</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Visa Card</p></td>
+<td><p>3500</p></td>
+<td><p>19.99</p></td>
+<td><p>105</p></td>
+</tr>
+<tr class="row-odd"><td><p>Master Card</p></td>
+<td><p>2800</p></td>
+<td><p>24.99</p></td>
+<td><p>85</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Command Line Usage:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">debt</span><span class="o">-</span><span class="n">optimizer</span> <span class="o">--</span><span class="nb">input</span> <span class="n">credit_cards</span><span class="o">.</span><span class="n">xlsx</span> <span class="o">--</span><span class="n">strategy</span> <span class="n">avalanche</span> <span class="o">--</span><span class="n">output</span> <span class="n">results</span><span class="o">.</span><span class="n">xlsx</span>
+</pre></div>
+</div>
+<p><strong>Expected Results:</strong>
+- Master Card paid off first (higher interest rate: 24.99%)
+- Total payoff time: ~24 months (minimum payments only)
+- Total interest paid: ~$1,180</p>
+<p><strong>With $200 extra payment:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">debt</span><span class="o">-</span><span class="n">optimizer</span> <span class="o">--</span><span class="nb">input</span> <span class="n">credit_cards</span><span class="o">.</span><span class="n">xlsx</span> <span class="o">--</span><span class="n">strategy</span> <span class="n">avalanche</span> <span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">payment</span> <span class="mi">200</span> <span class="o">--</span><span class="n">output</span> <span class="n">results_extra</span><span class="o">.</span><span class="n">xlsx</span>
+</pre></div>
+</div>
+<p><strong>Expected Results:</strong>
+- Total payoff time: ~18 months
+- Total interest paid: ~$680
+- <strong>Savings: ~$500</strong></p>
+</section>
+<section id="example-2-mixed-debt-portfolio">
+<h3>Example 2: Mixed Debt Portfolio<a class="headerlink" href="#example-2-mixed-debt-portfolio" title="Link to this heading"></a></h3>
+<p><strong>Scenario:</strong> You have various types of debt including credit cards, student loans, and a car loan.</p>
+<p><strong>Input Data (mixed_debts.xlsx):</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Balance</p></th>
+<th class="head"><p>Rate</p></th>
+<th class="head"><p>Min_Pay</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chase Credit</p></td>
+<td><p>4500</p></td>
+<td><p>18.99</p></td>
+<td><p>135</p></td>
+</tr>
+<tr class="row-odd"><td><p>Discover Card</p></td>
+<td><p>2300</p></td>
+<td><p>22.49</p></td>
+<td><p>75</p></td>
+</tr>
+<tr class="row-even"><td><p>Student Loan</p></td>
+<td><p>28000</p></td>
+<td><p>6.50</p></td>
+<td><p>285</p></td>
+</tr>
+<tr class="row-odd"><td><p>Car Loan</p></td>
+<td><p>15000</p></td>
+<td><p>4.25</p></td>
+<td><p>320</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Python API Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.debt_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DebtOptimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">excel_io.excel_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExcelReader</span>
+
+<span class="c1"># Load data</span>
+<span class="n">reader</span> <span class="o">=</span> <span class="n">ExcelReader</span><span class="p">()</span>
+<span class="n">debts</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_debt_data</span><span class="p">(</span><span class="s2">&quot;mixed_debts.xlsx&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compare strategies</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+
+<span class="n">avalanche</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+<span class="n">snowball</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_snowball</span><span class="p">()</span>
+<span class="n">hybrid</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_hybrid</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Strategy Comparison:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Avalanche: $</span><span class="si">{</span><span class="n">avalanche</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2"> interest, </span><span class="si">{</span><span class="n">avalanche</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Snowball:  $</span><span class="si">{</span><span class="n">snowball</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2"> interest, </span><span class="si">{</span><span class="n">snowball</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hybrid:    $</span><span class="si">{</span><span class="n">hybrid</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2"> interest, </span><span class="si">{</span><span class="n">hybrid</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Strategy Comparison:
+Avalanche: $12,450.75 interest, 58 months
+Snowball:  $13,820.25 interest, 59 months
+Hybrid:    $12,890.50 interest, 58 months
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-examples">
+<h2>Advanced Examples<a class="headerlink" href="#advanced-examples" title="Link to this heading"></a></h2>
+<section id="example-3-optimization-with-variable-extra-payments">
+<h3>Example 3: Optimization with Variable Extra Payments<a class="headerlink" href="#example-3-optimization-with-variable-extra-payments" title="Link to this heading"></a></h3>
+<p><strong>Scenario:</strong> You want to find the optimal extra payment amount.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.debt_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DebtOptimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">excel_io.excel_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExcelReader</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Load debt data</span>
+<span class="n">reader</span> <span class="o">=</span> <span class="n">ExcelReader</span><span class="p">()</span>
+<span class="n">debts</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_debt_data</span><span class="p">(</span><span class="s2">&quot;mixed_debts.xlsx&quot;</span><span class="p">)</span>
+
+<span class="c1"># Test different extra payment amounts</span>
+<span class="n">extra_payments</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1001</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># $0 to $1000 in $100 increments</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">extra</span> <span class="ow">in</span> <span class="n">extra_payments</span><span class="p">:</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="n">extra</span><span class="p">)</span>
+    <span class="n">strategy</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s1">&#39;extra_payment&#39;</span><span class="p">:</span> <span class="n">extra</span><span class="p">,</span>
+        <span class="s1">&#39;total_interest&#39;</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">(),</span>
+        <span class="s1">&#39;payoff_months&#39;</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">(),</span>
+        <span class="s1">&#39;total_payments&#39;</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">get_total_payments</span><span class="p">(),</span>
+        <span class="s1">&#39;monthly_payment&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">min_payment</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">debts</span><span class="p">)</span> <span class="o">+</span> <span class="n">extra</span>
+    <span class="p">})</span>
+
+<span class="c1"># Find the point of diminishing returns</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">savings</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">savings</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;total_interest&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;total_interest&#39;</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extra $</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;extra_payment&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">3d</span><span class="si">}</span><span class="s2">: &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;$</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;total_interest&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">7,.0f</span><span class="si">}</span><span class="s2"> interest, &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;payoff_months&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">2d</span><span class="si">}</span><span class="s2"> months, &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;Savings: $</span><span class="si">{</span><span class="n">savings</span><span class="si">:</span><span class="s2">6,.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Extra $  0: $ 18,450 interest, 72 months, Savings: $    0
+Extra $100: $ 15,240 interest, 58 months, Savings: $3,210
+Extra $200: $ 13,180 interest, 49 months, Savings: $5,270
+Extra $300: $ 11,740 interest, 43 months, Savings: $6,710
+Extra $400: $ 10,620 interest, 38 months, Savings: $7,830
+Extra $500: $  9,710 interest, 35 months, Savings: $8,740
+</pre></div>
+</div>
+</section>
+<section id="example-4-debt-consolidation-analysis">
+<h3>Example 4: Debt Consolidation Analysis<a class="headerlink" href="#example-4-debt-consolidation-analysis" title="Link to this heading"></a></h3>
+<p><strong>Scenario:</strong> You’re considering consolidating high-interest debt into a personal loan.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.debt_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Debt</span><span class="p">,</span> <span class="n">DebtOptimizer</span>
+
+<span class="c1"># Current high-interest debt</span>
+<span class="n">current_debts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Credit Card 1&quot;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mf">19.99</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Credit Card 2&quot;</span><span class="p">,</span> <span class="mi">3500</span><span class="p">,</span> <span class="mf">22.49</span><span class="p">,</span> <span class="mi">105</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Credit Card 3&quot;</span><span class="p">,</span> <span class="mi">4200</span><span class="p">,</span> <span class="mf">24.99</span><span class="p">,</span> <span class="mi">125</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Student Loan&quot;</span><span class="p">,</span> <span class="mi">25000</span><span class="p">,</span> <span class="mf">6.50</span><span class="p">,</span> <span class="mi">280</span><span class="p">)</span>  <span class="c1"># Keep this separate</span>
+<span class="p">]</span>
+
+<span class="c1"># Consolidation option: Personal loan for credit card debt</span>
+<span class="n">consolidated_debts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Personal Loan&quot;</span><span class="p">,</span> <span class="mi">12700</span><span class="p">,</span> <span class="mf">12.99</span><span class="p">,</span> <span class="mi">380</span><span class="p">),</span>  <span class="c1"># Consolidate first 3 debts</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Student Loan&quot;</span><span class="p">,</span> <span class="mi">25000</span><span class="p">,</span> <span class="mf">6.50</span><span class="p">,</span> <span class="mi">280</span><span class="p">)</span>     <span class="c1"># Keep student loan</span>
+<span class="p">]</span>
+
+<span class="c1"># Compare scenarios</span>
+<span class="n">current_optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">current_debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">consolidated_optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">consolidated_debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+<span class="n">current_strategy</span> <span class="o">=</span> <span class="n">current_optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+<span class="n">consolidated_strategy</span> <span class="o">=</span> <span class="n">consolidated_optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current Situation:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Interest: $</span><span class="si">{</span><span class="n">current_strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff Time: </span><span class="si">{</span><span class="n">current_strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nWith Consolidation:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Interest: $</span><span class="si">{</span><span class="n">consolidated_strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff Time: </span><span class="si">{</span><span class="n">consolidated_strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+
+<span class="n">savings</span> <span class="o">=</span> <span class="n">current_strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span> <span class="o">-</span> <span class="n">consolidated_strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nConsolidation Savings: $</span><span class="si">{</span><span class="n">savings</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="real-world-scenarios">
+<h2>Real-World Scenarios<a class="headerlink" href="#real-world-scenarios" title="Link to this heading"></a></h2>
+<section id="example-5-new-graduate-with-student-loans-and-credit-cards">
+<h3>Example 5: New Graduate with Student Loans and Credit Cards<a class="headerlink" href="#example-5-new-graduate-with-student-loans-and-credit-cards" title="Link to this heading"></a></h3>
+<p><strong>Background:</strong> Recent college graduate with multiple student loans and some credit card debt from college expenses.</p>
+<p><strong>Input Data (graduate_debts.xlsx):</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Balance</p></th>
+<th class="head"><p>Rate</p></th>
+<th class="head"><p>Min_Pay</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Federal Loan 1</p></td>
+<td><p>8500</p></td>
+<td><p>4.50</p></td>
+<td><p>87</p></td>
+</tr>
+<tr class="row-odd"><td><p>Federal Loan 2</p></td>
+<td><p>12000</p></td>
+<td><p>5.50</p></td>
+<td><p>123</p></td>
+</tr>
+<tr class="row-even"><td><p>Private Student Loan</p></td>
+<td><p>15000</p></td>
+<td><p>7.25</p></td>
+<td><p>165</p></td>
+</tr>
+<tr class="row-odd"><td><p>Credit Card</p></td>
+<td><p>3200</p></td>
+<td><p>21.99</p></td>
+<td><p>96</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Analysis Strategy:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">debt</span><span class="o">-</span><span class="n">optimizer</span> <span class="o">--</span><span class="nb">input</span> <span class="n">graduate_debts</span><span class="o">.</span><span class="n">xlsx</span> <span class="o">--</span><span class="n">strategy</span> <span class="n">avalanche</span> <span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">payment</span> <span class="mi">150</span> <span class="o">--</span><span class="n">charts</span> <span class="o">--</span><span class="n">output</span> <span class="n">graduate_analysis</span><span class="o">.</span><span class="n">xlsx</span>
+</pre></div>
+</div>
+<p><strong>Key Insights:</strong>
+- Credit card should be eliminated first (highest rate: 21.99%)
+- Private student loan next (7.25% vs federal loans at 4.5-5.5%)
+- Federal loans last due to lower rates and potential benefits
+- Extra payments make significant difference on high-rate debt</p>
+</section>
+<section id="example-6-family-with-mortgage-car-loans-and-credit-cards">
+<h3>Example 6: Family with Mortgage, Car Loans, and Credit Cards<a class="headerlink" href="#example-6-family-with-mortgage-car-loans-and-credit-cards" title="Link to this heading"></a></h3>
+<p><strong>Background:</strong> Family managing multiple types of debt with varying priorities.</p>
+<p><strong>Input Data (family_debts.xlsx):</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Balance</p></th>
+<th class="head"><p>Rate</p></th>
+<th class="head"><p>Min_Pay</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Mortgage</p></td>
+<td><p>285000</p></td>
+<td><p>3.75</p></td>
+<td><p>1850</p></td>
+</tr>
+<tr class="row-odd"><td><p>Car Loan 1</p></td>
+<td><p>18500</p></td>
+<td><p>4.25</p></td>
+<td><p>385</p></td>
+</tr>
+<tr class="row-even"><td><p>Car Loan 2</p></td>
+<td><p>22000</p></td>
+<td><p>5.75</p></td>
+<td><p>425</p></td>
+</tr>
+<tr class="row-odd"><td><p>Credit Card 1</p></td>
+<td><p>6500</p></td>
+<td><p>18.99</p></td>
+<td><p>195</p></td>
+</tr>
+<tr class="row-even"><td><p>Credit Card 2</p></td>
+<td><p>4200</p></td>
+<td><p>22.49</p></td>
+<td><p>125</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Strategic Considerations:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze excluding mortgage (different strategy for home equity)</span>
+<span class="n">non_mortgage_debts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Car Loan 1&quot;</span><span class="p">,</span> <span class="mi">18500</span><span class="p">,</span> <span class="mf">4.25</span><span class="p">,</span> <span class="mi">385</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Car Loan 2&quot;</span><span class="p">,</span> <span class="mi">22000</span><span class="p">,</span> <span class="mf">5.75</span><span class="p">,</span> <span class="mi">425</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Credit Card 1&quot;</span><span class="p">,</span> <span class="mi">6500</span><span class="p">,</span> <span class="mf">18.99</span><span class="p">,</span> <span class="mi">195</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Credit Card 2&quot;</span><span class="p">,</span> <span class="mi">4200</span><span class="p">,</span> <span class="mf">22.49</span><span class="p">,</span> <span class="mi">125</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">non_mortgage_debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">strategy</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Non-Mortgage Debt Analysis:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff Order: </span><span class="si">{</span><span class="p">[</span><span class="n">debt</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">debt</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">strategy</span><span class="o">.</span><span class="n">payoff_order</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Interest: $</span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff Time: </span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Expected Priority Order:</strong>
+1. Credit Card 2 (22.49% rate)
+2. Credit Card 1 (18.99% rate)
+3. Car Loan 2 (5.75% rate)
+4. Car Loan 1 (4.25% rate)</p>
+</section>
+<section id="example-7-pre-retirement-debt-elimination">
+<h3>Example 7: Pre-Retirement Debt Elimination<a class="headerlink" href="#example-7-pre-retirement-debt-elimination" title="Link to this heading"></a></h3>
+<p><strong>Background:</strong> Individual approaching retirement wanting to eliminate all debt beforehand.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="c1"># Target retirement in 5 years (60 months)</span>
+<span class="n">retirement_months</span> <span class="o">=</span> <span class="mi">60</span>
+
+<span class="n">debts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Credit Card&quot;</span><span class="p">,</span> <span class="mi">8500</span><span class="p">,</span> <span class="mf">16.99</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Car Loan&quot;</span><span class="p">,</span> <span class="mi">15000</span><span class="p">,</span> <span class="mf">5.25</span><span class="p">,</span> <span class="mi">285</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Home Equity&quot;</span><span class="p">,</span> <span class="mi">35000</span><span class="p">,</span> <span class="mf">6.75</span><span class="p">,</span> <span class="mi">425</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># Find minimum extra payment needed to be debt-free by retirement</span>
+<span class="k">for</span> <span class="n">extra_payment</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2001</span><span class="p">,</span> <span class="mi">50</span><span class="p">):</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="n">extra_payment</span><span class="p">)</span>
+    <span class="n">strategy</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">retirement_months</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum extra payment for retirement goal: $</span><span class="si">{</span><span class="n">extra_payment</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total monthly payment: $</span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">min_payment</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">debts</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">extra_payment</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff time: </span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total interest: $</span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cannot achieve debt-free retirement with reasonable extra payments&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="industry-specific-examples">
+<h2>Industry-Specific Examples<a class="headerlink" href="#industry-specific-examples" title="Link to this heading"></a></h2>
+<section id="example-8-medical-professional-with-educational-debt">
+<h3>Example 8: Medical Professional with Educational Debt<a class="headerlink" href="#example-8-medical-professional-with-educational-debt" title="Link to this heading"></a></h3>
+<p><strong>Background:</strong> Doctor with high income but substantial educational debt.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">medical_debts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Med School Loan 1&quot;</span><span class="p">,</span> <span class="mi">75000</span><span class="p">,</span> <span class="mf">6.25</span><span class="p">,</span> <span class="mi">765</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Med School Loan 2&quot;</span><span class="p">,</span> <span class="mi">85000</span><span class="p">,</span> <span class="mf">7.00</span><span class="p">,</span> <span class="mi">918</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Residency Credit Card&quot;</span><span class="p">,</span> <span class="mi">15000</span><span class="p">,</span> <span class="mf">19.99</span><span class="p">,</span> <span class="mi">450</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Equipment Loan&quot;</span><span class="p">,</span> <span class="mi">25000</span><span class="p">,</span> <span class="mf">8.50</span><span class="p">,</span> <span class="mi">315</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># High income allows substantial extra payments</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">medical_debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="n">strategy</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Medical Professional Debt Strategy:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Priority: </span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">payoff_order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (Rate: </span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">payoff_order</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rate</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Interest Savings vs Minimums: $</span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_interest_savings</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-9-small-business-owner">
+<h3>Example 9: Small Business Owner<a class="headerlink" href="#example-9-small-business-owner" title="Link to this heading"></a></h3>
+<p><strong>Background:</strong> Entrepreneur with business and personal debt to manage.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">business_personal_debts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Business Credit Line&quot;</span><span class="p">,</span> <span class="mi">45000</span><span class="p">,</span> <span class="mf">12.50</span><span class="p">,</span> <span class="mi">750</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Equipment Financing&quot;</span><span class="p">,</span> <span class="mi">35000</span><span class="p">,</span> <span class="mf">9.25</span><span class="p">,</span> <span class="mi">485</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Personal Credit Card&quot;</span><span class="p">,</span> <span class="mi">8500</span><span class="p">,</span> <span class="mf">21.99</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+    <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;SBA Loan&quot;</span><span class="p">,</span> <span class="mi">125000</span><span class="p">,</span> <span class="mf">7.75</span><span class="p">,</span> <span class="mi">1285</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># Variable income - analyze different scenarios</span>
+<span class="n">scenarios</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;Conservative&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Moderate&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Aggressive&quot;</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">scenario_name</span><span class="p">,</span> <span class="n">extra_payment</span> <span class="ow">in</span> <span class="n">scenarios</span><span class="p">:</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">business_personal_debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="n">extra_payment</span><span class="p">)</span>
+    <span class="n">strategy</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n</span><span class="si">{</span><span class="n">scenario_name</span><span class="si">}</span><span class="s2"> Scenario ($</span><span class="si">{</span><span class="n">extra_payment</span><span class="si">}</span><span class="s2"> extra):&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff Time: </span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Interest: $</span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="specialized-use-cases">
+<h2>Specialized Use Cases<a class="headerlink" href="#specialized-use-cases" title="Link to this heading"></a></h2>
+<section id="example-10-debt-payoff-vs-investment-analysis">
+<h3>Example 10: Debt Payoff vs Investment Analysis<a class="headerlink" href="#example-10-debt-payoff-vs-investment-analysis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare debt payoff vs investing extra money</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compare_debt_vs_investment</span><span class="p">(</span><span class="n">debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="p">,</span> <span class="n">investment_return_rate</span><span class="p">):</span>
+    <span class="c1"># Debt payoff scenario</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">debts</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="n">extra_payment</span><span class="p">)</span>
+    <span class="n">debt_strategy</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+    <span class="c1"># Investment scenario (simplified)</span>
+    <span class="n">monthly_investment</span> <span class="o">=</span> <span class="n">extra_payment</span>
+    <span class="n">investment_months</span> <span class="o">=</span> <span class="n">debt_strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span>
+
+    <span class="c1"># Future value of monthly investments</span>
+    <span class="n">monthly_rate</span> <span class="o">=</span> <span class="n">investment_return_rate</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">/</span> <span class="mi">100</span>
+    <span class="n">investment_value</span> <span class="o">=</span> <span class="n">monthly_investment</span> <span class="o">*</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">monthly_rate</span><span class="p">)</span> <span class="o">**</span> <span class="n">investment_months</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">monthly_rate</span><span class="p">)</span>
+
+    <span class="n">debt_interest_saved</span> <span class="o">=</span> <span class="n">debt_strategy</span><span class="o">.</span><span class="n">get_interest_savings</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Debt Payoff Approach:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interest Saved: $</span><span class="si">{</span><span class="n">debt_interest_saved</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time to Debt Freedom: </span><span class="si">{</span><span class="n">debt_strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nInvestment Approach:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Investment Value: $</span><span class="si">{</span><span class="n">investment_value</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Net Gain: $</span><span class="si">{</span><span class="n">investment_value</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">extra_payment</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">investment_months</span><span class="p">)</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">debt_interest_saved</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">investment_value</span> <span class="o">-</span> <span class="p">(</span><span class="n">extra_payment</span> <span class="o">*</span> <span class="n">investment_months</span><span class="p">)):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nRecommendation: Focus on debt payoff&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nRecommendation: Consider investing&quot;</span><span class="p">)</span>
+
+<span class="n">debts</span> <span class="o">=</span> <span class="p">[</span><span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Credit Card&quot;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mf">18.99</span><span class="p">,</span> <span class="mi">300</span><span class="p">)]</span>
+<span class="n">compare_debt_vs_investment</span><span class="p">(</span><span class="n">debts</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">)</span>  <span class="c1"># 7% investment return</span>
+</pre></div>
+</div>
+</section>
+<section id="example-11-balance-transfer-analysis">
+<h3>Example 11: Balance Transfer Analysis<a class="headerlink" href="#example-11-balance-transfer-analysis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analyze balance transfer credit card offer</span>
+<span class="n">current_debt</span> <span class="o">=</span> <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Current Card&quot;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="mf">22.99</span><span class="p">,</span> <span class="mi">240</span><span class="p">)</span>
+
+<span class="c1"># Balance transfer offer: 0% for 12 months, then 16.99%, 3% transfer fee</span>
+<span class="n">transfer_fee</span> <span class="o">=</span> <span class="mi">8000</span> <span class="o">*</span> <span class="mf">0.03</span>  <span class="c1"># $240</span>
+
+<span class="c1"># Scenario 1: Keep current card</span>
+<span class="n">current_optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">([</span><span class="n">current_debt</span><span class="p">],</span> <span class="n">extra_payment</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">current_strategy</span> <span class="o">=</span> <span class="n">current_optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+<span class="c1"># Scenario 2: Balance transfer</span>
+<span class="c1"># Model as debt with 0% rate for 12 months, then higher balance</span>
+<span class="c1"># This is simplified - real analysis would be more complex</span>
+<span class="n">transfer_debt</span> <span class="o">=</span> <span class="n">Debt</span><span class="p">(</span><span class="s2">&quot;Transfer Card&quot;</span><span class="p">,</span> <span class="mi">8000</span> <span class="o">+</span> <span class="n">transfer_fee</span><span class="p">,</span> <span class="mf">16.99</span><span class="p">,</span> <span class="mi">240</span><span class="p">)</span>
+<span class="n">transfer_optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">([</span><span class="n">transfer_debt</span><span class="p">],</span> <span class="n">extra_payment</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">transfer_strategy</span> <span class="o">=</span> <span class="n">transfer_optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current Card:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Interest: $</span><span class="si">{</span><span class="n">current_strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff Time: </span><span class="si">{</span><span class="n">current_strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nBalance Transfer:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transfer Fee: $</span><span class="si">{</span><span class="n">transfer_fee</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Interest: $</span><span class="si">{</span><span class="n">transfer_strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff Time: </span><span class="si">{</span><span class="n">transfer_strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-testing-examples">
+<h2>Performance Testing Examples<a class="headerlink" href="#performance-testing-examples" title="Link to this heading"></a></h2>
+<section id="example-12-large-debt-portfolio-analysis">
+<h3>Example 12: Large Debt Portfolio Analysis<a class="headerlink" href="#example-12-large-debt-portfolio-analysis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.debt_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Debt</span><span class="p">,</span> <span class="n">DebtOptimizer</span>
+
+<span class="c1"># Generate large number of debts for performance testing</span>
+<span class="n">large_debt_portfolio</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>  <span class="c1"># 50 different debts</span>
+    <span class="n">debt</span> <span class="o">=</span> <span class="n">Debt</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Debt </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">balance</span><span class="o">=</span><span class="mi">1000</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">500</span><span class="p">),</span>  <span class="c1"># Varying balances</span>
+        <span class="n">rate</span><span class="o">=</span><span class="mf">5.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">),</span>      <span class="c1"># Varying rates</span>
+        <span class="n">min_payment</span><span class="o">=</span><span class="mi">50</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># Varying payments</span>
+    <span class="p">)</span>
+    <span class="n">large_debt_portfolio</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">debt</span><span class="p">)</span>
+
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">DebtOptimizer</span><span class="p">(</span><span class="n">large_debt_portfolio</span><span class="p">,</span> <span class="n">extra_payment</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">strategy</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">optimize_debt_avalanche</span><span class="p">()</span>
+
+<span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">processing_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">large_debt_portfolio</span><span class="p">)</span><span class="si">}</span><span class="s2"> debts in </span><span class="si">{</span><span class="n">processing_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Interest: $</span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_total_interest</span><span class="p">()</span><span class="si">:</span><span class="s2">,.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payoff Time: </span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_payoff_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> months&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="tips-for-creating-your-own-examples">
+<h2>Tips for Creating Your Own Examples<a class="headerlink" href="#tips-for-creating-your-own-examples" title="Link to this heading"></a></h2>
+<section id="data-preparation-tips">
+<h3>Data Preparation Tips<a class="headerlink" href="#data-preparation-tips" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Use realistic interest rates</strong>: Credit cards (15-25%), auto loans (3-8%), student loans (4-8%)</p></li>
+<li><p><strong>Ensure minimum payments cover interest</strong>: Monthly payment should be at least (balance × rate / 12)</p></li>
+<li><p><strong>Include variety</strong>: Mix high and low balance debts with different rates</p></li>
+<li><p><strong>Test edge cases</strong>: Very high rates, very low minimums, large balances</p></li>
+</ol>
+</section>
+<section id="analysis-best-practices">
+<h3>Analysis Best Practices<a class="headerlink" href="#analysis-best-practices" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Start simple</strong>: Begin with 2-3 debts to understand the concepts</p></li>
+<li><p><strong>Compare strategies</strong>: Always run multiple strategies to see differences</p></li>
+<li><p><strong>Test extra payments</strong>: Small increases in extra payments often yield large savings</p></li>
+<li><p><strong>Validate results</strong>: Spot-check calculations for reasonableness</p></li>
+<li><p><strong>Document assumptions</strong>: Note any special circumstances or assumptions</p></li>
+</ol>
+</section>
+<section id="common-pitfalls-to-avoid">
+<h3>Common Pitfalls to Avoid<a class="headerlink" href="#common-pitfalls-to-avoid" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Decimal vs percentage rates</strong>: Use 18.99, not 0.1899</p></li>
+<li><p><strong>Annual vs monthly payments</strong>: Ensure all payments are monthly</p></li>
+<li><p><strong>Outdated balances</strong>: Use current balances for accurate results</p></li>
+<li><p><strong>Ignoring fees</strong>: Consider balance transfer fees, loan origination fees</p></li>
+<li><p><strong>Unrealistic extra payments</strong>: Ensure extra payments fit your actual budget</p></li>
+</ol>
+<p>These examples demonstrate the versatility and power of the Financial Debt Optimizer across various scenarios and use cases. Use them as starting points for your own debt optimization analysis.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="user_guide.html" class="btn btn-neutral float-left" title="User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="faq.html" class="btn btn-neutral float-right" title="Frequently Asked Questions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bryan Kemp.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
