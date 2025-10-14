@@ -3,11 +3,16 @@ from pathlib import Path
 import sys
 from datetime import date
 from typing import Optional
+import logging
 
 # Add src to path to allow imports
 src_path = Path(__file__).parent.parent
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
+
+# Import after path setup
+from core.logging_config import setup_logging, get_logger
+from core.validation import validate_financial_scenario, ValidationError
 
 from core.financial_calc import Debt, Income
 from core.debt_optimizer import DebtOptimizer, OptimizationGoal
@@ -16,8 +21,10 @@ from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_rep
 
 
 @click.group()
-@click.version_option(version="0.1.0")
-def main():
+@click.version_option()
+@click.option('--debug', is_flag=True, help='Enable debug logging')
+@click.option('--log-file', type=str, help='Log file path')
+def main(debug, log_file):
     """
     Financial Debt Optimizer
     
@@ -28,7 +35,13 @@ def main():
     It generates detailed Excel reports with payment schedules, charts, and
     analysis to help you become debt-free as efficiently as possible.
     """
-    pass
+    # Setup logging
+    level = "DEBUG" if debug else "INFO"
+    setup_logging(level=level, log_file=log_file, console_output=False)
+    
+    # Get logger for CLI
+    logger = get_logger("cli")
+    logger.debug(f"Starting Financial Debt Optimizer CLI with debug={debug}, log_file={log_file}")
 
 
 @main.command()
@@ -124,13 +137,40 @@ def analyze(
 ):
     """Analyze debt and generate optimized repayment plan."""
     
+    logger = get_logger("cli.analyze")
+    
     try:
         click.echo("📊 Starting debt optimization analysis...")
+        logger.info(f"Starting analysis with input={input}, goal={goal}, extra_payment={extra_payment}")
         
         # Read input data
         click.echo(f"📁 Reading data from {input}")
         reader = ExcelReader(input)
         debts, income_sources, recurring_expenses, future_income, future_expenses, settings = reader.read_all_data()
+        
+        # Validate the financial scenario
+        logger.debug("Validating financial scenario")
+        is_valid, messages = validate_financial_scenario(debts, income_sources, recurring_expenses, settings)
+        
+        if not is_valid:
+            click.echo("❌ Validation errors found:")
+            for message in messages:
+                if message.startswith("Warning:"):
+                    click.echo(f"  ⚠️  {message}")
+                    logger.warning(message)
+                else:
+                    click.echo(f"  ❌ {message}")
+                    logger.error(message)
+            
+            # Exit if there are actual errors (not just warnings)
+            error_count = len([m for m in messages if not m.startswith("Warning:")])
+            if error_count > 0:
+                logger.error(f"Analysis aborted due to {error_count} validation errors")
+                sys.exit(1)
+        elif messages:  # Only warnings
+            for message in messages:
+                click.echo(f"  ⚠️  {message}")
+                logger.warning(message)
         
         click.echo(f"✓ Found {len(debts)} debts and {len(income_sources)} income sources")
         
