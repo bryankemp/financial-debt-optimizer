@@ -108,7 +108,7 @@ For more control, use the Python API:
     writer.write_strategy_comparison([avalanche_strategy, snowball_strategy])
 
 Available Strategies
--------------------
+--------------------
 
 The Financial Debt Optimizer supports several debt repayment strategies:
 
@@ -166,7 +166,7 @@ Now that you've completed the quick start:
 4. **See** :doc:`faq` **for common questions**
 
 Common Use Cases
----------------
+----------------
 
 **"I want to pay off debt as quickly as possible"**
     Use the avalanche strategy with extra payments::

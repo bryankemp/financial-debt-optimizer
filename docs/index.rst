@@ -77,26 +77,26 @@ Quick Start
 
    .. code-block:: python
 
-   from core.debt_optimizer import DebtOptimizer, OptimizationGoal
-   from excel_io.excel_reader import ExcelReader
-   from excel_io.excel_writer import ExcelReportWriter
-   
-   # Load debt data from Excel
-   reader = ExcelReader("my_debts.xlsx")
-   debts, income, expenses, _, _, settings = reader.read_all_data()
-   
-   # Create optimizer
-   optimizer = DebtOptimizer(debts, income, expenses)
-   
-   # Run optimization
-   result = optimizer.optimize_debt_strategy(
-       OptimizationGoal.MINIMIZE_INTEREST, extra_payment=200.0
-   )
-   
-   # Generate comprehensive report
-   debt_summary = optimizer.generate_debt_summary()
-   writer = ExcelReportWriter("debt_analysis_report.xlsx")
-   writer.create_comprehensive_report(result, debt_summary)
+      from core.debt_optimizer import DebtOptimizer, OptimizationGoal
+      from excel_io.excel_reader import ExcelReader
+      from excel_io.excel_writer import ExcelReportWriter
+      
+      # Load debt data from Excel
+      reader = ExcelReader("my_debts.xlsx")
+      debts, income, expenses, _, _, settings = reader.read_all_data()
+      
+      # Create optimizer
+      optimizer = DebtOptimizer(debts, income, expenses)
+      
+      # Run optimization
+      result = optimizer.optimize_debt_strategy(
+          OptimizationGoal.MINIMIZE_INTEREST, extra_payment=200.0
+      )
+      
+      # Generate comprehensive report
+      debt_summary = optimizer.generate_debt_summary()
+      writer = ExcelReportWriter("debt_analysis_report.xlsx")
+      writer.create_comprehensive_report(result, debt_summary)
 
 .. toctree::
    :maxdepth: 2
@@ -112,7 +112,7 @@ Quick Start
    :maxdepth: 2
    :caption: API Reference:
    
-   modules
+   api/modules
 
 .. toctree::
    :maxdepth: 1

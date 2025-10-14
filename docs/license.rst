@@ -50,12 +50,12 @@ We chose the BSD 3-Clause License because it:
 - Encourages widespread adoption and contribution
 
 Copyright Notice
----------------
+----------------
 
 Copyright (c) 2025, Bryan Kemp. All rights reserved.
 
 Full License Text
-----------------
+-----------------
 
 For the complete license text with all legal details, please visit:
 https://github.com/bryankemp/financial-debt-optimizer/blob/main/LICENSE

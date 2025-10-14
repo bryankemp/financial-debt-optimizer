@@ -12,7 +12,7 @@ What is the Financial Debt Optimizer?
 The Financial Debt Optimizer is a Python tool that helps you analyze and optimize your debt repayment strategies. It can compare different approaches (avalanche, snowball, hybrid) to help you save money and pay off debt faster.
 
 Who should use this tool?
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Anyone with multiple debts who wants to optimize their repayment strategy
 - Financial advisors helping clients with debt management
@@ -50,7 +50,7 @@ Try::
 If Python isn't recognized, install it from `python.org <https://python.org>`_.
 
 Can I use this on Windows/Mac/Linux?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Yes, the tool works on all major operating systems. The installation process is the same across platforms.
 
@@ -76,7 +76,7 @@ While the tool is designed to work with Excel files, you can create the required
 - Even a CSV file renamed to .xlsx (though this may have limitations)
 
 How accurate are the calculations?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The calculations are highly accurate for standard debt scenarios. The tool uses:
 - Compound interest formulas
@@ -90,10 +90,10 @@ However, the tool assumes:
 - No missed payments
 
 Debt Strategies
---------------
+---------------
 
 Which strategy should I choose?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Debt Avalanche** if you:
 - Want to minimize total interest paid
@@ -111,7 +111,7 @@ Which strategy should I choose?
 - Want some quick wins while still focusing on high-interest debt
 
 What if I have very large debts with low interest rates?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Large, low-interest debts (like mortgages or some student loans) should often be treated differently:
 - Consider excluding them from optimization (pay minimums)
@@ -142,7 +142,7 @@ Yes, your data is completely private:
 - The tool only reads the Excel file you provide and writes results locally
 
 Can I share my results?
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The Excel output files contain only the analysis results and payment schedules - they don't include sensitive account information unless you put it in the original file. Remove any sensitive data before sharing.
 
@@ -166,7 +166,7 @@ What data should I include?
 - Passwords or PINs
 
 Technical Issues
----------------
+----------------
 
 The tool is running slowly
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -193,7 +193,7 @@ Check that:
 Excel files created in newer versions should work fine.
 
 The results look wrong
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 Common issues:
 - Interest rates entered as decimals instead of percentages (use 18.99, not 0.1899)
@@ -207,7 +207,7 @@ Financial Planning
 ------------------
 
 How often should I run this analysis?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Recommended frequency:
 - **Monthly**: Update balances and track progress
@@ -216,7 +216,7 @@ Recommended frequency:
 - **As needed**: When adding new debt or making large payments
 
 Should I always follow the recommended strategy?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The tool provides mathematically optimal recommendations, but consider:
 - Your personal financial situation
@@ -227,7 +227,7 @@ The tool provides mathematically optimal recommendations, but consider:
 The recommendations are a starting point for your decision-making.
 
 What about emergency funds?
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Most financial advisors recommend:
 1. Build a small emergency fund ($1,000) first
@@ -238,7 +238,7 @@ Most financial advisors recommend:
 The tool focuses on debt optimization - factor in emergency savings separately.
 
 Can this help with mortgage decisions?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While you can include mortgages in the analysis, they often require special consideration:
 - Tax deductibility of mortgage interest
@@ -249,10 +249,10 @@ While you can include mortgages in the analysis, they often require special cons
 Consider consulting a financial advisor for major mortgage decisions.
 
 Advanced Usage
--------------
+--------------
 
 Can I automate this analysis?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Yes, using the Python API you can:
 - Schedule regular analysis runs
@@ -263,7 +263,7 @@ Yes, using the Python API you can:
 See the :doc:`user_guide` for automation examples.
 
 How do I contribute improvements?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The project welcomes contributions:
 - Report bugs on GitHub Issues
@@ -274,7 +274,7 @@ The project welcomes contributions:
 See :doc:`contributing` for detailed guidelines.
 
 Can I use this commercially?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Yes, the BSD 3-Clause license allows commercial use. You can:
 - Use it in financial planning businesses
@@ -283,10 +283,10 @@ Yes, the BSD 3-Clause license allows commercial use. You can:
 - Redistribute it (with proper attribution)
 
 Error Messages
--------------
+--------------
 
 "ImportError: No module named 'pandas'"
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Dependencies weren't installed. Try::
 
@@ -294,14 +294,14 @@ Dependencies weren't installed. Try::
     pip install financial-debt-optimizer
 
 "Permission denied" errors
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Make sure the output directory exists and is writable
 - Close the output Excel file if it's open in another program
 - Try running with ``--user`` flag: ``pip install --user financial-debt-optimizer``
 
 "Invalid strategy" error
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use one of the supported strategies:
 - ``avalanche``
@@ -322,7 +322,7 @@ Getting More Help
 -----------------
 
 Where can I get additional support?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Documentation**: Check the complete :doc:`user_guide` and :doc:`examples`
 2. **GitHub Issues**: Report bugs or ask questions at https://github.com/bryankemp/financial-debt-optimizer/issues
@@ -330,7 +330,7 @@ Where can I get additional support?
 4. **Community**: Join discussions on the GitHub repository
 
 How do I report a bug?
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 When reporting issues, please include:
 - Your operating system and Python version
@@ -340,7 +340,7 @@ When reporting issues, please include:
 - Expected vs actual results
 
 What features are planned?
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Potential future features:
 - Web-based interface
@@ -352,7 +352,7 @@ Potential future features:
 Feature requests and contributions are welcome!
 
 Is there a user community?
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While there isn't a dedicated forum yet, you can:
 - Follow the GitHub repository for updates
@@ -361,7 +361,7 @@ While there isn't a dedicated forum yet, you can:
 - Share your success stories and use cases
 
 Still Have Questions?
---------------------
+---------------------
 
 If your question isn't answered here:
 

@@ -98,7 +98,7 @@ The hybrid strategy balances mathematical optimization with psychological benefi
 **Best for:** Most people who want to optimize savings while maintaining motivation.
 
 Data Input and Format
---------------------
+---------------------
 
 Excel File Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -181,7 +181,7 @@ Required Options
     Strategy to use: ``avalanche``, ``snowball``, or ``hybrid``
 
 Optional Parameters
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 ``--extra-payment AMOUNT`` or ``-e AMOUNT``
     Additional monthly payment amount (default: 0)
@@ -257,7 +257,7 @@ Basic API Usage
     print(f"Payoff time: {payoff_months} months")
 
 Advanced API Features
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 **Compare Multiple Strategies:**
 
@@ -366,7 +366,7 @@ The generated Excel file contains multiple worksheets:
     - Payment timeline charts
 
 Reading the Payment Schedule
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The payment schedule shows:
 
@@ -401,7 +401,7 @@ Optimization Tips
 -----------------
 
 Maximizing Your Results
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 **1. Increase Extra Payments Gradually**
    Start with a small extra payment and increase it as your budget allows. Even $50 extra per month makes a significant difference.
@@ -419,7 +419,7 @@ Maximizing Your Results
    Re-run analyses quarterly to stay motivated and adjust for any changes.
 
 Common Scenarios
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 **Scenario 1: Limited Extra Payment Capacity**
    Use the hybrid strategy to get some quick wins while still focusing on high-interest debt.
@@ -437,7 +437,7 @@ Integration and Automation
 --------------------------
 
 Connecting to Other Tools
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Budget Tracking Software**
    Export payment schedules to import into Mint, YNAB, or other budgeting tools.
@@ -449,7 +449,7 @@ Connecting to Other Tools
    Use the API to integrate debt optimization into broader financial planning applications.
 
 Automated Updates
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -489,7 +489,7 @@ Best Practices
 --------------
 
 Data Management
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 **Keep Data Current**
    Update your Excel file monthly with current balances and any rate changes.
@@ -504,7 +504,7 @@ Data Management
    Note any assumptions about rate changes, extra payments, or other variables.
 
 Financial Discipline
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 **Stick to the Plan**
    Once you choose a strategy, commit to it for at least 6 months before reconsidering.
@@ -519,10 +519,10 @@ Financial Discipline
    Life changes - be willing to adjust your strategy if your financial situation changes significantly.
 
 Troubleshooting
---------------
+---------------
 
 Common Issues and Solutions
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Issue: Results seem unrealistic**
    - Check that interest rates are entered as percentages (not decimals)
@@ -550,7 +550,7 @@ Common Issues and Solutions
    - Ensure input file exists and is accessible
 
 Performance Considerations
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Large Datasets**
    - For 20+ debts, processing may take a few seconds

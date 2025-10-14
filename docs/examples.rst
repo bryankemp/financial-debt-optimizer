@@ -326,7 +326,7 @@ Example 8: Medical Professional with Educational Debt
     print(f"Total Interest Savings vs Minimums: ${strategy.get_interest_savings():,.2f}")
 
 Example 9: Small Business Owner
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Background:** Entrepreneur with business and personal debt to manage.
 
@@ -355,7 +355,7 @@ Example 9: Small Business Owner
         print(f"Total Interest: ${strategy.get_total_interest():,.2f}")
 
 Specialized Use Cases
---------------------
+---------------------
 
 Example 10: Debt Payoff vs Investment Analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -395,7 +395,7 @@ Example 10: Debt Payoff vs Investment Analysis
     compare_debt_vs_investment(debts, 400, 7.0)  # 7% investment return
 
 Example 11: Balance Transfer Analysis
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -426,7 +426,7 @@ Example 11: Balance Transfer Analysis
     print(f"Payoff Time: {transfer_strategy.get_payoff_time()} months")
 
 Performance Testing Examples
----------------------------
+----------------------------
 
 Example 12: Large Debt Portfolio Analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -463,7 +463,7 @@ Tips for Creating Your Own Examples
 -----------------------------------
 
 Data Preparation Tips
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 1. **Use realistic interest rates**: Credit cards (15-25%), auto loans (3-8%), student loans (4-8%)
 2. **Ensure minimum payments cover interest**: Monthly payment should be at least (balance × rate / 12)
@@ -471,7 +471,7 @@ Data Preparation Tips
 4. **Test edge cases**: Very high rates, very low minimums, large balances
 
 Analysis Best Practices
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Start simple**: Begin with 2-3 debts to understand the concepts
 2. **Compare strategies**: Always run multiple strategies to see differences
@@ -480,7 +480,7 @@ Analysis Best Practices
 5. **Document assumptions**: Note any special circumstances or assumptions
 
 Common Pitfalls to Avoid
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Decimal vs percentage rates**: Use 18.99, not 0.1899
 2. **Annual vs monthly payments**: Ensure all payments are monthly

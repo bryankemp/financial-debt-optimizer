@@ -24,7 +24,7 @@ Quick Start for Contributors
 5. **Submit a pull request** with your improvements
 
 Types of Contributions
----------------------
+----------------------
 
 We appreciate all types of contributions:
 
@@ -37,7 +37,7 @@ We appreciate all types of contributions:
 - **User experience** improvements
 
 Development Setup
-----------------
+-----------------
 
 **Prerequisites:**
 - Python 3.8 or higher
@@ -76,7 +76,7 @@ We follow PEP 8 style guidelines with some project-specific conventions. Please:
 - Write tests for new functionality
 
 Pull Request Process
--------------------
+--------------------
 
 1. **Create a feature branch** from main
 2. **Make your changes** with clear, descriptive commits
@@ -88,7 +88,7 @@ Pull Request Process
 For complete details, see `CONTRIBUTING.md <https://github.com/bryankemp/financial-debt-optimizer/blob/main/CONTRIBUTING.md>`_.
 
 Reporting Issues
----------------
+----------------
 
 When reporting bugs or requesting features, please use our `GitHub Issues <https://github.com/bryankemp/financial-debt-optimizer/issues>`_ page.
 
@@ -100,7 +100,7 @@ Include:
 - Sample data (remove sensitive information)
 
 Communication
-------------
+-------------
 
 - **GitHub Issues**: For bug reports and feature requests
 - **GitHub Discussions**: For questions and general discussion

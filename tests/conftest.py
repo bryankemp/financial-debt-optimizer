@@ -4,7 +4,6 @@ Shared pytest fixtures and configuration for Financial Debt Optimizer tests.
 
 import os
 import shutil
-
 # Add src to Python path for testing
 import sys
 import tempfile
@@ -17,13 +16,8 @@ import pytest
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from core.financial_calc import (
-    Debt,
-    FutureExpense,
-    FutureIncome,
-    Income,
-    RecurringExpense,
-)
+from core.financial_calc import (Debt, FutureExpense, FutureIncome, Income,
+                                 RecurringExpense)
 from excel_io.excel_reader import ExcelTemplateGenerator
 
 

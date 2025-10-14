@@ -6,7 +6,6 @@ with various parameter combinations and edge cases.
 """
 
 import shutil
-
 # Import the classes to test
 import sys
 import tempfile
