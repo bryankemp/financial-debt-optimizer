@@ -223,7 +223,7 @@ class TestFutureIncome:
     def test_future_income_creation(self):
         """Test FutureIncome object creation."""
         future_date = date.today() + timedelta(days=90)
-        
+
         # One-time income
         one_time = FutureIncome("Bonus", 5000.0, future_date, "once")
         assert one_time.description == "Bonus"
@@ -235,9 +235,7 @@ class TestFutureIncome:
         # Recurring income with end date
         start_date = date.today() + timedelta(days=30)
         end_date = date.today() + timedelta(days=180)
-        recurring = FutureIncome(
-            "Temp Job", 2000.0, start_date, "monthly", end_date
-        )
+        recurring = FutureIncome("Temp Job", 2000.0, start_date, "monthly", end_date)
         assert recurring.end_date == end_date
 
     @pytest.mark.unit
@@ -245,7 +243,7 @@ class TestFutureIncome:
         """Test is_recurring method."""
         future_date1 = date.today() + timedelta(days=90)
         future_date2 = date.today() + timedelta(days=30)
-        
+
         one_time = FutureIncome("Bonus", 5000.0, future_date1, "once")
         recurring = FutureIncome("Salary Raise", 500.0, future_date2, "monthly")
 
@@ -258,7 +256,7 @@ class TestFutureIncome:
         future_date = date.today() + timedelta(days=90)
         range_start = date.today() + timedelta(days=30)
         range_end = date.today() + timedelta(days=365)
-        
+
         # One-time income
         one_time = FutureIncome("Bonus", 5000.0, future_date, "once")
         occurrences = one_time.get_occurrences(range_start, range_end)
@@ -268,7 +266,9 @@ class TestFutureIncome:
         # Recurring income
         recurring_start = date.today() + timedelta(days=45)
         recurring = FutureIncome("Monthly Income", 1000.0, recurring_start, "monthly")
-        occurrences = recurring.get_occurrences(range_start, range_start + timedelta(days=120))
+        occurrences = recurring.get_occurrences(
+            range_start, range_start + timedelta(days=120)
+        )
         assert len(occurrences) >= 2  # At least 2-3 monthly occurrences
 
         # Income with end date
@@ -286,7 +286,7 @@ class TestFutureIncome:
         future_date = date.today() + timedelta(days=90)
         range_start = date.today() + timedelta(days=30)
         range_end = date.today() + timedelta(days=365)
-        
+
         one_time = FutureIncome("Bonus", 5000.0, future_date, "once")
         total = one_time.get_total_amount_in_range(range_start, range_end)
         assert total == 5000.0
@@ -383,7 +383,9 @@ class TestDataValidation:
     def test_date_handling(self):
         """Test proper date handling across all classes."""
         test_date = date(2024, 2, 29)  # Leap year date (for past classes)
-        future_test_date = date.today() + timedelta(days=60)  # Future date for FutureIncome
+        future_test_date = date.today() + timedelta(
+            days=60
+        )  # Future date for FutureIncome
 
         # Test with all date-containing classes
         income = Income("Test", 1000.0, "monthly", test_date)

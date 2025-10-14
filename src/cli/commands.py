@@ -1,27 +1,22 @@
-import logging
 import sys
-from datetime import date
 from pathlib import Path
-from typing import Optional
 
 import click
+
+from core.debt_optimizer import DebtOptimizer, OptimizationGoal
+from core.logging_config import get_logger, setup_logging
+from core.validation import validate_financial_scenario
+from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
+from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
 
 # Add src to path to allow imports
 src_path = Path(__file__).parent.parent
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
-from core.debt_optimizer import DebtOptimizer, OptimizationGoal
-from core.financial_calc import Debt, Income
-# Import after path setup
-from core.logging_config import get_logger, setup_logging
-from core.validation import ValidationError, validate_financial_scenario
-from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
-from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
-
 
 @click.group()
-@click.version_option()
+@click.version_option(version="1.0.0")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.option("--log-file", type=str, help="Log file path")
 def main(debug, log_file):
@@ -96,9 +91,9 @@ def generate_template(output: str, sample_data: bool):
         )
         click.echo("  • Settings: Configure optimization goals and preferences")
 
-        click.echo(f"\nNext steps:")
+        click.echo("\nNext steps:")
         click.echo(f"  1. Open {output} in Excel or similar spreadsheet program")
-        click.echo(f"  2. Fill in your actual financial data")
+        click.echo("  2. Fill in your actual financial data")
         click.echo(f"  3. Run analysis: debt-optimizer analyze -i {output}")
 
     except Exception as e:
@@ -110,7 +105,7 @@ def generate_template(output: str, sample_data: bool):
 @click.option(
     "--input",
     "-i",
-    type=click.Path(exists=True),
+    type=click.Path(),
     required=True,
     help="Input Excel file with debt and income data",
 )
@@ -156,6 +151,12 @@ def analyze(
     logger = get_logger("cli.analyze")
 
     try:
+        # Check if input file exists
+        input_path = Path(input)
+        if not input_path.exists():
+            click.echo(f"✗ File not found: {input}", err=True)
+            sys.exit(1)
+
         click.echo("📊 Starting debt optimization analysis...")
         logger.info(
             f"Starting analysis with input={input}, goal={goal}, extra_payment={extra_payment}"
@@ -254,11 +255,14 @@ def analyze(
         )
 
         # Display results
-        click.echo(f"\n🎯 Optimization Results:")
+        click.echo("\n🎯 Optimization Results:")
         click.echo(f"  Best Strategy: {result.strategy.replace('_', ' ').title()}")
         click.echo(f"  Total Interest: ${result.total_interest_paid:,.2f}")
+        years = result.total_months_to_freedom // 12
+        months = result.total_months_to_freedom % 12
         click.echo(
-            f"  Time to Freedom: {result.total_months_to_freedom} months ({result.total_months_to_freedom // 12} years, {result.total_months_to_freedom % 12} months)"
+            f"  Time to Freedom: {result.total_months_to_freedom} months "
+            f"({years} years, {months} months)"
         )
         click.echo(
             f"  Interest Saved: ${result.savings_vs_minimum['interest_saved']:,.2f}"
@@ -353,9 +357,6 @@ def validate(input_file: str):
         if not debts:
             errors.append("No debts found")
         else:
-            total_debt = sum(debt.balance for debt in debts)
-            total_minimums = sum(debt.minimum_payment for debt in debts)
-
             for debt in debts:
                 if debt.balance <= 0:
                     warnings.append(f"Debt '{debt.name}' has zero or negative balance")
@@ -378,6 +379,7 @@ def validate(input_file: str):
 
         # Financial health checks
         if debts and income_sources:
+            total_minimums = sum(debt.minimum_payment for debt in debts)
             if total_monthly_income < total_minimums:
                 errors.append("Income is insufficient to cover minimum payments")
 
@@ -398,7 +400,7 @@ def validate(input_file: str):
             click.echo("✅ Validation passed with warnings - file can be analyzed")
 
         # Summary
-        click.echo(f"\nFile Summary:")
+        click.echo("\nFile Summary:")
         click.echo(f"  Debts: {len(debts)}")
         click.echo(f"  Income Sources: {len(income_sources)}")
         click.echo(f"  Total Debt: ${sum(debt.balance for debt in debts):,.2f}")

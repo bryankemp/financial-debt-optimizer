@@ -1,11 +1,8 @@
-from datetime import date, datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-import numpy as np
 import pandas as pd
 import xlsxwriter
-from xlsxwriter.utility import xl_rowcol_to_cell
+from xlsxwriter.workbook import Workbook
 
 from core.debt_optimizer import OptimizationResult
 
@@ -15,9 +12,9 @@ class ExcelReportWriter:
 
     def __init__(self, output_path: str):
         """Initialize with output path for Excel file."""
-        self.output_path = Path(output_path)
-        self.workbook = None
-        self.formats = {}
+        self.output_path = output_path
+        self.workbook: Optional[Workbook] = None
+        self.formats: Dict[str, Any] = {}
 
     def create_comprehensive_report(
         self,
@@ -28,7 +25,7 @@ class ExcelReportWriter:
         """Create a comprehensive Excel report with all analysis results."""
 
         # Create workbook and formats
-        self.workbook = xlsxwriter.Workbook(str(self.output_path))
+        self.workbook = xlsxwriter.Workbook(self.output_path)
         self._setup_formats()
 
         try:
@@ -93,6 +90,8 @@ class ExcelReportWriter:
         self, result: OptimizationResult, debt_summary: Dict[str, Any]
     ):
         """Create executive summary sheet."""
+        if self.workbook is None:
+            raise ValueError("Workbook not initialized")
         worksheet = self.workbook.add_worksheet("Executive Summary")
 
         # Title
@@ -688,7 +687,7 @@ class ExcelReportWriter:
         worksheet.write(summary_start_row, 0, "DECISION SUMMARY", self.formats["title"])
 
         # Count decisions by type
-        decision_counts = {}
+        decision_counts: Dict[str, int] = {}
         for decision in result.decision_log:
             decision_type = decision.decision_type.replace("_", " ").title()
             decision_counts[decision_type] = decision_counts.get(decision_type, 0) + 1

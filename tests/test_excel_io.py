@@ -20,7 +20,8 @@ src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
 from core.debt_optimizer import DebtOptimizer, OptimizationGoal, OptimizationResult
-from core.financial_calc import Debt, FutureIncome, FutureExpense, Income, RecurringExpense
+from core.financial_calc import (Debt, FutureExpense, FutureIncome, Income,
+                                 RecurringExpense)
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
 from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
 
@@ -320,9 +321,9 @@ class TestExcelReader:
         assert isinstance(future_income, list)
         assert len(future_income) > 0
 
-        # Check that future income items are FutureTransaction objects
+        # Check that future income items are FutureIncome objects
         for income in future_income:
-            assert isinstance(income, FutureTransaction)
+            assert isinstance(income, FutureIncome)
             assert income.description is not None
             assert income.amount > 0
             assert isinstance(income.start_date, date)
@@ -335,9 +336,9 @@ class TestExcelReader:
         assert isinstance(future_expenses, list)
         assert len(future_expenses) > 0
 
-        # Check that future expense items are FutureTransaction objects
+        # Check that future expense items are FutureExpense objects
         for expense in future_expenses:
-            assert isinstance(expense, FutureTransaction)
+            assert isinstance(expense, FutureExpense)
             assert expense.description is not None
             assert expense.amount > 0
             assert isinstance(expense.start_date, date)
@@ -441,7 +442,7 @@ class TestExcelWriter:
 
         # Load and verify structure
         workbook = load_workbook(self.output_path)
-        expected_sheets = ["Summary", "Payment Schedule", "Debt Details"]
+        expected_sheets = ["Executive Summary", "Payment Schedule", "Monthly Summary"]
 
         # Check that key sheets exist
         for sheet_name in expected_sheets:
@@ -491,25 +492,28 @@ class TestExcelWriter:
         workbook = load_workbook(self.output_path)
         schedule_sheet = workbook["Payment Schedule"]
 
-        # Check headers
+        # Check headers (headers are in row 3, as row 1 is the merged title)
         expected_headers = [
-            "Month",
+            "Date",
+            "Type",
+            "Description",
+            "Amount",
+            "Interest",
+            "Principal",
+            "Total Debt Balance",
             "Debt Name",
-            "Balance Before",
-            "Interest Charge",
-            "Principal Payment",
-            "Balance After",
-            "Total Payment",
+            "Debt Balance",
+            "Bank Balance",
         ]
         for col, expected_header in enumerate(expected_headers, 1):
-            actual_header = schedule_sheet.cell(row=1, column=col).value
+            actual_header = schedule_sheet.cell(row=3, column=col).value
             assert actual_header == expected_header
 
-        # Check that data exists
-        assert schedule_sheet.cell(row=2, column=1).value is not None  # First month
+        # Check that data exists (data starts at row 4)
+        assert schedule_sheet.cell(row=4, column=1).value is not None  # First date
         assert isinstance(
-            schedule_sheet.cell(row=2, column=3).value, (int, float)
-        )  # Balance
+            schedule_sheet.cell(row=4, column=4).value, (int, float)
+        )  # Amount
 
     @pytest.mark.excel
     def test_summary_sheet_content(self):
@@ -518,7 +522,7 @@ class TestExcelWriter:
         writer.create_comprehensive_report(self.optimization_result, self.debt_summary)
 
         workbook = load_workbook(self.output_path)
-        summary_sheet = workbook["Summary"]
+        summary_sheet = workbook["Executive Summary"]
 
         # Check that summary information is present
         # (Exact content depends on implementation, but should have key metrics)
@@ -639,4 +643,5 @@ class TestExcelIOIntegration:
 
         # Should raise appropriate error when trying to read
         with pytest.raises(Exception):  # Could be various Excel-related exceptions
-            ExcelReader(str(fake_excel_path))
+            reader = ExcelReader(str(fake_excel_path))
+            reader.read_debts()  # This should trigger the exception

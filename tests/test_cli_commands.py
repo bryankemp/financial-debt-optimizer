@@ -384,7 +384,7 @@ class TestCLIValidate:
 
         assert result.exit_code == 1  # Should exit with error code for empty file
         assert "Validating" in result.output
-        assert "Validation failed" in result.output or "No debts found" in result.output
+        assert "No valid income records found" in result.output
 
     @pytest.mark.cli
     def test_validate_nonexistent_file(self):

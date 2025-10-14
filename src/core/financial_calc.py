@@ -1,8 +1,9 @@
 import calendar
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date as Date
+from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -30,7 +31,7 @@ class RecurrencePattern:
     """
 
     def __init__(
-        self, frequency: str, start_date: date, end_date: Optional[date] = None
+        self, frequency: str, start_date: Date, end_date: Optional[Date] = None
     ):
         """Initialize a recurrence pattern.
 
@@ -54,7 +55,7 @@ class RecurrencePattern:
         if self.end_date and self.start_date > self.end_date:
             raise ValueError("Start date cannot be after end date")
 
-    def get_dates(self, range_start: date, range_end: date) -> List[date]:
+    def get_dates(self, range_start: Date, range_end: Date) -> List[Date]:
         """Generate all occurrence dates within the given date range.
 
         Args:
@@ -122,7 +123,7 @@ class RecurrencePattern:
             while True:
                 # Try to add 1st of month if in range
                 try:
-                    first_of_month = date(current_year, current_month, 1)
+                    first_of_month = Date(current_year, current_month, 1)
                     if effective_start <= first_of_month <= effective_end:
                         dates.append(first_of_month)
                 except ValueError:
@@ -130,7 +131,7 @@ class RecurrencePattern:
 
                 # Try to add 15th of month if in range
                 try:
-                    fifteenth_of_month = date(current_year, current_month, 15)
+                    fifteenth_of_month = Date(current_year, current_month, 15)
                     if effective_start <= fifteenth_of_month <= effective_end:
                         dates.append(fifteenth_of_month)
                 except ValueError:
@@ -144,7 +145,7 @@ class RecurrencePattern:
                     current_month += 1
 
                 # Check if we've gone past the end date
-                if date(current_year, current_month, 1) > effective_end:
+                if Date(current_year, current_month, 1) > effective_end:
                     break
 
         elif self.frequency == PaymentFrequency.MONTHLY.value:
@@ -164,13 +165,13 @@ class RecurrencePattern:
 
             while True:
                 try:
-                    current_date = date(current_year, current_month, target_day)
+                    current_date = Date(current_year, current_month, target_day)
                     if effective_start <= current_date <= effective_end:
                         dates.append(current_date)
                 except ValueError:
                     # Handle month lengths - use last day of month if target_day exceeds month length
                     last_day = calendar.monthrange(current_year, current_month)[1]
-                    current_date = date(current_year, current_month, last_day)
+                    current_date = Date(current_year, current_month, last_day)
                     if effective_start <= current_date <= effective_end:
                         dates.append(current_date)
 
@@ -182,7 +183,7 @@ class RecurrencePattern:
                     current_month += 1
 
                 # Check if we've gone past the end date
-                if date(current_year, current_month, 1) > effective_end:
+                if Date(current_year, current_month, 1) > effective_end:
                     break
 
         elif self.frequency == PaymentFrequency.QUARTERLY.value:
@@ -212,13 +213,13 @@ class RecurrencePattern:
 
             while True:
                 try:
-                    current_date = date(current_year, current_month, target_day)
+                    current_date = Date(current_year, current_month, target_day)
                     if effective_start <= current_date <= effective_end:
                         dates.append(current_date)
                 except ValueError:
                     # Handle month lengths
                     last_day = calendar.monthrange(current_year, current_month)[1]
-                    current_date = date(current_year, current_month, last_day)
+                    current_date = Date(current_year, current_month, last_day)
                     if effective_start <= current_date <= effective_end:
                         dates.append(current_date)
 
@@ -229,7 +230,7 @@ class RecurrencePattern:
                     current_month -= 12
 
                 # Check if we've gone past the end date
-                if date(current_year, current_month, 1) > effective_end:
+                if Date(current_year, current_month, 1) > effective_end:
                     break
 
         elif self.frequency == PaymentFrequency.SEMI_ANNUALLY.value:
@@ -259,13 +260,13 @@ class RecurrencePattern:
 
             while True:
                 try:
-                    current_date = date(current_year, current_month, target_day)
+                    current_date = Date(current_year, current_month, target_day)
                     if effective_start <= current_date <= effective_end:
                         dates.append(current_date)
                 except ValueError:
                     # Handle month lengths
                     last_day = calendar.monthrange(current_year, current_month)[1]
-                    current_date = date(current_year, current_month, last_day)
+                    current_date = Date(current_year, current_month, last_day)
                     if effective_start <= current_date <= effective_end:
                         dates.append(current_date)
 
@@ -276,7 +277,7 @@ class RecurrencePattern:
                     current_month -= 12
 
                 # Check if we've gone past the end date
-                if date(current_year, current_month, 1) > effective_end:
+                if Date(current_year, current_month, 1) > effective_end:
                     break
 
         elif self.frequency == PaymentFrequency.ANNUALLY.value:
@@ -297,7 +298,7 @@ class RecurrencePattern:
 
             while True:
                 try:
-                    current_date = date(current_year, target_month, target_day)
+                    current_date = Date(current_year, target_month, target_day)
                     if current_date > effective_end:
                         break
                     if current_date >= effective_start:
@@ -309,7 +310,7 @@ class RecurrencePattern:
                         and target_day == 29
                         and not calendar.isleap(current_year)
                     ):
-                        current_date = date(current_year, target_month, 28)
+                        current_date = Date(current_year, target_month, 28)
                         if effective_start <= current_date <= effective_end:
                             dates.append(current_date)
 
@@ -391,14 +392,14 @@ class Debt:
         interest_charge = self.calculate_interest_charge(balance)
         return max(0, total_payment - interest_charge)
 
-    def calculate_months_to_payoff(self, payment_amount: float) -> int:
+    def calculate_months_to_payoff(self, payment_amount: float) -> float:
         """Calculate months to pay off debt with fixed payment amount."""
         if payment_amount <= 0:
             return float("inf")
 
         monthly_rate = self.monthly_interest_rate
         if monthly_rate == 0:
-            return int(np.ceil(self.balance / payment_amount))
+            return float(np.ceil(self.balance / payment_amount))
 
         if payment_amount <= self.balance * monthly_rate:
             return float("inf")  # Payment doesn't cover interest
@@ -406,7 +407,7 @@ class Debt:
         months = -np.log(1 - (self.balance * monthly_rate) / payment_amount) / np.log(
             1 + monthly_rate
         )
-        return int(np.ceil(months))
+        return float(np.ceil(months))
 
 
 @dataclass
@@ -416,7 +417,7 @@ class Income:
     source: str
     amount: float
     frequency: str
-    start_date: date
+    start_date: Date
 
     def __post_init__(self):
         """Validate income parameters after initialization."""
@@ -441,10 +442,10 @@ class Income:
         }
         return self.amount * frequency_multipliers[self.frequency]
 
-    def get_payment_dates(self, start_date: date, end_date: date) -> List[date]:
+    def get_payment_dates(self, start_date: Date, end_date: Date) -> List[Date]:
         """Generate list of payment dates within the given date range."""
         dates = []
-        today = date.today()
+        today = Date.today()
 
         # Start from the income start_date, but find the first payment on or after today
         current_date = self.start_date
@@ -522,14 +523,14 @@ class RecurringExpense:
     amount: float
     frequency: str  # monthly, quarterly, annually
     due_date: int  # Day of month when due (1-31)
-    start_date: date
+    start_date: Date
 
     def __post_init__(self):
         """Validate recurring expense parameters after initialization."""
         if self.amount <= 0:
             raise ValueError("Expense amount must be positive")
 
-        valid_frequencies = ["bi-weekly", "monthly", "quarterly", "annually"]
+        valid_frequencies = ["weekly", "bi-weekly", "monthly", "quarterly", "annually"]
         if self.frequency.lower() not in valid_frequencies:
             raise ValueError(f"Frequency must be one of: {valid_frequencies}")
 
@@ -538,13 +539,25 @@ class RecurringExpense:
         if not (1 <= self.due_date <= 31):
             raise ValueError("Due date must be between 1 and 31")
 
-    def get_payment_dates(self, start_date: date, end_date: date) -> List[date]:
+    def get_payment_dates(self, start_date: Date, end_date: Date) -> List[Date]:
         """Generate list of payment dates within the given date range."""
         dates = []
-        today = date.today()
+        today = Date.today()
 
-        # Handle bi-weekly frequency differently since it's not tied to month boundaries
-        if self.frequency == "bi-weekly":
+        # Handle weekly and bi-weekly frequencies differently since they're not tied to month boundaries
+        if self.frequency == "weekly":
+            # Start from the expense start_date or today, whichever is later
+            current_date = max(self.start_date, today)
+
+            # Generate dates every 7 days
+            while current_date <= end_date:
+                if current_date >= start_date and current_date >= today:
+                    dates.append(current_date)
+                current_date += timedelta(days=7)
+
+            return sorted(dates)
+
+        elif self.frequency == "bi-weekly":
             # Start from the expense start_date or today, whichever is later
             current_date = max(self.start_date, today)
 
@@ -619,6 +632,7 @@ class RecurringExpense:
     def get_monthly_amount(self) -> float:
         """Convert expense to monthly equivalent amount."""
         frequency_multipliers = {
+            "weekly": 52 / 12,  # 52 weeks per year / 12 months
             "bi-weekly": 26 / 12,  # 26 bi-weekly periods per year / 12 months
             "monthly": 1,
             "quarterly": 1 / 3,  # Every 3 months
@@ -637,12 +651,12 @@ class FutureIncome:
 
     description: str
     amount: float
-    start_date: date
+    start_date: Date
     frequency: Optional[str] = None  # If None, it's a one-time event
-    end_date: Optional[date] = None  # If None and frequency is set, goes indefinitely
+    end_date: Optional[Date] = None  # If None and frequency is set, goes indefinitely
 
     # Legacy field for backward compatibility with one-time events
-    date: Optional[date] = None
+    date: Optional[Date] = None
 
     def __post_init__(self):
         """Validate future income parameters after initialization."""
@@ -656,7 +670,7 @@ class FutureIncome:
             self.end_date = None
 
         # Validate dates
-        if self.start_date <= date.today():
+        if self.start_date <= Date.today():
             raise ValueError("Future income start date must be in the future")
 
         if self.end_date and self.start_date > self.end_date:
@@ -677,8 +691,8 @@ class FutureIncome:
         return self.frequency is not None and self.frequency.lower() != "once"
 
     def get_occurrences(
-        self, range_start: date, range_end: date
-    ) -> List[Tuple[date, float]]:
+        self, range_start: Date, range_end: Date
+    ) -> List[Tuple[Date, float]]:
         """Get all income occurrences within the specified date range.
 
         Args:
@@ -702,7 +716,7 @@ class FutureIncome:
 
         return sorted(occurrences, key=lambda x: x[0])
 
-    def get_total_amount_in_range(self, range_start: date, range_end: date) -> float:
+    def get_total_amount_in_range(self, range_start: Date, range_end: Date) -> float:
         """Calculate total income amount within the specified date range.
 
         Args:
@@ -748,12 +762,12 @@ class FutureExpense:
 
     description: str
     amount: float
-    start_date: date
+    start_date: Date
     frequency: Optional[str] = None  # If None, it's a one-time event
-    end_date: Optional[date] = None  # If None and frequency is set, goes indefinitely
+    end_date: Optional[Date] = None  # If None and frequency is set, goes indefinitely
 
     # Legacy field for backward compatibility with one-time events
-    date: Optional[date] = None
+    date: Optional[Date] = None
 
     def __post_init__(self):
         """Validate future expense parameters after initialization."""
@@ -767,7 +781,7 @@ class FutureExpense:
             self.end_date = None
 
         # Validate dates
-        if self.start_date <= date.today():
+        if self.start_date <= Date.today():
             raise ValueError("Future expense start date must be in the future")
 
         if self.end_date and self.start_date > self.end_date:
@@ -788,8 +802,8 @@ class FutureExpense:
         return self.frequency is not None and self.frequency.lower() != "once"
 
     def get_occurrences(
-        self, range_start: date, range_end: date
-    ) -> List[Tuple[date, float]]:
+        self, range_start: Date, range_end: Date
+    ) -> List[Tuple[Date, float]]:
         """Get all expense occurrences within the specified date range.
 
         Args:
@@ -813,7 +827,7 @@ class FutureExpense:
 
         return sorted(occurrences, key=lambda x: x[0])
 
-    def get_total_amount_in_range(self, range_start: date, range_end: date) -> float:
+    def get_total_amount_in_range(self, range_start: Date, range_end: Date) -> float:
         """Calculate total expense amount within the specified date range.
 
         Args:
@@ -870,7 +884,7 @@ def calculate_total_monthly_income(income_sources: List[Income]) -> float:
 
 
 def generate_amortization_schedule(
-    debt: Debt, payment_amount: float, start_date: date
+    debt: Debt, payment_amount: float, start_date: Date
 ) -> pd.DataFrame:
     """Generate detailed amortization schedule for a debt."""
     schedule = []
@@ -978,7 +992,7 @@ class DebtAnalyzer:
     @staticmethod
     def calculate_payoff_order_impact(
         debts: List[Debt], extra_payment: float, strategy: str = "avalanche"
-    ) -> Dict[str, float]:
+    ) -> Dict[str, Any]:
         """Calculate impact of different payoff strategies."""
         if strategy == "avalanche":
             ordered_debts = DebtAnalyzer.rank_debts_by_avalanche(debts)
@@ -987,8 +1001,8 @@ class DebtAnalyzer:
         else:
             raise ValueError("Strategy must be 'avalanche' or 'snowball'")
 
-        total_interest = 0
-        total_months = 0
+        total_interest = 0.0
+        total_months = 0.0
 
         # Simplified calculation - distribute extra payment to priority debt
         for debt in ordered_debts:

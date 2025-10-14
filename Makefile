@@ -17,6 +17,7 @@ help:
 	@echo "  test-slow        Run slow tests only"
 	@echo "  test-coverage    Run tests with detailed coverage report"
 	@echo "  test-parallel    Run tests in parallel for speed"
+	@echo "  test-reports     Generate test reports for documentation"
 	@echo ""
 	@echo "Code Quality:"
 	@echo "  lint             Run linting checks"
@@ -24,9 +25,12 @@ help:
 	@echo "  type-check       Run type checking with mypy"
 	@echo "  security         Run security checks"
 	@echo ""
+	@echo "Documentation:"
+	@echo "  docs             Generate documentation"
+	@echo "  docs-with-tests  Generate documentation with test reports"
+	@echo ""
 	@echo "Maintenance:"
 	@echo "  clean            Clean up temporary files and caches"
-	@echo "  docs             Generate documentation"
 
 # Setup targets
 install:
@@ -56,6 +60,9 @@ test-coverage:
 
 test-parallel:
 	pytest -n auto
+
+test-reports:
+	python scripts/generate_test_reports.py -v
 
 # Code quality targets
 lint:
@@ -90,7 +97,11 @@ clean:
 	find tests -name "test_output" -type d -exec rm -rf {} + 2>/dev/null || true
 
 docs:
-	cd docs && make html
+	python scripts/build_docs.py
+
+docs-with-tests:
+	python scripts/generate_test_reports.py
+	python scripts/build_docs.py
 
 # Development workflow targets
 check: lint type-check security test-unit

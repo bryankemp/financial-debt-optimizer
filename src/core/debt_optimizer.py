@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
-import numpy as np
 import pandas as pd
 
 from .financial_calc import (Debt, DebtAnalyzer, FutureIncome, Income, RecurringExpense,
@@ -22,8 +21,8 @@ class OptimizationGoal(Enum):
 class PaymentStrategy(Enum):
     """Available payment strategies."""
 
-    AVALANCHE = "avalanche"  # Highest interest rate first
-    SNOWBALL = "snowball"  # Lowest balance first
+    AVALANCHE = "debt_avalanche"  # Highest interest rate first
+    SNOWBALL = "debt_snowball"  # Lowest balance first
     HYBRID = "hybrid"  # Balance of both strategies
     CUSTOM = "custom"  # User-defined order
 
@@ -215,15 +214,31 @@ class DebtOptimizer:
         """Generate rationale for why a specific strategy was selected."""
         if goal == OptimizationGoal.MINIMIZE_INTEREST:
             interest_savings = [r.total_interest_paid for r in all_results]
-            return f"Selected for lowest interest cost: ${best_result.total_interest_paid:,.2f} vs others: {[f'${i:,.2f}' for i in interest_savings if i != best_result.total_interest_paid]}"
+            other_costs = [
+                f"${i:,.2f}"
+                for i in interest_savings
+                if i != best_result.total_interest_paid
+            ]
+            return f"Selected for lowest interest cost: ${best_result.total_interest_paid:,.2f} vs others: {other_costs}"
         elif goal == OptimizationGoal.MINIMIZE_TIME:
             time_comparisons = [r.total_months_to_freedom for r in all_results]
-            return f"Selected for shortest payoff time: {best_result.total_months_to_freedom} months vs others: {[t for t in time_comparisons if t != best_result.total_months_to_freedom]}"
+            other_times = [
+                t for t in time_comparisons if t != best_result.total_months_to_freedom
+            ]
+            return f"Selected for shortest payoff time: {best_result.total_months_to_freedom} months vs others: {other_times}"
         elif goal == OptimizationGoal.MAXIMIZE_CASHFLOW:
             cashflow_comparisons = [
                 r.monthly_cash_flow_improvement for r in all_results
             ]
-            return f"Selected for best cash flow: ${best_result.monthly_cash_flow_improvement:,.2f}/month vs others: {[f'${c:,.2f}' for c in cashflow_comparisons if c != best_result.monthly_cash_flow_improvement]}"
+            other_flows = [
+                f"${c:,.2f}"
+                for c in cashflow_comparisons
+                if c != best_result.monthly_cash_flow_improvement
+            ]
+            return (
+                f"Selected for best cash flow: "
+                f"${best_result.monthly_cash_flow_improvement:,.2f}/month vs others: {other_flows}"
+            )
         else:
             return "Selected based on overall optimization metrics"
 
@@ -367,8 +382,11 @@ class DebtOptimizer:
         self.log_decision(
             decision_type="payment_allocation",
             description=f"Allocated ${total_extra:,.2f} extra payment per month",
-            rationale=f"Using available cash flow (${self.available_extra_payment:,.2f}) plus additional extra (${extra_payment:,.2f})",
-            impact=f"Will accelerate debt payoff and reduce interest costs",
+            rationale=(
+                f"Using available cash flow (${self.available_extra_payment:,.2f}) "
+                f"plus additional extra (${extra_payment:,.2f})"
+            ),
+            impact="Will accelerate debt payoff and reduce interest costs",
             data_snapshot={
                 "base_extra_payment": self.available_extra_payment,
                 "additional_extra": extra_payment,
@@ -432,9 +450,9 @@ class DebtOptimizer:
         # Log the start of simulation with detailed debt prioritization info
         self.log_decision(
             decision_type="priority_change",
-            description=f"Starting simulation with debt priority order",
+            description="Starting simulation with debt priority order",
             rationale=self._get_debt_prioritization_rationale(ordered_debts),
-            impact=f"Will focus extra payments on priority debts to optimize strategy",
+            impact="Will focus extra payments on priority debts to optimize strategy",
             data_snapshot={
                 "debt_priority_order": [
                     {
@@ -583,7 +601,7 @@ class DebtOptimizer:
 
                     # Find current balance for this debt
                     debt_index = None
-                    current_balance = 0
+                    current_balance = 0.0
                     for idx, (d, bal) in enumerate(current_debts):
                         if d.name == debt.name:
                             debt_index = idx
@@ -669,7 +687,7 @@ class DebtOptimizer:
                                 current_balance = bal
                                 break
                         else:
-                            current_balance = 0
+                            current_balance = 0.0
 
                         # Only reserve money for debts that still have balances
                         if current_balance > 0.01:
@@ -713,14 +731,14 @@ class DebtOptimizer:
                     # Find the priority debt (first debt in ordered list with remaining balance)
                     priority_debt = None
                     priority_debt_index = None
-                    priority_balance = 0
+                    priority_balance = 0.0
 
                     for priority_debt_candidate in ordered_debts:
                         for idx, (d, bal) in enumerate(current_debts):
                             if d.name == priority_debt_candidate.name and bal > 0.01:
                                 priority_debt = d
                                 priority_debt_index = idx
-                                priority_balance = bal
+                                priority_balance = float(bal)
                                 break
                         if priority_debt:
                             break
@@ -742,7 +760,10 @@ class DebtOptimizer:
                                     available_for_extra,
                                     priority_balance,
                                 ),
-                                impact=f"Reduces {priority_debt.name} balance from ${priority_balance:,.2f} to ${priority_balance - max_extra_payment:,.2f}",
+                                impact=(
+                                    f"Reduces {priority_debt.name} balance from ${priority_balance:,.2f} "
+                                    f"to ${priority_balance - max_extra_payment:,.2f}"
+                                ),
                                 data_snapshot={
                                     "available_extra": available_for_extra,
                                     "allocated_amount": max_extra_payment,
@@ -796,7 +817,10 @@ class DebtOptimizer:
                                 {
                                     "date": current_date,
                                     "type": "extra_payment",
-                                    "description": f"{priority_debt.name} Extra Payment (After Reserving for Minimums & Expenses)",
+                                    "description": (
+                                        f"{priority_debt.name} Extra Payment "
+                                        "(After Reserving for Minimums & Expenses)"
+                                    ),
                                     "amount": -max_extra_payment,
                                     "interest_portion": 0.0,
                                     "principal_portion": max_extra_payment,
@@ -994,23 +1018,23 @@ class DebtOptimizer:
 
     def _generate_monthly_summaries(self, payment_schedule: List[Dict]) -> List[Dict]:
         """Generate enhanced monthly summary data from payment schedule with detailed extra funds and expense tracking."""
-        summaries = []
+        summaries: List[Dict] = []
         current_month = None
         month_data = {
-            "income": 0,
-            "regular_income": 0,
-            "future_income": 0,
-            "expenses": 0,
-            "recurring_expenses": 0,
-            "future_expenses": 0,
-            "payments": 0,
-            "minimum_payments": 0,
-            "extra_payments": 0,
-            "interest": 0,
-            "principal": 0,
+            "income": 0.0,
+            "regular_income": 0.0,
+            "future_income": 0.0,
+            "expenses": 0.0,
+            "recurring_expenses": 0.0,
+            "future_expenses": 0.0,
+            "payments": 0.0,
+            "minimum_payments": 0.0,
+            "extra_payments": 0.0,
+            "interest": 0.0,
+            "principal": 0.0,
             "expense_details": [],
             "income_details": [],
-        }
+        }  # type: Dict[str, Any]
         last_event = None
 
         for event in payment_schedule:
@@ -1077,21 +1101,24 @@ class DebtOptimizer:
 
                 # Reset for new month
                 current_month = event_month
-                month_data = {
-                    "income": 0,
-                    "regular_income": 0,
-                    "future_income": 0,
-                    "expenses": 0,
-                    "recurring_expenses": 0,
-                    "future_expenses": 0,
-                    "payments": 0,
-                    "minimum_payments": 0,
-                    "extra_payments": 0,
-                    "interest": 0,
-                    "principal": 0,
-                    "expense_details": [],
-                    "income_details": [],
-                }
+                month_data.clear()
+                month_data.update(
+                    {
+                        "income": 0.0,
+                        "regular_income": 0.0,
+                        "future_income": 0.0,
+                        "expenses": 0.0,
+                        "recurring_expenses": 0.0,
+                        "future_expenses": 0.0,
+                        "payments": 0.0,
+                        "minimum_payments": 0.0,
+                        "extra_payments": 0.0,
+                        "interest": 0.0,
+                        "principal": 0.0,
+                        "expense_details": [],
+                        "income_details": [],
+                    }
+                )
 
             # Accumulate data for current month
             event_type = event.get("type", "")
@@ -1235,7 +1262,7 @@ class DebtOptimizer:
         self, payment_schedule: List[Dict], initial_debts: List[Tuple]
     ) -> List[Dict]:
         """Generate debt progression data from payment schedule."""
-        progression = []
+        progression: List[Dict] = []
         debt_balances = {debt.name: balance for debt, balance in initial_debts}
 
         current_month = None
@@ -1251,7 +1278,8 @@ class DebtOptimizer:
             # Update debt balances based on payments (both regular and extra)
             if event["type"] in ["payment", "extra_payment"] and "description" in event:
                 # Extract debt name from description
-                # (e.g., "Credit Card 1 Payment" -> "Credit Card 1" or "Credit Card 1 Extra Payment (After...)" -> "Credit Card 1")
+                # (e.g., "Credit Card 1 Payment" -> "Credit Card 1" or
+                # "Credit Card 1 Extra Payment (After...)" -> "Credit Card 1")
                 description = event["description"]
                 if description.endswith(" Payment"):
                     # Regular payment: "Debt Name Payment"
@@ -1515,7 +1543,7 @@ class DebtOptimizer:
 
         # Balance consideration
         if priority_balance <= available_extra:
-            reasons.append(f"can be paid off completely with available funds")
+            reasons.append("can be paid off completely with available funds")
         else:
             payoff_percent = (available_extra / priority_balance) * 100
             reasons.append(f"will pay off {payoff_percent:.1f}% of remaining balance")

@@ -9,6 +9,9 @@ import sys
 # Add the source directory to the Python path
 sys.path.insert(0, os.path.abspath('../src'))
 
+# Add custom extensions directory to Python path
+sys.path.insert(0, os.path.abspath('_extensions'))
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -28,9 +31,14 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.autosummary',  # Added for better API documentation
     'sphinx_autodoc_typehints',
     'myst_parser',
+    'test_reports',  # Custom extension for test report integration
 ]
+
+# Generate autosummary stubs automatically
+autosummary_generate = True
 
 # Source file parsers
 source_suffix = {
@@ -68,7 +76,14 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_css_files = []
+html_css_files = [
+    'custom_test_reports.css',  # Custom styling for test reports
+]
+
+# Fix for newer Sphinx versions
+html_permalinks_icon = '🔗'
+# Disable jQuery SRI for compatibility
+jquery_use_sri = False
 
 # -- Extension configuration -------------------------------------------------
 
@@ -86,8 +101,12 @@ autodoc_mock_imports = ['pandas', 'numpy', 'matplotlib', 'xlsxwriter', 'openpyxl
 autodoc_typehints = 'description'
 nitpicky = False
 
-# Suppress autodoc warnings for missing modules
-suppress_warnings = ['autodoc.import_object']
+# Suppress autodoc warnings for missing modules and other common warnings
+suppress_warnings = [
+    'autodoc.import_object',
+    'ref.python',  # Suppress Python reference warnings
+    'myst.header',  # Suppress MyST header warnings
+]
 
 # -- Options for napoleon extension -----------------------------------------
 napoleon_google_docstring = True
@@ -122,6 +141,11 @@ myst_enable_extensions = [
     "tasklist",
     "colon_fence",
 ]
+
+# -- Options for test reports extension -------------------------------------
+test_reports_enabled = True
+test_reports_fail_on_error = False  # Don't fail docs build if tests fail
+test_reports_run_on_build = True
 
 # -- HTML context variables -------------------------------------------------
 html_context = {

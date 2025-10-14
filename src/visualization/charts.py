@@ -1,10 +1,7 @@
-from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 
 from core.debt_optimizer import OptimizationResult
@@ -282,7 +279,7 @@ class DebtVisualization:
         debt_balances = [debt.balance for debt in debts]
 
         # Create pie chart
-        wedges, texts, autotexts = ax.pie(
+        pie_result = ax.pie(
             debt_balances,
             labels=debt_names,
             autopct="%1.1f%%",
@@ -291,16 +288,24 @@ class DebtVisualization:
             explode=[0.05] * len(debts),  # Slight separation for each slice
         )
 
+        # Unpack the pie chart result safely
+        if len(pie_result) >= 3:
+            wedges, texts, autotexts = pie_result[:3]
+        else:
+            wedges, texts = pie_result[:2]
+            autotexts = None
+
         # Formatting
         ax.set_title(
             "Debt Composition by Balance", fontsize=16, fontweight="bold", pad=20
         )
 
         # Improve text formatting
-        for autotext in autotexts:
-            autotext.set_color("white")
-            autotext.set_fontweight("bold")
-            autotext.set_fontsize(10)
+        if autotexts:
+            for autotext in autotexts:
+                autotext.set_color("white")
+                autotext.set_fontweight("bold")
+                autotext.set_fontsize(10)
 
         # Add legend with balance amounts
         legend_labels = [
@@ -346,7 +351,10 @@ class DebtVisualization:
                 (rate - min_rate) / (max_rate - min_rate) if max_rate > min_rate else 0
             )
             # Color from green (low) to red (high)
-            color = plt.cm.RdYlGn_r(norm_rate)
+            from matplotlib.cm import get_cmap
+
+            colormap = get_cmap("RdYlGn_r")
+            color = colormap(norm_rate)
             bar.set_color(color)
 
         # Formatting
@@ -395,7 +403,11 @@ class DebtVisualization:
             gs = fig.add_gridspec(2, 2, hspace=0.3, wspace=0.3)
 
         # Debt Progression Chart
-        ax1 = fig.add_subplot(gs[0, :2])
+        if comparison_df is not None:
+            ax1 = fig.add_subplot(gs[0, :2])
+        else:
+            ax1 = fig.add_subplot(gs[0, :])
+
         debt_columns = [
             col
             for col in optimization_result.debt_progression.columns
@@ -418,7 +430,10 @@ class DebtVisualization:
         ax1.grid(True, alpha=0.3)
 
         # Payment Breakdown Chart
-        ax2 = fig.add_subplot(gs[0, 2])
+        if comparison_df is not None:
+            ax2 = fig.add_subplot(gs[0, 2])
+        else:
+            ax2 = fig.add_subplot(gs[1, 0])
         ax2.bar(
             optimization_result.monthly_summary["month"][:12],  # First 12 months
             optimization_result.monthly_summary["total_principal"][:12],
@@ -442,7 +457,11 @@ class DebtVisualization:
         ax2.grid(True, alpha=0.3, axis="y")
 
         # Debt Composition Pie Chart
-        ax3 = fig.add_subplot(gs[1, 0])
+        if comparison_df is not None:
+            ax3 = fig.add_subplot(gs[1, 0])
+        else:
+            ax3 = fig.add_subplot(gs[1, 1])
+
         debt_names = [debt.name for debt in debts]
         debt_balances = [debt.balance for debt in debts]
         ax3.pie(
@@ -453,14 +472,15 @@ class DebtVisualization:
         )
         ax3.set_title("Debt Composition", fontsize=14, fontweight="bold")
 
-        # Interest Rate Comparison
-        ax4 = fig.add_subplot(gs[1, 1])
-        sorted_debts = sorted(debts, key=lambda d: d.interest_rate, reverse=True)
-        debt_names = [debt.name for debt in sorted_debts]
-        interest_rates = [debt.interest_rate for debt in sorted_debts]
-        bars = ax4.barh(debt_names, interest_rates, color=self.colors[: len(debts)])
-        ax4.set_title("Interest Rates", fontsize=14, fontweight="bold")
-        ax4.set_xlabel("Interest Rate (%)")
+        # Interest Rate Comparison (only show if there are multiple charts)
+        if comparison_df is not None:
+            ax4 = fig.add_subplot(gs[1, 1])
+            sorted_debts = sorted(debts, key=lambda d: d.interest_rate, reverse=True)
+            debt_names = [debt.name for debt in sorted_debts]
+            interest_rates = [debt.interest_rate for debt in sorted_debts]
+            bars = ax4.barh(debt_names, interest_rates, color=self.colors[: len(debts)])
+            ax4.set_title("Interest Rates", fontsize=14, fontweight="bold")
+            ax4.set_xlabel("Interest Rate (%)")
 
         # Strategy Comparison (if available)
         if comparison_df is not None:

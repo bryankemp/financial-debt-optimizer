@@ -87,7 +87,7 @@ Include:
 
 ### Python Style
 
-- Follow [PEP 8](https://pep8.org/) style guidelines
+- Follow [PEP 8](https://pep8.org/) style guidelines (checked with pycodestyle)
 - Use type hints for function parameters and return values
 - Maximum line length: 88 characters (Black formatter default)
 - Use descriptive variable and function names

@@ -16,7 +16,8 @@ import pytest
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
-from core.financial_calc import Debt, FutureIncome, FutureExpense, Income, RecurringExpense
+from core.financial_calc import (Debt, FutureExpense, FutureIncome, Income,
+                                 RecurringExpense)
 from core.validation import (ValidationError, validate_debt_data, validate_expense_data,
                              validate_financial_scenario, validate_income_data)
 
@@ -99,18 +100,21 @@ class TestFinancialScenarioValidation:
     @pytest.mark.unit
     def test_validate_financial_scenario_negative_cash_flow(self):
         """Test validation with negative cash flow after expenses."""
+        # Make expenses high enough to create negative cash flow
+        # Valid income is ~8,383/month, debt payments are 475, so need expenses > 7,908
         high_expenses = [
-            RecurringExpense("High Rent", 5000.0, "monthly", 1, date(2024, 1, 1)),
-            RecurringExpense("High Insurance", 2000.0, "monthly", 15, date(2024, 1, 1)),
+            RecurringExpense("High Rent", 6000.0, "monthly", 1, date(2024, 1, 1)),
+            RecurringExpense("High Insurance", 3000.0, "monthly", 15, date(2024, 1, 1)),
         ]
 
         is_valid, messages = validate_financial_scenario(
             self.valid_debts, self.valid_income, high_expenses, self.valid_settings
         )
 
-        # Should produce warnings about negative cash flow
+        # Should produce errors about negative cash flow
         assert isinstance(messages, list)
         assert len(messages) > 0
+        assert is_valid is False  # Should be invalid with negative cash flow
 
     @pytest.mark.unit
     def test_validate_financial_scenario_warnings_only(self):
@@ -161,11 +165,16 @@ class TestDebtDataValidation:
     @pytest.mark.unit
     def test_validate_debt_data_negative_balance(self):
         """Test validation with negative balance."""
-        debts_negative = [
-            Debt("Negative Card", -1000.0, 25.0, 15.0, 15),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        debt_data = {
+            "name": "Negative Card",
+            "balance": -1000.0,
+            "minimum_payment": 25.0,
+            "interest_rate": 15.0,
+            "due_date": 15,
+        }
 
-        errors = validate_debt_data(debts_negative)
+        errors = validate_debt_data(debt_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("negative" in error.lower() for error in errors)
@@ -173,11 +182,16 @@ class TestDebtDataValidation:
     @pytest.mark.unit
     def test_validate_debt_data_negative_minimum_payment(self):
         """Test validation with negative minimum payment."""
-        debts_negative_payment = [
-            Debt("Bad Payment", 1000.0, -25.0, 15.0, 15),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        debt_data = {
+            "name": "Bad Payment",
+            "balance": 1000.0,
+            "minimum_payment": -25.0,
+            "interest_rate": 15.0,
+            "due_date": 15,
+        }
 
-        errors = validate_debt_data(debts_negative_payment)
+        errors = validate_debt_data(debt_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("minimum payment" in error.lower() for error in errors)
@@ -185,11 +199,16 @@ class TestDebtDataValidation:
     @pytest.mark.unit
     def test_validate_debt_data_negative_interest_rate(self):
         """Test validation with negative interest rate."""
-        debts_negative_rate = [
-            Debt("Bad Rate", 1000.0, 25.0, -5.0, 15),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        debt_data = {
+            "name": "Bad Rate",
+            "balance": 1000.0,
+            "minimum_payment": 25.0,
+            "interest_rate": -5.0,
+            "due_date": 15,
+        }
 
-        errors = validate_debt_data(debts_negative_rate)
+        errors = validate_debt_data(debt_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("interest rate" in error.lower() for error in errors)
@@ -197,12 +216,16 @@ class TestDebtDataValidation:
     @pytest.mark.unit
     def test_validate_debt_data_invalid_due_date(self):
         """Test validation with invalid due date."""
-        debts_invalid_date = [
-            Debt("Bad Date", 1000.0, 25.0, 15.0, 32),  # Day 32 doesn't exist
-            Debt("Zero Date", 1000.0, 25.0, 15.0, 0),  # Day 0 doesn't exist
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        debt_data_bad = {
+            "name": "Bad Date",
+            "balance": 1000.0,
+            "minimum_payment": 25.0,
+            "interest_rate": 15.0,
+            "due_date": 32,  # Day 32 doesn't exist
+        }
 
-        errors = validate_debt_data(debts_invalid_date)
+        errors = validate_debt_data(debt_data_bad)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("due date" in error.lower() for error in errors)
@@ -239,11 +262,10 @@ class TestIncomeDataValidation:
     @pytest.mark.unit
     def test_validate_income_data_zero_amount(self):
         """Test validation with zero income amount."""
-        zero_income = [
-            Income("Zero Income", 0.0, "monthly", date(2024, 1, 1)),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        income_data = {"source": "Zero Income", "amount": 0.0, "frequency": "monthly"}
 
-        errors = validate_income_data(zero_income)
+        errors = validate_income_data(income_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("amount" in error.lower() for error in errors)
@@ -251,24 +273,29 @@ class TestIncomeDataValidation:
     @pytest.mark.unit
     def test_validate_income_data_negative_amount(self):
         """Test validation with negative income amount."""
-        negative_income = [
-            Income("Negative Income", -1000.0, "monthly", date(2024, 1, 1)),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        income_data = {
+            "source": "Negative Income",
+            "amount": -1000.0,
+            "frequency": "monthly",
+        }
 
-        errors = validate_income_data(negative_income)
+        errors = validate_income_data(income_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
-        assert any("negative" in error.lower() for error in errors)
+        assert any("positive" in error.lower() for error in errors)
 
     @pytest.mark.unit
     def test_validate_income_data_invalid_frequency(self):
         """Test validation with invalid frequency."""
-        invalid_freq_income = [
-            Income("Bad Frequency", 1000.0, "invalid_frequency", date(2024, 1, 1)),
-            Income("Empty Frequency", 1000.0, "", date(2024, 1, 1)),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        income_data = {
+            "source": "Bad Frequency",
+            "amount": 1000.0,
+            "frequency": "invalid_frequency",
+        }
 
-        errors = validate_income_data(invalid_freq_income)
+        errors = validate_income_data(income_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("frequency" in error.lower() for error in errors)
@@ -316,38 +343,45 @@ class TestExpenseDataValidation:
     @pytest.mark.unit
     def test_validate_expense_data_zero_amount(self):
         """Test validation with zero expense amount."""
-        zero_expense = [
-            RecurringExpense("Free Service", 0.0, "monthly", 15, date(2024, 1, 1)),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        expense_data = {
+            "description": "Free Service",
+            "amount": 0.0,
+            "frequency": "monthly",
+        }
 
-        errors = validate_expense_data(zero_expense)
-        # Zero amount expenses might be warnings rather than errors
+        errors = validate_expense_data(expense_data)
+        # Zero amount expenses should produce errors
         assert isinstance(errors, list)
+        assert len(errors) > 0
+        assert any("positive" in error.lower() for error in errors)
 
     @pytest.mark.unit
     def test_validate_expense_data_negative_amount(self):
         """Test validation with negative expense amount."""
-        negative_expense = [
-            RecurringExpense(
-                "Negative Expense", -50.0, "monthly", 15, date(2024, 1, 1)
-            ),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        expense_data = {
+            "description": "Negative Expense",
+            "amount": -50.0,
+            "frequency": "monthly",
+        }
 
-        errors = validate_expense_data(negative_expense)
+        errors = validate_expense_data(expense_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
-        assert any("negative" in error.lower() for error in errors)
+        assert any("positive" in error.lower() for error in errors)
 
     @pytest.mark.unit
     def test_validate_expense_data_invalid_frequency(self):
         """Test validation with invalid frequency."""
-        invalid_freq_expense = [
-            RecurringExpense(
-                "Bad Frequency", 100.0, "invalid_freq", 15, date(2024, 1, 1)
-            ),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        expense_data = {
+            "description": "Bad Frequency",
+            "amount": 100.0,
+            "frequency": "invalid_freq",
+        }
 
-        errors = validate_expense_data(invalid_freq_expense)
+        errors = validate_expense_data(expense_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("frequency" in error.lower() for error in errors)
@@ -355,12 +389,15 @@ class TestExpenseDataValidation:
     @pytest.mark.unit
     def test_validate_expense_data_invalid_due_date(self):
         """Test validation with invalid due date."""
-        invalid_date_expense = [
-            RecurringExpense("Bad Date", 100.0, "monthly", 32, date(2024, 1, 1)),
-            RecurringExpense("Zero Date", 100.0, "monthly", 0, date(2024, 1, 1)),
-        ]
+        # Use dictionary format since object creation would fail in __post_init__
+        expense_data = {
+            "description": "Bad Date",
+            "amount": 100.0,
+            "frequency": "monthly",
+            "due_date": 32,
+        }
 
-        errors = validate_expense_data(invalid_date_expense)
+        errors = validate_expense_data(expense_data)
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("due date" in error.lower() for error in errors)

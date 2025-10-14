@@ -2,7 +2,6 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import openpyxl
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -16,8 +15,9 @@ class ExcelReader:
 
     def __init__(self, file_path: str):
         """Initialize with path to Excel file."""
-        self.file_path = Path(file_path)
-        if not self.file_path.exists():
+        self.file_path = file_path
+        path_obj = Path(file_path)
+        if not path_obj.exists():
             raise FileNotFoundError(f"Excel file not found: {file_path}")
 
     def read_all_data(
@@ -30,7 +30,9 @@ class ExcelReader:
         List[FutureExpense],
         Dict[str, Any],
     ]:
-        """Read all data from Excel file and return debts, income, recurring expenses, future income, future expenses, and settings."""
+        """Read all data from Excel file and return debts, income, recurring expenses,
+        future income, future expenses, and settings.
+        """
         debts = self.read_debts()
         income = self.read_income()
         recurring_expenses = self.read_recurring_expenses()
@@ -100,8 +102,8 @@ class ExcelReader:
             except (ValueError, TypeError) as e:
                 raise ValueError(f"Error reading debt data at row {index + 2}: {e}")
 
-        if not debts:
-            raise ValueError("No valid debt records found")
+        # Return empty list for empty templates instead of raising error
+        # This allows the calling code to handle validation appropriately
 
         return debts
 
@@ -145,7 +147,7 @@ class ExcelReader:
                         # Try alternative formats if the first fails
                         try:
                             start_date_val = pd.to_datetime(start_date_val).date()
-                        except:
+                        except (ValueError, TypeError, pd.errors.ParserError):
                             start_date_val = date.today()
                 elif isinstance(start_date_val, datetime):
                     # Validate datetime is reasonable
@@ -223,7 +225,7 @@ class ExcelReader:
                     except ValueError:
                         try:
                             start_date_val = pd.to_datetime(start_date_val).date()
-                        except:
+                        except (ValueError, TypeError, pd.errors.ParserError):
                             start_date_val = date.today()
                 elif isinstance(start_date_val, datetime):
                     if start_date_val.year > 9999 or start_date_val.year < 1900:
@@ -271,14 +273,13 @@ class ExcelReader:
         if has_new_format:
             # New format with recurrence support
             required_columns = ["description", "amount", "start_date"]
-            optional_columns = ["frequency", "end_date"]
         elif has_legacy_format:
             # Legacy format - one-time events only
             required_columns = ["description", "amount", "date"]
-            optional_columns = []
         else:
             raise ValueError(
-                f"Future Income sheet must have either (description, amount, date) for one-time events or (description, amount, start_date) for recurring events"
+                "Future Income sheet must have either (description, amount, date) for "
+                "one-time events or (description, amount, start_date) for recurring events"
             )
 
         missing_columns = [col for col in required_columns if col not in df.columns]
@@ -365,7 +366,7 @@ class ExcelReader:
                 # If specific formats fail, try pandas
                 try:
                     return pd.to_datetime(date_value).date()
-                except:
+                except (ValueError, TypeError, pd.errors.ParserError):
                     return None
             elif isinstance(date_value, datetime):
                 if 1900 <= date_value.year <= 9999:
@@ -379,7 +380,8 @@ class ExcelReader:
                     return None
             elif hasattr(date_value, "date"):
                 return date_value.date()
-        except Exception:
+        except (ValueError, TypeError, AttributeError, OverflowError):
+            # Log the specific error for debugging purposes
             pass
 
         return None
@@ -404,14 +406,13 @@ class ExcelReader:
         if has_new_format:
             # New format with recurrence support
             required_columns = ["description", "amount", "start_date"]
-            optional_columns = ["frequency", "end_date"]
         elif has_legacy_format:
             # Legacy format - one-time events only
             required_columns = ["description", "amount", "date"]
-            optional_columns = []
         else:
             raise ValueError(
-                f"Future Expenses sheet must have either (description, amount, date) for one-time events or (description, amount, start_date) for recurring events"
+                "Future Expenses sheet must have either (description, amount, date) for "
+                "one-time events or (description, amount, start_date) for recurring events"
             )
 
         missing_columns = [col for col in required_columns if col not in df.columns]
@@ -826,7 +827,8 @@ class ExcelTemplateGenerator:
             "Examples:",
             "• One-time: Description='Tax Refund', Amount=1200, Start Date=2025-04-01, Frequency=once",
             "• Recurring: Description='Raise', Amount=500, Start Date=2026-01-19, Frequency=monthly",
-            "• Limited recurring: Description='Contract', Amount=2000, Start Date=2025-12-01, Frequency=monthly, End Date=2026-06-30",
+            "• Limited recurring: Description='Contract', Amount=2000, Start Date=2025-12-01, "
+            "Frequency=monthly, End Date=2026-06-30",
         ]
 
         for idx, instruction in enumerate(instructions):
@@ -913,7 +915,8 @@ class ExcelTemplateGenerator:
             "Examples:",
             "• One-time: Description='Car Repair', Amount=800, Start Date=2025-12-15, Frequency=once",
             "• Recurring: Description='New Subscription', Amount=9.99, Start Date=2025-11-01, Frequency=monthly",
-            "• Limited recurring: Description='Temp Insurance', Amount=25, Start Date=2026-01-01, Frequency=monthly, End Date=2026-12-31",
+            "• Limited recurring: Description='Temp Insurance', Amount=25, Start Date=2026-01-01, "
+            "Frequency=monthly, End Date=2026-12-31",
         ]
 
         for idx, instruction in enumerate(instructions):
@@ -955,7 +958,13 @@ class ExcelTemplateGenerator:
             ["Optimization Goal", "minimize_interest"],
         ]
 
-        for row_idx, (setting, value) in enumerate(default_settings, 2):
+        from typing import List, Tuple, Union, cast
+
+        setting_list = cast(List[Tuple[str, Union[str, float]]], default_settings)
+        for row_idx, setting_data in enumerate(setting_list, 2):
+            setting: str
+            value: Union[str, float]
+            setting, value = setting_data
             sheet.cell(row=row_idx, column=1).value = setting
             cell = sheet.cell(row=row_idx, column=2)
             cell.value = value
