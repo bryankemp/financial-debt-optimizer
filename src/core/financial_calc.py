@@ -583,6 +583,16 @@ class RecurringExpense:
                 break  # Stop on date calculation errors
         
         return dates
+    
+    def get_monthly_amount(self) -> float:
+        """Convert expense to monthly equivalent amount."""
+        frequency_multipliers = {
+            'bi-weekly': 26 / 12,  # 26 bi-weekly periods per year / 12 months
+            'monthly': 1,
+            'quarterly': 1 / 3,    # Every 3 months
+            'annually': 1 / 12,    # Once per year
+        }
+        return self.amount * frequency_multipliers.get(self.frequency, 1)
 
 
 @dataclass

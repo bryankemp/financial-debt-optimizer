@@ -77,9 +77,12 @@ def generate_template(output: str, sample_data: bool):
             click.echo("\nThe template includes sample data to help you get started.")
             click.echo("Replace the sample data with your actual financial information.")
         
-        click.echo("\nTemplate includes three sheets:")
+        click.echo("\nTemplate includes six sheets:")
         click.echo("  • Debts: List your debts with balance, minimum payment, interest rate")
-        click.echo("  • Income: Define your income sources and payment frequency")  
+        click.echo("  • Income: Define your income sources and payment frequency")
+        click.echo("  • Recurring Expenses: Track regular expenses like subscriptions, fees")
+        click.echo("  • Future Income: Plan for bonuses, raises, or new income streams")
+        click.echo("  • Future Expenses: Budget for upcoming one-time or recurring costs")
         click.echo("  • Settings: Configure optimization goals and preferences")
         
         click.echo(f"\nNext steps:")
