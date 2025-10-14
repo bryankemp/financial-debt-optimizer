@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('_extensions'))
 project = 'Financial Debt Optimizer'
 copyright = '2025, Bryan Kemp'
 author = 'Bryan Kemp'
-release = '1.1.1'
-version = '1.1.1'
+release = '1.2.0'
+version = '1.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

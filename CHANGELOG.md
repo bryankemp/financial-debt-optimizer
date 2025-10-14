@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.2.0] - 2025-10-14
+
+### Added
+- 
+
+### Changed
+- 
+
+### Deprecated
+- 
+
+### Removed
+- 
+
+### Fixed
+- 
+
+### Security
+-
 All notable changes to the Financial Debt Optimizer project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
