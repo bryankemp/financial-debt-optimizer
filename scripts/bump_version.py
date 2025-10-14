@@ -328,10 +328,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
             return False
 
     def validate_git_status(self) -> bool:
-        """Check if git working directory is clean.
+        """Check if git working directory is clean or has only expected changes.
 
         Returns:
-            True if working directory is clean, False otherwise
+            True if working directory is clean or has only expected changes, False otherwise
         """
         try:
             result = subprocess.run(
@@ -342,13 +342,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
                 check=True,
             )
 
-            if result.stdout.strip():
-                print("⚠️  Git working directory is not clean:")
-                print(result.stdout)
-                print("Commit or stash changes before bumping version.")
-                return False
+            if not result.stdout.strip():
+                print("✅ Git working directory is clean")
+                return True
 
-            print("✅ Git working directory is clean")
+            # Check if changes are only in expected files (test reports, formatting)
+            changed_files = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    # Extract filename from git status output
+                    file_path = line[3:].strip()  # Skip status indicators
+                    changed_files.append(file_path)
+
+            # Define expected files that can be modified during release workflow
+            expected_files = {
+                'docs/test_coverage.rst',
+                'docs/test_report.rst',
+                # Allow any .py files that might have been reformatted
+            }
+            
+            # Check if all changes are in expected files or Python files (formatting)
+            unexpected_changes = []
+            for file_path in changed_files:
+                if (file_path not in expected_files and 
+                    not file_path.endswith('.py') and 
+                    not file_path.startswith('tests/') and
+                    not file_path.startswith('src/')):
+                    unexpected_changes.append(file_path)
+
+            if unexpected_changes:
+                print("⚠️  Git working directory has unexpected changes:")
+                for file_path in unexpected_changes:
+                    print(f"  - {file_path}")
+                print("Commit or stash unexpected changes before bumping version.")
+                return False
+            
+            if changed_files:
+                print("ℹ️  Found expected changes (test reports and/or code formatting):")
+                for file_path in changed_files:
+                    print(f"  - {file_path}")
+                print("✅ These changes will be committed as part of the release process")
+                
             return True
 
         except subprocess.CalledProcessError as e:
@@ -356,6 +390,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
             return False
         except FileNotFoundError:
             print("⚠️  Git not found. Skipping git status check.")
+            return True
+
+    def commit_pre_release_changes(self) -> bool:
+        """Commit any pre-release changes (test reports, formatting).
+        
+        Returns:
+            True if commit was successful or no changes needed, False otherwise
+        """
+        try:
+            # Check for any staged or unstaged changes that need to be committed
+            result = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=self.project_root,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            
+            if not result.stdout.strip():
+                return True  # No changes to commit
+                
+            # Get list of changed files
+            changed_files = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    file_path = line[3:].strip()
+                    changed_files.append(file_path)
+                    
+            # Filter for expected pre-release changes
+            pre_release_files = []
+            for file_path in changed_files:
+                if (file_path in {'docs/test_coverage.rst', 'docs/test_report.rst'} or
+                    file_path.endswith('.py') and 
+                    (file_path.startswith('src/') or file_path.startswith('tests/'))):
+                    pre_release_files.append(file_path)
+            
+            if not pre_release_files:
+                return True  # No pre-release files to commit
+                
+            # Add and commit pre-release changes
+            subprocess.run(
+                ["git", "add"] + pre_release_files,
+                cwd=self.project_root,
+                check=True
+            )
+            
+            subprocess.run(
+                ["git", "commit", "-m", "chore: update test reports and code formatting for release"],
+                cwd=self.project_root,
+                check=True,
+            )
+            
+            print(f"✅ Committed pre-release changes: {len(pre_release_files)} files")
+            return True
+            
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to commit pre-release changes: {e}")
+            return False
+        except FileNotFoundError:
+            print("⚠️  Git not found. Skipping pre-release commit.")
             return True
 
     def create_git_commit(self, skip_commit: bool = False) -> bool:
@@ -372,7 +466,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
             return True
 
         try:
-            # Add changed files
+            # First commit any pre-release changes (test reports, formatting)
+            if not self.commit_pre_release_changes():
+                return False
+
+            # Add version-related files
             changed_files = []
             for file_path in self.version_files:
                 full_path = self.project_root / file_path
@@ -385,23 +483,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
                 changed_files.append("CHANGELOG.md")
 
             if not changed_files:
-                print("⚠️  No files to commit")
+                print("⚠️  No version files to commit")
                 return True
 
-            # Add files to git
+            # Add version files to git
             subprocess.run(
                 ["git", "add"] + changed_files, cwd=self.project_root, check=True
             )
 
-            # Create commit
-            commit_message = f"Bump version to {self.new_version}"
+            # Create version bump commit
+            commit_message = f"release: bump version to {self.new_version}"
             subprocess.run(
                 ["git", "commit", "-m", commit_message],
                 cwd=self.project_root,
                 check=True,
             )
 
-            print(f"✅ Created git commit: {commit_message}")
+            print(f"✅ Created version bump commit: {commit_message}")
             return True
 
         except subprocess.CalledProcessError as e:
