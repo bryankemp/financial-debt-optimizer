@@ -6,6 +6,7 @@ and report creation, ensuring all components work together correctly.
 """
 
 import shutil
+
 # Import the classes to test
 import sys
 import tempfile
@@ -21,8 +22,13 @@ sys.path.insert(0, str(src_path))
 
 from cli.commands import analyze, generate_template, main, validate
 from core.debt_optimizer import DebtOptimizer, OptimizationGoal
-from core.financial_calc import (Debt, FutureExpense, FutureIncome, Income,
-                                 RecurringExpense)
+from core.financial_calc import (
+    Debt,
+    FutureExpense,
+    FutureIncome,
+    Income,
+    RecurringExpense,
+)
 from core.validation import validate_financial_scenario
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
 from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report

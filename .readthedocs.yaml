@@ -8,6 +8,12 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
+  jobs:
+    pre_build:
+      # Generate API documentation
+      - sphinx-apidoc -f -o docs/api src --separate --module-first --implicit-namespaces
+      # Generate test reports  
+      - python scripts/generate_test_reports.py || echo "Test report generation failed, continuing..."
     
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
