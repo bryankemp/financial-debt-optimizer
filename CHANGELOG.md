@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.4.0] - 2025-10-14
+
+### Added
+- 
+
+### Changed
+- 
+
+### Deprecated
+- 
+
+### Removed
+- 
+
+### Fixed
+- 
+
+### Security
+-
 ## [1.3.0] - 2025-10-14
 
 ### Added

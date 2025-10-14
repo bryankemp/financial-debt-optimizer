@@ -12,7 +12,7 @@ try:
         __author_email__, __license__, __url__
     )
 except ImportError:
-    __version__ = "1.3.0"
+    __version__ = "1.4.0"
     __title__ = "Financial Debt Optimizer"
     __description__ = "A comprehensive tool for analyzing and optimizing debt repayment strategies"
     __author__ = "Bryan Kemp"
