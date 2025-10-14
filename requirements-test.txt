@@ -1,0 +1,36 @@
+# Testing dependencies for Financial Debt Optimizer
+# Install with: pip install -r requirements-test.txt
+
+# Core testing framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-xdist>=3.0.0  # For parallel test execution
+pytest-mock>=3.10.0  # For mocking capabilities
+pytest-benchmark>=4.0.0  # For performance testing
+
+# Test coverage reporting
+coverage>=7.0.0
+coverage[toml]  # For pyproject.toml configuration support
+
+# Code quality and linting (for CI)
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.0.0
+mypy>=1.0.0
+
+# Additional testing utilities
+factory-boy>=3.2.0  # For test data generation
+faker>=18.0.0  # For realistic test data
+freezegun>=1.2.0  # For time-based testing
+responses>=0.23.0  # For mocking HTTP requests (if needed)
+
+# Excel testing support
+openpyxl>=3.1.0  # Already in main requirements, but ensuring version
+xlsxwriter>=3.1.0  # Already in main requirements
+
+# Visualization testing (matplotlib backend support)
+matplotlib>=3.7.0  # Already in main requirements
+pillow>=9.5.0  # For image comparison in chart tests
+
+# CLI testing
+click>=8.1.0  # Already in main requirements
