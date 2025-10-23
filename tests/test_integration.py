@@ -31,7 +31,10 @@ from core.financial_calc import (  # noqa: E402
 )
 from core.validation import validate_financial_scenario  # noqa: E402
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator  # noqa: E402
-from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report  # noqa: E402
+from excel_io.excel_writer import (
+    ExcelReportWriter,
+    generate_simple_summary_report,
+)  # noqa: E402
 from visualization.charts import DebtVisualization  # noqa: E402
 
 
