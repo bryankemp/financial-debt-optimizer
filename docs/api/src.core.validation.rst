@@ -1,7 +1,7 @@
-src.core.validation module
+debt_optimizer.core.validation module
 ==========================
 
-.. automodule:: src.core.validation
+.. automodule:: debt_optimizer.core.validation
    :members:
    :show-inheritance:
    :undoc-members:

@@ -1,7 +1,7 @@
-src.excel\_io package
+debt_optimizer.excel\_io package
 =====================
 
-.. automodule:: src.excel_io
+.. automodule:: debt_optimizer.excel_io
    :members:
    :show-inheritance:
    :undoc-members:
@@ -12,5 +12,5 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   src.excel_io.excel_reader
-   src.excel_io.excel_writer
+   debt_optimizer.excel_io.excel_reader
+   debt_optimizer.excel_io.excel_writer

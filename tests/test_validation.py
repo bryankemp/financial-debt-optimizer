@@ -13,7 +13,7 @@ from typing import List
 
 import pytest
 
-src_path = Path(__file__).parent.parent / "src"
+src_path = Path(__file__).parent.parent / "debt-optimizer"
 sys.path.insert(0, str(src_path))
 
 from core.financial_calc import (

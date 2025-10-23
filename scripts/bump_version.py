@@ -27,7 +27,7 @@ class VersionBumper:
         self.project_root = project_root
         self.verbose = verbose
         self.version_files = [
-            "src/__version__.py",
+            "debt-optimizer/__version__.py",
             "setup.py",
             "docs/conf.py",
         ]
@@ -91,10 +91,10 @@ class VersionBumper:
         Raises:
             ValueError: If version cannot be found or parsed
         """
-        version_file = self.project_root / "src" / "__version__.py"
+        version_file = self.project_root / "debt-optimizer" / "__version__.py"
 
         if not version_file.exists():
-            raise ValueError("Version file not found: src/__version__.py")
+            raise ValueError("Version file not found: debt-optimizer/__version__.py")
 
         content = version_file.read_text()
 
@@ -103,7 +103,7 @@ class VersionBumper:
         match = re.search(version_pattern, content)
 
         if not match:
-            raise ValueError("Version not found in src/__version__.py")
+            raise ValueError("Version not found in debt-optimizer/__version__.py")
 
         version = match.group(1)
         self.log(f"Current version: {version}")
@@ -183,7 +183,7 @@ class VersionBumper:
             content = full_path.read_text()
             original_content = content
 
-            if file_path == "src/__version__.py":
+            if file_path == "debt-optimizer/__version__.py":
                 # Update __version__ = "x.y.z"
                 content = re.sub(
                     r'(__version__\s*=\s*["\'])([^"\']+)(["\'])',
@@ -435,7 +435,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
                 if (
                     file_path in {"docs/test_coverage.rst", "docs/test_report.rst"}
                     or file_path.endswith(".py")
-                    and (file_path.startswith("src/") or file_path.startswith("tests/"))
+                    and (file_path.startswith("debt-optimizer/") or file_path.startswith("tests/"))
                 ):
                     pre_release_files.append(file_path)
 

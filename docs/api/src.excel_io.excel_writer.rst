@@ -1,7 +1,7 @@
-src.excel\_io.excel\_writer module
+debt_optimizer.excel\_io.excel\_writer module
 ==================================
 
-.. automodule:: src.excel_io.excel_writer
+.. automodule:: debt_optimizer.excel_io.excel_writer
    :members:
    :show-inheritance:
    :undoc-members:

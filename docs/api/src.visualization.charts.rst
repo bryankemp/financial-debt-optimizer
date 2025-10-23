@@ -1,7 +1,7 @@
-src.visualization.charts module
+debt_optimizer.visualization.charts module
 ===============================
 
-.. automodule:: src.visualization.charts
+.. automodule:: debt_optimizer.visualization.charts
    :members:
    :show-inheritance:
    :undoc-members:

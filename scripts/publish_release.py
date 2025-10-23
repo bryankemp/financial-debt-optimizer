@@ -97,7 +97,7 @@ class ReleasePublisher:
         version_file = self.project_root / "src" / "__version__.py"
 
         if not version_file.exists():
-            raise ValueError("Version file not found: src/__version__.py")
+            raise ValueError("Version file not found: debt-optimizer/__version__.py")
 
         content = version_file.read_text()
 
@@ -108,7 +108,7 @@ class ReleasePublisher:
         match = re.search(version_pattern, content)
 
         if not match:
-            raise ValueError("Version not found in src/__version__.py")
+            raise ValueError("Version not found in debt-optimizer/__version__.py")
 
         self.current_version = match.group(1)
         return self.current_version

@@ -1,7 +1,7 @@
-src.cli.commands module
+debt_optimizer.cli.commands module
 =======================
 
-.. automodule:: src.cli.commands
+.. automodule:: debt_optimizer.cli.commands
    :members:
    :show-inheritance:
    :undoc-members:

@@ -12,7 +12,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   src.cli
-   src.core
-   src.excel_io
-   src.visualization
+   debt_optimizer.cli
+   debt_optimizer.core
+   debt_optimizer.excel_io
+   debt_optimizer.visualization

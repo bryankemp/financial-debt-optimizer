@@ -1,7 +1,7 @@
-src.cli package
+debt_optimizer.cli package
 ===============
 
-.. automodule:: src.cli
+.. automodule:: debt_optimizer.cli
    :members:
    :show-inheritance:
    :undoc-members:
@@ -12,4 +12,4 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   src.cli.commands
+   debt_optimizer.cli.commands

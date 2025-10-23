@@ -1,7 +1,7 @@
-src.core.logging\_config module
+debt_optimizer.core.logging\_config module
 ===============================
 
-.. automodule:: src.core.logging_config
+.. automodule:: debt_optimizer.core.logging_config
    :members:
    :show-inheritance:
    :undoc-members:
