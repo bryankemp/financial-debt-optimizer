@@ -1,4 +1,4 @@
-# Financial Debt Optimizer 1.1.1
+# Financial Debt Optimizer 2.0.0
 
 [![PyPI Version](https://img.shields.io/pypi/v/financial-debt-optimizer.svg)](https://pypi.org/project/financial-debt-optimizer/)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
@@ -6,6 +6,14 @@
 [![Documentation Status](https://readthedocs.org/projects/financial-debt-optimizer/badge/?version=latest)](https://financial-debt-optimizer.readthedocs.io/en/latest/?badge=latest)
 
 A comprehensive Python tool for analyzing and optimizing debt repayment strategies to help you become debt-free faster while minimizing interest costs.
+
+## ✨ What's New in Version 2.0
+
+- **🔄 Quicken Integration**: Directly sync balances from Quicken databases
+- **⚙️ Configuration System**: YAML-based config files with sensible defaults
+- **🎯 Smart Balance Updates**: Only updates when balances actually change
+- **📊 Fixed Surplus Calculations**: Accurate monthly cash flow including all expenses
+- **🚀 Unified CLI**: All features accessible through single command interface
 
 ## Features
 
@@ -20,6 +28,8 @@ A comprehensive Python tool for analyzing and optimizing debt repayment strategi
 - **Recurring Expense Management**: Track monthly, bi-weekly, quarterly, and annual expenses
 - **Extra Payment Allocation**: Optimize how extra funds are distributed across debts
 - **Cash Flow Analysis**: Monitor monthly financial health and surplus calculations
+- **Quicken Database Sync**: Automatically update balances from Quicken SQLite databases
+- **Fuzzy Matching**: Intelligent account name matching with configurable thresholds
 
 ### Comprehensive Reporting
 - **Excel Integration**: Generate detailed spreadsheet reports with multiple worksheets
@@ -43,9 +53,15 @@ A comprehensive Python tool for analyzing and optimizing debt repayment strategi
 pip install financial-debt-optimizer
 ```
 
+### With Quicken Integration Support
+```bash
+pip install financial-debt-optimizer[balance]
+```
+
 ### Requirements
 - Python 3.8 or higher
 - Dependencies are automatically installed with the package
+- Optional: rapidfuzz or thefuzz for balance update fuzzy matching
 
 ### Install from Source
 ```bash
@@ -63,12 +79,23 @@ pip install -e .[dev]
 
 ## Quick Start
 
-### 1. Generate an Excel Template
+### 1. Create Configuration (One-time Setup)
+```bash
+debt-optimizer config init
+```
+
+This creates `~/.debt-optimizer/config.yaml` with default settings. Edit it to set:
+- Input/output file paths
+- Quicken database location
+- Optimization preferences
+- Balance update settings
+
+### 2. Generate an Excel Template
 ```bash
 debt-optimizer generate-template my-debt-data.xlsx
 ```
 
-### 2. Fill in Your Data
+### 3. Fill in Your Data
 Open `my-debt-data.xlsx` and fill in:
 - **Debts**: Name, balance, minimum payment, interest rate, due date
 - **Income**: Sources, amounts, frequency (bi-weekly, monthly, etc.)
@@ -76,12 +103,21 @@ Open `my-debt-data.xlsx` and fill in:
 - **Future Income**: Bonuses, raises, additional income streams
 - **Settings**: Bank balance, optimization preferences
 
-### 3. Run Analysis
+### 4. Update Balances from Quicken (Optional)
 ```bash
-debt-optimizer analyze --input my-debt-data.xlsx --output debt-analysis.xlsx
+debt-optimizer update-balances --db ~/Documents/MyQuicken.quicken/data --xlsx my-debt-data.xlsx
 ```
 
-### 4. Review Results
+Or update automatically during analysis with the `-u` flag.
+
+### 5. Run Analysis
+```bash
+debt-optimizer analyze -u --input my-debt-data.xlsx --output debt-analysis.xlsx
+```
+
+The `-u` flag automatically updates balances from Quicken before analyzing.
+
+### 6. Review Results
 Open `debt-analysis.xlsx` to see:
 - Optimized payment strategy
 - Month-by-month payment schedule
@@ -90,21 +126,60 @@ Open `debt-analysis.xlsx` to see:
 
 ## Usage Examples
 
+### Configuration Management
+```bash
+# Create configuration file
+debt-optimizer config init
+
+# View current settings
+debt-optimizer config show
+
+# Get specific setting
+debt-optimizer config get input_file
+
+# Set value
+debt-optimizer config set extra_payment 500.0
+```
+
+### Balance Updates
+```bash
+# Update balances using config defaults
+debt-optimizer update-balances
+
+# Update with custom paths
+debt-optimizer update-balances \
+    --db ~/Documents/MyQuicken.quicken/data \
+    --xlsx my-debts.xlsx \
+    --threshold 85
+
+# Skip backup creation
+debt-optimizer update-balances --no-backup
+```
+
 ### Basic Analysis
 ```bash
-# Analyze debts with default settings (minimize interest)
+# Analyze using config defaults
+debt-optimizer analyze
+
+# Analyze with balance update
+debt-optimizer analyze -u
+
+# Override config defaults
 debt-optimizer analyze -i my-debts.xlsx -o results.xlsx
 ```
 
-### Advanced Options
+### Advanced Analysis
 ```bash
-# Compare all strategies with extra monthly payment
-debt-optimizer analyze \
+# Full workflow: update balances, compare all strategies
+debt-optimizer analyze -u \
     --input my-debts.xlsx \
     --output comprehensive-analysis.xlsx \
     --goal minimize_interest \
     --extra-payment 500 \
     --compare-strategies
+
+# Generate simple one-sheet report
+debt-optimizer analyze -u --simple-report
 ```
 
 ### Available Goals
@@ -228,5 +303,5 @@ This tool is for educational and informational purposes only. It does not consti
 ---
 
 **Author**: Bryan Kemp (bryan@kempville.com)  
-**Version**: 1.0.0  
+**Version**: 2.0.0  
 **License**: BSD 3-Clause

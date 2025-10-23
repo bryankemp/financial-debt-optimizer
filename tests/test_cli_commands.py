@@ -169,8 +169,14 @@ class TestCLIAnalyze:
 
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(
-                analyze,
-                ["--input", str(self.template_path), "--output", str(output_file)],
+                main,
+                [
+                    "analyze",
+                    "--input",
+                    str(self.template_path),
+                    "--output",
+                    str(output_file),
+                ],
             )
 
         assert result.exit_code == 0
@@ -185,8 +191,9 @@ class TestCLIAnalyze:
 
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(
-                analyze,
+                main,
                 [
+                    "analyze",
                     "--input",
                     str(self.template_path),
                     "--output",
@@ -207,8 +214,9 @@ class TestCLIAnalyze:
 
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(
-                analyze,
+                main,
                 [
+                    "analyze",
                     "--input",
                     str(self.template_path),
                     "--output",
@@ -229,8 +237,9 @@ class TestCLIAnalyze:
 
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(
-                analyze,
+                main,
                 [
+                    "analyze",
                     "--input",
                     str(self.template_path),
                     "--output",
@@ -250,8 +259,9 @@ class TestCLIAnalyze:
 
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(
-                analyze,
+                main,
                 [
+                    "analyze",
                     "--input",
                     str(self.template_path),
                     "--output",
@@ -272,8 +282,9 @@ class TestCLIAnalyze:
 
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(
-                analyze,
+                main,
                 [
+                    "analyze",
                     "--input",
                     str(self.template_path),
                     "--output",
@@ -299,8 +310,14 @@ class TestCLIAnalyze:
 
         with self.runner.isolated_filesystem():
             result = self.runner.invoke(
-                analyze,
-                ["--input", str(nonexistent_file), "--output", str(output_file)],
+                main,
+                [
+                    "analyze",
+                    "--input",
+                    str(nonexistent_file),
+                    "--output",
+                    str(output_file),
+                ],
             )
 
         assert result.exit_code == 1
@@ -314,15 +331,27 @@ class TestCLIAnalyze:
         # Create initial analysis
         with self.runner.isolated_filesystem():
             result1 = self.runner.invoke(
-                analyze,
-                ["--input", str(self.template_path), "--output", str(output_file)],
+                main,
+                [
+                    "analyze",
+                    "--input",
+                    str(self.template_path),
+                    "--output",
+                    str(output_file),
+                ],
             )
             assert result1.exit_code == 0
 
             # Overwrite with confirmation
             result2 = self.runner.invoke(
-                analyze,
-                ["--input", str(self.template_path), "--output", str(output_file)],
+                main,
+                [
+                    "analyze",
+                    "--input",
+                    str(self.template_path),
+                    "--output",
+                    str(output_file),
+                ],
                 input="y\n",
             )
 
@@ -332,7 +361,7 @@ class TestCLIAnalyze:
     @pytest.mark.cli
     def test_analyze_help(self):
         """Test analyze command help message."""
-        result = self.runner.invoke(analyze, ["--help"])
+        result = self.runner.invoke(main, ["analyze", "--help"])
 
         assert result.exit_code == 0
         assert "Analyze debt and generate optimized repayment plan" in result.output
@@ -634,8 +663,9 @@ class TestCLIIntegration:
 
             # Step 3: Analyze template
             result3 = self.runner.invoke(
-                analyze,
+                main,
                 [
+                    "analyze",
                     "--input",
                     str(template_path),
                     "--output",
@@ -666,7 +696,14 @@ class TestCLIIntegration:
 
             # Analysis of empty file should fail
             result3 = self.runner.invoke(
-                analyze, ["--input", str(template_path), "--output", str(analysis_path)]
+                main,
+                [
+                    "analyze",
+                    "--input",
+                    str(template_path),
+                    "--output",
+                    str(analysis_path),
+                ],
             )
             assert result3.exit_code == 1  # Should fail due to no data
 
@@ -675,12 +712,18 @@ class TestCLIIntegration:
     def test_cli_consistency(self):
         """Test that CLI commands are consistent in behavior."""
         # All commands should have help
-        commands = [generate_template, analyze, validate, info]
+        commands = [
+            (["generate-template", "--help"], "Generate an Excel template"),
+            (["analyze", "--help"], "Analyze debt"),
+            (["validate", "--help"], "Validate an Excel"),
+            (["info", "--help"], "Display information"),
+        ]
 
-        for command in commands:
-            result = self.runner.invoke(command, ["--help"])
+        for args, expected_text in commands:
+            result = self.runner.invoke(main, args)
             assert result.exit_code == 0
             assert len(result.output) > 0
+            assert expected_text in result.output
 
     @pytest.mark.integration
     @pytest.mark.cli
@@ -692,20 +735,20 @@ class TestCLIIntegration:
         )
 
         with self.runner.isolated_filesystem():
-            # Test missing required argument
-            result1 = self.runner.invoke(analyze, [])
+            # Test missing required argument - analyze now uses config defaults
+            # so this doesn't fail the same way. Test with nonexistent file instead.
+            result1 = self.runner.invoke(
+                main,
+                [
+                    "analyze",
+                    "--input",
+                    "/nonexistent/path/file.xlsx",
+                    "--output",
+                    "output.xlsx",
+                ],
+            )
             assert result1.exit_code != 0
-            assert (
-                "Missing option" in result1.output
-                or "required" in result1.output.lower()
-            )
-
-            # Test invalid file path
-            result2 = self.runner.invoke(
-                analyze,
-                ["--input", "/nonexistent/path/file.xlsx", "--output", "output.xlsx"],
-            )
-            assert result2.exit_code != 0
+            assert "File not found" in result1.output
 
     @pytest.mark.integration
     @pytest.mark.cli
@@ -724,8 +767,9 @@ class TestCLIIntegration:
 
             # Run analysis with all options (most computationally intensive)
             result2 = self.runner.invoke(
-                analyze,
+                main,
                 [
+                    "analyze",
                     "--input",
                     str(template_path),
                     "--output",

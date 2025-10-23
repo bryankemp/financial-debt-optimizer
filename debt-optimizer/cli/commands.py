@@ -2,7 +2,8 @@ import sys
 from pathlib import Path
 
 import click
-
+from core.balance_updater import BalanceUpdater, BalanceUpdaterError
+from core.config import Config
 from core.debt_optimizer import DebtOptimizer, OptimizationGoal
 from core.logging_config import get_logger, setup_logging
 from core.validation import validate_financial_scenario
@@ -16,10 +17,12 @@ if str(src_path) not in sys.path:
 
 
 @click.group()
-@click.version_option(version="1.0.0")
+@click.version_option(version="2.0.0")
+@click.option("--config", "-c", type=click.Path(), help="Path to configuration file")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 @click.option("--log-file", type=str, help="Log file path")
-def main(debug, log_file):
+@click.pass_context
+def main(ctx, config, debug, log_file):
     """
     Financial Debt Optimizer
 
@@ -39,6 +42,18 @@ def main(debug, log_file):
     logger.debug(
         f"Starting Financial Debt Optimizer CLI with debug={debug}, log_file={log_file}"
     )
+
+    # Load configuration
+    ctx.ensure_object(dict)
+    try:
+        ctx.obj["config"] = Config(Path(config) if config else None)
+        if ctx.obj["config"].config_path:
+            logger.debug(f"Loaded config from: {ctx.obj['config'].config_path}")
+    except Exception as e:
+        if config:  # Only error if user explicitly specified a config file
+            click.echo(f"✗ Error loading config file: {e}", err=True)
+            sys.exit(1)
+        ctx.obj["config"] = Config()  # Use defaults
 
 
 @main.command()
@@ -101,31 +116,226 @@ def generate_template(output: str, sample_data: bool):
         sys.exit(1)
 
 
+@main.group()
+def config():
+    """Manage configuration settings."""
+    pass
+
+
+@config.command("init")
+@click.option("--path", "-p", type=click.Path(), help="Config file path")
+@click.option("--force", "-f", is_flag=True, help="Overwrite existing config file")
+def config_init(path, force):
+    """Create a new configuration file with default values."""
+
+    if path:
+        config_path = Path(path).expanduser()
+    else:
+        config_path = Path.home() / ".debt-optimizer"
+
+    if config_path.exists() and not force:
+        click.echo(f"✗ Config file already exists: {config_path}")
+        click.echo("  Use --force to overwrite or specify a different path")
+        sys.exit(1)
+
+    try:
+        Config.create_default_config(config_path)
+        click.echo(f"✓ Configuration file created: {config_path}")
+        click.echo("\nEdit this file to customize default settings.")
+        click.echo("\nAlternatively, place a config file at:")
+        click.echo("  • ~/.debt-optimizer (in home directory)")
+        click.echo("  • ./debt-optimizer.yaml (in current directory)")
+    except Exception as e:
+        click.echo(f"✗ Error creating config file: {e}", err=True)
+        sys.exit(1)
+
+
+@config.command("show")
+@click.pass_context
+def config_show(ctx):
+    """Display current configuration."""
+
+    cfg = ctx.obj["config"]
+
+    if cfg.config_path:
+        click.echo(f"Configuration loaded from: {cfg.config_path}\n")
+    else:
+        click.echo("Using default configuration (no config file loaded)\n")
+
+    config_dict = cfg.as_dict()
+
+    click.echo("Current Settings:")
+    click.echo("=" * 50)
+    for key, value in config_dict.items():
+        click.echo(f"  {key:25s} = {value}")
+
+
+@config.command("get")
+@click.argument("key")
+@click.pass_context
+def config_get(ctx, key):
+    """Get a configuration value."""
+
+    cfg = ctx.obj["config"]
+    value = cfg.get(key)
+
+    if value is None:
+        click.echo(f"✗ Key '{key}' not found in configuration", err=True)
+        sys.exit(1)
+
+    click.echo(value)
+
+
+@config.command("set")
+@click.argument("key")
+@click.argument("value")
+@click.pass_context
+def config_set(ctx, key, value):
+    """Set a configuration value."""
+
+    cfg = ctx.obj["config"]
+
+    if not cfg.config_path:
+        click.echo(
+            "✗ No config file loaded. Create one with 'debt-optimizer config init'",
+            err=True,
+        )
+        sys.exit(1)
+
+    try:
+        # Try to convert value to appropriate type
+        if value.lower() in ("true", "false"):
+            value = value.lower() == "true"
+        elif value.replace(".", "", 1).isdigit():
+            value = float(value) if "." in value else int(value)
+
+        cfg.set(key, value)
+        cfg.save_to_file()
+        click.echo(f"✓ Set {key} = {value}")
+        click.echo(f"  Saved to: {cfg.config_path}")
+    except Exception as e:
+        click.echo(f"✗ Error saving config: {e}", err=True)
+        sys.exit(1)
+
+
+@main.command("update-balances")
+@click.option("--db", type=click.Path(), help="Path to Quicken database")
+@click.option("--xlsx", type=click.Path(), help="Path to Excel workbook")
+@click.option("--threshold", type=int, help="Fuzzy match threshold (0-100)")
+@click.option("--bank-account", help="Bank account name for Settings sheet")
+@click.option("--no-backup", is_flag=True, help="Skip creating backup file")
+@click.pass_context
+def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
+    """Update Excel workbook balances from Quicken database.
+
+    This command reads account balances from your Quicken database and updates
+    the corresponding debt balances in your Excel workbook. It uses fuzzy matching
+    to match account names and will prompt for confirmation on uncertain matches.
+    """
+
+    cfg = ctx.obj["config"]
+
+    # Get values from config or CLI args (CLI args take precedence)
+    db_path = Path(db or cfg.get("quicken_db_path")).expanduser()
+    xlsx_path = Path(xlsx or cfg.get("input_file")).expanduser()
+    fuzzy_threshold = threshold or cfg.get("fuzzy_match_threshold")
+    bank_acct_name = bank_account or cfg.get("bank_account_name")
+    auto_backup = not no_backup and cfg.get("auto_backup")
+
+    try:
+        click.echo("📊 Updating balances from Quicken database...")
+        click.echo(f"  Database: {db_path}")
+        click.echo(f"  Workbook: {xlsx_path}")
+        click.echo(f"  Fuzzy threshold: {fuzzy_threshold}")
+
+        # Create updater
+        updater = BalanceUpdater(
+            db_path=db_path,
+            fuzzy_threshold=fuzzy_threshold,
+            bank_account_name=bank_acct_name,
+            auto_backup=auto_backup,
+        )
+
+        # Update workbook
+        result = updater.update_workbook(xlsx_path)
+
+        # Display results
+        click.echo("\n✓ Balances updated successfully!\n")
+
+        if result["backup_path"]:
+            click.echo(f"📦 Backup created: {result['backup_path']}")
+
+        if result["debt_updates"]:
+            click.echo(f"\n💳 Updated {len(result['debt_updates'])} debt(s):")
+            for update in result["debt_updates"]:
+                auto_str = "(auto)" if update["auto"] else "(approved)"
+                if update["excel_name_old"] != update["excel_name_new"]:
+                    click.echo(
+                        f"  • Row {update['row']}: {update['excel_name_old']} → {update['excel_name_new']} "
+                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"
+                    )
+                else:
+                    click.echo(
+                        f"  • Row {update['row']}: {update['excel_name_new']} "
+                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"
+                    )
+        else:
+            click.echo("  No debt updates (all balances current or no matches found)")
+
+        if result["settings_update"]:
+            su = result["settings_update"]
+            click.echo(
+                f"\n🏦 Bank balance updated: {su['name']} = ${su['balance']:.2f} ({su['matched']})"
+            )
+
+        click.echo(f"\n✓ Workbook saved: {result['workbook_path']}")
+
+    except FileNotFoundError as e:
+        click.echo(f"✗ File not found: {e}", err=True)
+        sys.exit(1)
+    except BalanceUpdaterError as e:
+        click.echo(f"✗ Balance update error: {e}", err=True)
+        sys.exit(1)
+    except ImportError as e:
+        click.echo(f"✗ {e}", err=True)
+        click.echo("\nInstall balance update dependencies with:", err=True)
+        click.echo("  pip install debt-optimizer[balance]", err=True)
+        sys.exit(1)
+    except Exception as e:
+        click.echo(f"✗ Unexpected error: {e}", err=True)
+        import traceback
+
+        traceback.print_exc()
+        sys.exit(1)
+
+
 @main.command()
 @click.option(
     "--input",
     "-i",
     type=click.Path(),
-    required=True,
     help="Input Excel file with debt and income data",
 )
 @click.option(
     "--output",
     "-o",
     type=click.Path(),
-    default="debt_analysis.xlsx",
     help="Output file path for the analysis report",
+)
+@click.option(
+    "--update-balances",
+    "-u",
+    is_flag=True,
+    help="Update balances from Quicken before analyzing",
 )
 @click.option(
     "--goal",
     type=click.Choice(["minimize_interest", "minimize_time", "maximize_cashflow"]),
-    default="minimize_interest",
     help="Optimization goal for debt repayment strategy",
 )
 @click.option(
     "--extra-payment",
     type=float,
-    default=0.0,
     help="Additional monthly payment amount to apply to debts",
 )
 @click.option(
@@ -138,33 +348,71 @@ def generate_template(output: str, sample_data: bool):
     is_flag=True,
     help="Compare all available strategies in the report",
 )
+@click.pass_context
 def analyze(
+    ctx,
     input: str,
     output: str,
+    update_balances: bool,
     goal: str,
     extra_payment: float,
     simple_report: bool,
     compare_strategies: bool,
 ):
-    """Analyze debt and generate optimized repayment plan."""
+    """Analyze debt and generate optimized repayment plan.
+
+    Reads financial data from an Excel workbook, optimizes debt repayment
+    strategy, and generates a detailed analysis report.
+
+    Use -u/--update-balances to sync balances from Quicken before analysis.
+    """
 
     logger = get_logger("cli.analyze")
+    cfg = ctx.obj["config"]
 
     try:
+        # Use config defaults, CLI args override
+        input_path = Path(input or cfg.get("input_file")).expanduser()
+        output_path = Path(output or cfg.get("output_file")).expanduser()
+        goal = goal or cfg.get("optimization_goal")
+        extra_payment_val = (
+            extra_payment if extra_payment is not None else cfg.get("extra_payment")
+        )
+        simple_report = simple_report or cfg.get("simple_report")
+        compare_strategies = compare_strategies or cfg.get("compare_strategies")
+
         # Check if input file exists
-        input_path = Path(input)
         if not input_path.exists():
-            click.echo(f"✗ File not found: {input}", err=True)
+            click.echo(f"✗ File not found: {input_path}", err=True)
             sys.exit(1)
+
+        # Update balances if requested
+        if update_balances:
+            try:
+                click.echo("📊 Updating balances from Quicken...")
+                db_path = Path(cfg.get("quicken_db_path")).expanduser()
+                updater = BalanceUpdater(
+                    db_path=db_path,
+                    fuzzy_threshold=cfg.get("fuzzy_match_threshold"),
+                    bank_account_name=cfg.get("bank_account_name"),
+                    auto_backup=cfg.get("auto_backup"),
+                )
+                result = updater.update_workbook(input_path)
+                debt_count = len(result["debt_updates"])
+                click.echo(f"✓ Balances updated ({debt_count} debt(s))\n")
+            except (FileNotFoundError, BalanceUpdaterError, ImportError) as e:
+                click.echo(f"✗ Balance update failed: {e}", err=True)
+                if not click.confirm("Continue with analysis anyway?"):
+                    sys.exit(1)
 
         click.echo("📊 Starting debt optimization analysis...")
         logger.info(
-            f"Starting analysis with input={input}, goal={goal}, extra_payment={extra_payment}"
+            f"Starting analysis with input={input_path}, goal={goal}, extra_payment={extra_payment_val}"
         )
 
         # Read input data
-        click.echo(f"📁 Reading data from {input}")
-        reader = ExcelReader(input)
+        click.echo(f"📁 Reading data from {input_path}")
+        reader = ExcelReader(str(input_path))
         (
             debts,
             income_sources,
@@ -205,8 +453,8 @@ def analyze(
         )
 
         # Override settings with command line options
-        if extra_payment > 0:
-            settings["extra_payment"] = extra_payment
+        if extra_payment_val > 0:
+            settings["extra_payment"] = extra_payment_val
         settings["optimization_goal"] = goal
 
         # Initialize optimizer
@@ -285,12 +533,9 @@ def analyze(
                     f"{row['months_to_freedom']} months"
                 )
 
-        # Generate report
-        output_path = Path(output)
-
         # Check if output file exists
         if output_path.exists():
-            if not click.confirm(f"File '{output}' already exists. Overwrite?"):
+            if not click.confirm(f"File '{output_path}' already exists. Overwrite?"):
                 click.echo("Operation cancelled.")
                 return
 

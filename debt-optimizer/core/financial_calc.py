@@ -435,7 +435,7 @@ class Income:
         # One-time income doesn't have a monthly equivalent
         if self.frequency == PaymentFrequency.ONCE.value:
             return 0.0
-        
+
         frequency_multipliers = {
             PaymentFrequency.WEEKLY.value: 52 / 12,
             PaymentFrequency.BI_WEEKLY.value: 26 / 12,

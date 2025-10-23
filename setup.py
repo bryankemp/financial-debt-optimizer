@@ -12,7 +12,7 @@ try:
         __author_email__, __license__, __url__
     )
 except ImportError:
-    __version__ = "1.4.0"
+    __version__ = "2.0.0"
     __title__ = "Financial Debt Optimizer"
     __description__ = "A comprehensive tool for analyzing and optimizing debt repayment strategies"
     __author__ = "Bryan Kemp"
@@ -38,7 +38,8 @@ except FileNotFoundError:
         "xlsxwriter>=3.0.0",
         "openpyxl>=3.0.0",
         "click>=8.0.0",
-        "matplotlib>=3.5.0"
+        "matplotlib>=3.5.0",
+        "pyyaml>=6.0"
     ]
 
 setup(
@@ -79,6 +80,7 @@ setup(
     extras_require={
         "dev": ["pytest>=6.2.5", "black>=21.5b2", "pylint>=2.8.2", "mypy>=0.910"],
         "test": ["pytest>=6.2.5", "pytest-cov>=2.12.0"],
+        "balance": ["rapidfuzz>=3.0.0"],
     },
     entry_points={
         "console_scripts": [

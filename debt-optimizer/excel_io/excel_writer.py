@@ -2,9 +2,8 @@ from typing import Any, Dict, Optional
 
 import pandas as pd
 import xlsxwriter
-from xlsxwriter.workbook import Workbook
-
 from core.debt_optimizer import OptimizationResult
+from xlsxwriter.workbook import Workbook
 
 
 class ExcelReportWriter:
@@ -1180,8 +1179,9 @@ class ExcelReportWriter:
             for idx, row in monthly_summary.iterrows():
                 month = row.get("month", idx + 1)
                 income = row.get("total_income", 0)
+                expenses = row.get("total_expenses", 0)
                 payment = row.get("total_payment", 0)
-                surplus = income - payment
+                surplus = income - expenses - payment
 
                 worksheet.write(start_row, 0, f"Month {month}:")
                 worksheet.write(start_row, 1, f"Income: ${income:,.2f}")
@@ -1879,13 +1879,14 @@ class ExcelReportWriter:
         if monthly_summary.empty:
             return
 
-        # Calculate monthly surplus (income - payments)
+        # Calculate monthly surplus (income - expenses - payments)
         surplus_values = []
 
         for _, row in monthly_summary.iterrows():
             income = row.get("total_income", 0)
+            expenses = row.get("total_expenses", 0)
             payment = row.get("total_payment", 0)
-            surplus = income - payment
+            surplus = income - expenses - payment
             surplus_values.append(surplus)
 
         if surplus_values:

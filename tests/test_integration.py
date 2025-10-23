@@ -69,8 +69,9 @@ class TestCompleteWorkflow:
 
             # Step 3: Run analysis with strategy comparison
             result3 = self.runner.invoke(
-                analyze,
+                main,
                 [
+                    "analyze",
                     "--input",
                     str(template_path),
                     "--output",

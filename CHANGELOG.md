@@ -1,62 +1,74 @@
 # Changelog
 
-## [1.4.0] - 2025-10-14
+## [2.0.0] - 2025-10-23
+
+### 🎉 Major Release - Complete Integration & Optimization
 
 ### Added
-- 
+- **Quicken Database Integration**: Direct balance syncing from Quicken SQLite databases
+  - New `update-balances` CLI command for standalone balance updates
+  - `-u/--update-balances` flag in `analyze` command for automatic sync before analysis
+  - Fuzzy matching support with configurable threshold for account name matching
+  - Automatic backup creation before balance updates
+  - Support for both rapidfuzz and thefuzz fuzzy matching libraries
+  
+- **Configuration System**: YAML-based configuration management
+  - `config init` command to create default configuration files
+  - `config show` command to view current settings
+  - `config get/set` commands for individual setting management
+  - Multiple config file locations: `~/.debt-optimizer/config.yaml`, `./debt-optimizer.yaml`
+  - Environment variable overrides with `DEBT_OPTIMIZER_*` prefix
+  - CLI arguments always take precedence over config file settings
+
+- **Enhanced Balance Updater**:
+  - Updates both Debts sheet (credit cards) and Settings sheet (bank balance)
+  - Exact and fuzzy matching for account names
+  - Interactive prompts for uncertain matches
+  - Only updates balances when they actually change (prevents unnecessary updates)
+  - Comprehensive update summaries with row numbers and old/new values
 
 ### Changed
-- 
+- **Surplus Calculation Fix**: Now correctly includes expenses in monthly surplus calculation
+  - Previous: `surplus = income - payment`
+  - Current: `surplus = income - expenses - payment`
+  - Fixes negative surplus displays when using bank balance or extra payments
+  
+- **Workbook Sheet Access**: Fixed openpyxl compatibility issue
+  - Changed from `wb.get("Settings")` to proper `wb["Settings"] if "Settings" in wb.sheetnames else None`
+  - Eliminates AttributeError on Workbook objects
 
-### Deprecated
-- 
-
-### Removed
-- 
-
-### Fixed
-- 
-
-### Security
--
-## [1.3.0] - 2025-10-14
-
-### Added
-- 
-
-### Changed
-- 
-
-### Deprecated
-- 
+- **File Overwrite Prompts**: Now displays actual file path instead of "None"
+  - Fixed variable reference to use resolved `output_path` instead of raw `output` parameter
 
 ### Removed
-- 
+- Deprecated `update_balances.py` standalone script (functionality now integrated)
+- Deprecated `debug_optimizer.py` debug script
+- Removed `INTEGRATION_COMPLETE.md` and `INTEGRATION_PROGRESS.md` (obsolete documentation)
 
 ### Fixed
-- 
+- **Balance Update Logic**: Balances only update when changed, not on every run
+  - Prevents duplicate update reports for unchanged data
+  - Reduces workbook modifications and backup file creation
+  - Smarter detection of actual changes vs. matching existing values
+  
+- **Workbook AttributeError**: Fixed "'Workbook' object has no attribute 'get'" error
+  - Proper openpyxl sheet access patterns throughout codebase
+  
+- **Monthly Surplus Display**: Fixed negative surplus in month 3 and other months
+  - Surplus now correctly accounts for all expenses before calculating available cash flow
+  - Charts and reports now show accurate cash flow after all obligations
 
-### Security
--
-## [1.2.0] - 2025-10-14
+### Technical Improvements
+- Enhanced error handling for missing Quicken databases
+- Better validation of configuration file settings
+- Improved user feedback during balance updates and analysis
+- More consistent CLI command structure
+- Added comprehensive docstrings to new modules
 
-### Added
-- 
-
-### Changed
-- 
-
-### Deprecated
-- 
-
-### Removed
-- 
-
-### Fixed
-- 
-
-### Security
--
+### Dependencies
+- Added `pyyaml>=6.0` for configuration file support
+- Added optional `rapidfuzz>=3.0.0` for balance updates (install with `pip install debt-optimizer[balance]`)
+- All dependencies updated to modern versions with proper version constraints
 All notable changes to the Financial Debt Optimizer project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

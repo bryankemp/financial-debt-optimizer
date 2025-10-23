@@ -143,6 +143,40 @@ VALID_SETTINGS_DATA = [
 
 def pytest_configure(config):
     """Pytest configuration hook."""
+    # Register custom markers
+    config.addinivalue_line("markers", "cli: mark test as CLI command test")
+    config.addinivalue_line("markers", "integration: mark test as integration test")
+    config.addinivalue_line("markers", "slow: mark test as slow running test")
+    config.addinivalue_line("markers", "visualization: mark test as visualization test")
+    config.addinivalue_line("markers", "unit: mark test as unit test")
+    config.addinivalue_line("markers", "excel: mark test as Excel file operation test")
+
     # Ensure test output directory exists
     test_output_dir = Path(__file__).parent / "test_output"
     test_output_dir.mkdir(exist_ok=True)
+
+
+@pytest.fixture
+def mock_config():
+    """Fixture providing a mock Config object for CLI tests."""
+    from unittest.mock import MagicMock
+
+    from core.config import Config
+
+    config = MagicMock(spec=Config)
+    config.get.side_effect = lambda key, default=None: {
+        "input_file": "default.xlsx",
+        "output_file": "debt_analysis.xlsx",
+        "quicken_db_path": "~/Documents/Test.quicken/data",
+        "optimization_goal": "minimize_interest",
+        "extra_payment": 0.0,
+        "emergency_fund": 1000.0,
+        "fuzzy_match_threshold": 80,
+        "bank_account_name": "PECU Checking",
+        "auto_backup": True,
+        "simple_report": False,
+        "compare_strategies": False,
+    }.get(key, default)
+    config.config_path = None
+
+    return config
