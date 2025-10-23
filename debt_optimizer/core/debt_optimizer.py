@@ -667,7 +667,7 @@ class DebtOptimizer:
             if daily_income > 0 or bank_balance > 0:
                 # Calculate how much cash we need to reserve for upcoming minimum payments  # noqa: E501
                 # Look ahead to find all minimum payments due before the next income event  # noqa: E501
-                reserved_for_minimums = 0
+                reserved_for_minimums = 0.0
 
                 # Find next income date after current date
                 next_income_date = None
@@ -703,7 +703,7 @@ class DebtOptimizer:
                             min_payment_needed = min(
                                 debt.minimum_payment, current_balance + interest_charge
                             )
-                            reserved_for_minimums += min_payment_needed
+                            reserved_for_minimums += float(min_payment_needed)
                     elif event_type == "expense":
                         # Only reserve money for expenses that DON'T happen on the same day as income  # noqa: E501
                         # Check if there's income on the same day as this expense

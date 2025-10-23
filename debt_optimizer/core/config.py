@@ -6,7 +6,7 @@ Supports loading configuration from YAML files with CLI overrides.
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import yaml
@@ -159,7 +159,7 @@ class Config:
         """
         return self._config.copy()
 
-    def validate(self) -> tuple[bool, list[str]]:
+    def validate(self) -> Tuple[bool, List[str]]:
         """Validate configuration values.
 
         Returns:
