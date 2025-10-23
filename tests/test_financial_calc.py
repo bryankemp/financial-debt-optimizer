@@ -22,6 +22,8 @@ from core.financial_calc import (  # noqa: E402
     FutureExpense,
     FutureIncome,
     Income,
+    PaymentFrequency,
+    RecurrencePattern,
     RecurringExpense,
     calculate_monthly_payment,
 )
@@ -85,6 +87,83 @@ class TestDebt:
         assert debt1 == debt2
         assert debt1 != debt3
 
+    @pytest.mark.unit
+    def test_debt_validation_negative_balance(self):
+        """Test Debt validation with negative balance."""
+        with pytest.raises(ValueError, match="balance cannot be negative"):
+            Debt("Invalid", -100.0, 25.0, 15.0, 15)
+
+    @pytest.mark.unit
+    def test_debt_validation_negative_payment(self):
+        """Test Debt validation with negative minimum payment."""
+        with pytest.raises(ValueError, match="payment cannot be negative"):
+            Debt("Invalid", 1000.0, -25.0, 15.0, 15)
+
+    @pytest.mark.unit
+    def test_debt_validation_negative_rate(self):
+        """Test Debt validation with negative interest rate."""
+        with pytest.raises(ValueError, match="rate cannot be negative"):
+            Debt("Invalid", 1000.0, 25.0, -15.0, 15)
+
+    @pytest.mark.unit
+    def test_debt_validation_invalid_due_date(self):
+        """Test Debt validation with invalid due date."""
+        with pytest.raises(ValueError, match="Due date must be between 1 and 31"):
+            Debt("Invalid", 1000.0, 25.0, 15.0, 0)
+        with pytest.raises(ValueError, match="Due date must be between 1 and 31"):
+            Debt("Invalid", 1000.0, 25.0, 15.0, 32)
+
+    @pytest.mark.unit
+    def test_debt_monthly_interest_rate_property(self):
+        """Test monthly interest rate property."""
+        debt = Debt("Test", 1000.0, 25.0, 12.0, 15)  # 12% annual
+        assert abs(debt.monthly_interest_rate - 0.01) < 0.0001  # 1% monthly
+
+    @pytest.mark.unit
+    def test_debt_calculate_interest_charge(self):
+        """Test interest charge calculation."""
+        debt = Debt("Test", 1000.0, 25.0, 12.0, 15)  # 12% annual = 1% monthly
+        interest = debt.calculate_interest_charge(1000.0)
+        assert abs(interest - 10.0) < 0.01  # 1% of 1000 is 10
+
+    @pytest.mark.unit
+    def test_debt_calculate_principal_payment(self):
+        """Test principal payment calculation."""
+        debt = Debt("Test", 1000.0, 25.0, 12.0, 15)
+        balance = 1000.0
+        total_payment = 100.0
+        
+        principal = debt.calculate_principal_payment(total_payment, balance)
+        interest = debt.calculate_interest_charge(balance)
+        
+        # Principal should be payment minus interest
+        assert abs(principal - (total_payment - interest)) < 0.01
+
+    @pytest.mark.unit
+    def test_debt_calculate_months_to_payoff(self):
+        """Test months to payoff calculation."""
+        debt = Debt("Test", 1000.0, 50.0, 18.0, 15)
+        
+        # With $100 payment
+        months = debt.calculate_months_to_payoff(100.0)
+        assert months > 0
+        assert months < float("inf")
+        
+    @pytest.mark.unit
+    def test_debt_calculate_months_to_payoff_zero_interest(self):
+        """Test months to payoff with zero interest."""
+        debt = Debt("Test", 1000.0, 50.0, 0.0, 15)
+        months = debt.calculate_months_to_payoff(100.0)
+        assert months == 10.0  # 1000 / 100 = 10 months
+
+    @pytest.mark.unit
+    def test_debt_calculate_months_to_payoff_insufficient_payment(self):
+        """Test months to payoff with payment too small."""
+        debt = Debt("Test", 10000.0, 50.0, 24.0, 15)  # 2% monthly interest
+        # Payment of $100 is less than monthly interest on $10,000
+        months = debt.calculate_months_to_payoff(100.0)
+        assert months == float("inf")
+
 
 class TestIncome:
     """Test cases for the Income class."""
@@ -145,6 +224,24 @@ class TestIncome:
         # Large amount
         large_income = Income("CEO Salary", 100000.0, "monthly", date(2024, 1, 1))
         assert large_income.get_monthly_amount() == 100000.0
+
+    @pytest.mark.unit
+    def test_income_validation_negative_amount(self):
+        """Test Income validation with negative amount."""
+        with pytest.raises(ValueError, match="must be positive"):
+            Income("Invalid", -1000.0, "monthly", date(2024, 1, 1))
+
+    @pytest.mark.unit
+    def test_income_validation_zero_amount(self):
+        """Test Income validation with zero amount."""
+        with pytest.raises(ValueError, match="must be positive"):
+            Income("Invalid", 0.0, "monthly", date(2024, 1, 1))
+
+    @pytest.mark.unit
+    def test_income_validation_invalid_frequency(self):
+        """Test Income validation with invalid frequency."""
+        with pytest.raises(ValueError, match="Frequency must be one of"):
+            Income("Invalid", 1000.0, "invalid_freq", date(2024, 1, 1))
 
     @pytest.mark.unit
     def test_income_string_representation(self):
@@ -299,6 +396,72 @@ class TestFutureIncome:
         assert total == 5000.0
 
 
+class TestFutureExpense:
+    """Test cases for the FutureExpense class."""
+
+    @pytest.mark.unit
+    def test_future_expense_creation(self):
+        """Test FutureExpense object creation."""
+        future_date = date.today() + timedelta(days=90)
+        
+        # One-time expense
+        one_time = FutureExpense("Car Repair", 1500.0, future_date, "once")
+        assert one_time.description == "Car Repair"
+        assert one_time.amount == 1500.0
+        assert one_time.start_date == future_date
+        assert one_time.frequency == "once"
+
+    @pytest.mark.unit
+    def test_future_expense_is_recurring(self):
+        """Test is_recurring method for FutureExpense."""
+        future_date1 = date.today() + timedelta(days=90)
+        future_date2 = date.today() + timedelta(days=30)
+        
+        one_time = FutureExpense("Emergency", 2000.0, future_date1, "once")
+        recurring = FutureExpense("Rent Increase", 100.0, future_date2, "monthly")
+        
+        assert one_time.is_recurring() is False
+        assert recurring.is_recurring() is True
+
+    @pytest.mark.unit
+    def test_future_expense_get_occurrences(self):
+        """Test getting expense occurrences."""
+        future_date = date.today() + timedelta(days=60)
+        range_start = date.today() + timedelta(days=30)
+        range_end = date.today() + timedelta(days=180)
+        
+        one_time = FutureExpense("Vacation", 3000.0, future_date, "once")
+        occurrences = one_time.get_occurrences(range_start, range_end)
+        
+        assert len(occurrences) == 1
+        assert occurrences[0] == (future_date, 3000.0)
+
+
+class TestPaymentFrequency:
+    """Test cases for PaymentFrequency enum."""
+
+    @pytest.mark.unit
+    def test_payment_frequency_values(self):
+        """Test PaymentFrequency enum values."""
+        assert PaymentFrequency.ONCE.value == "once"
+        assert PaymentFrequency.DAILY.value == "daily"
+        assert PaymentFrequency.WEEKLY.value == "weekly"
+        assert PaymentFrequency.BI_WEEKLY.value == "bi-weekly"
+        assert PaymentFrequency.SEMI_MONTHLY.value == "semi-monthly"
+        assert PaymentFrequency.MONTHLY.value == "monthly"
+        assert PaymentFrequency.QUARTERLY.value == "quarterly"
+        assert PaymentFrequency.SEMI_ANNUALLY.value == "semi-annually"
+        assert PaymentFrequency.ANNUALLY.value == "annually"
+
+    @pytest.mark.unit
+    def test_payment_frequency_iteration(self):
+        """Test that we can iterate over PaymentFrequency."""
+        frequencies = [freq.value for freq in PaymentFrequency]
+        assert len(frequencies) == 9
+        assert "monthly" in frequencies
+        assert "once" in frequencies
+
+
 class TestUtilityFunctions:
     """Test cases for utility functions."""
 
@@ -403,3 +566,254 @@ class TestDataValidation:
 
         future_income = FutureIncome("Test", 500.0, future_test_date, "once")
         assert future_income.start_date == future_test_date
+
+
+class TestRecurrencePattern:
+    """Test cases for RecurrencePattern class."""
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_creation(self):
+        """Test RecurrencePattern creation with valid data."""
+        start = date(2024, 1, 1)
+        pattern = RecurrencePattern("monthly", start)
+        assert pattern.frequency == "monthly"
+        assert pattern.start_date == start
+        assert pattern.end_date is None
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_invalid_frequency(self):
+        """Test RecurrencePattern raises error for invalid frequency."""
+        with pytest.raises(ValueError, match="Frequency must be one of"):
+            RecurrencePattern("invalid_freq", date(2024, 1, 1))
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_invalid_date_range(self):
+        """Test RecurrencePattern raises error when start > end."""
+        start = date(2024, 6, 1)
+        end = date(2024, 1, 1)  # End before start
+        with pytest.raises(ValueError, match="Start date cannot be after end date"):
+            RecurrencePattern("monthly", start, end)
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_once(self):
+        """Test ONCE frequency pattern."""
+        start = date(2024, 3, 15)
+        pattern = RecurrencePattern("once", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 12, 31)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 1
+        assert dates[0] == start
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_daily(self):
+        """Test DAILY frequency pattern."""
+        start = date(2024, 1, 1)
+        pattern = RecurrencePattern("daily", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 1, 10)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 10  # 10 days inclusive
+        assert dates[0] == date(2024, 1, 1)
+        assert dates[-1] == date(2024, 1, 10)
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_weekly(self):
+        """Test WEEKLY frequency pattern."""
+        start = date(2024, 1, 1)  # Monday
+        pattern = RecurrencePattern("weekly", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 1, 31)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) >= 4  # At least 4 weeks in January
+        # Check they're 7 days apart
+        for i in range(1, len(dates)):
+            assert (dates[i] - dates[i-1]).days == 7
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_bi_weekly(self):
+        """Test BI_WEEKLY frequency pattern."""
+        start = date(2024, 1, 1)
+        pattern = RecurrencePattern("bi-weekly", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 3, 31)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) >= 6  # At least 6 bi-weekly occurrences in 3 months
+        # Check they're 14 days apart
+        for i in range(1, len(dates)):
+            assert (dates[i] - dates[i-1]).days == 14
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_semi_monthly(self):
+        """Test SEMI_MONTHLY frequency pattern (1st and 15th)."""
+        start = date(2024, 1, 1)
+        pattern = RecurrencePattern("semi-monthly", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 2, 29)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        # Should have 1st and 15th of each month
+        assert len(dates) == 4  # Jan 1, Jan 15, Feb 1, Feb 15
+        assert date(2024, 1, 1) in dates
+        assert date(2024, 1, 15) in dates
+        assert date(2024, 2, 1) in dates
+        assert date(2024, 2, 15) in dates
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_monthly_normal_day(self):
+        """Test MONTHLY frequency with regular day."""
+        start = date(2024, 1, 15)
+        pattern = RecurrencePattern("monthly", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 6, 30)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 6  # 6 months
+        # All should be on the 15th
+        assert all(d.day == 15 for d in dates)
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_monthly_day_31(self):
+        """Test MONTHLY frequency with day 31 (month length handling)."""
+        start = date(2024, 1, 31)
+        pattern = RecurrencePattern("monthly", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 4, 30)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 4
+        assert dates[0] == date(2024, 1, 31)
+        assert dates[1] == date(2024, 2, 29)  # Feb has 29 in 2024 (leap year)
+        assert dates[2] == date(2024, 3, 31)
+        # April has 30 days, so should use last day
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_quarterly(self):
+        """Test QUARTERLY frequency pattern."""
+        start = date(2024, 1, 15)
+        pattern = RecurrencePattern("quarterly", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 12, 31)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 4  # 4 quarters in a year
+        # Check they're ~3 months apart
+        assert dates[0].month == 1
+        assert dates[1].month == 4
+        assert dates[2].month == 7
+        assert dates[3].month == 10
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_semi_annually(self):
+        """Test SEMI_ANNUALLY frequency pattern."""
+        start = date(2024, 1, 15)
+        pattern = RecurrencePattern("semi-annually", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 12, 31)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 2  # Twice a year
+        # Should be ~6 months apart
+        assert dates[0].month == 1
+        assert dates[1].month == 7
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_annually(self):
+        """Test ANNUALLY frequency pattern."""
+        start = date(2024, 1, 15)
+        pattern = RecurrencePattern("annually", start)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2026, 12, 31)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 3  # 3 years
+        assert dates[0] == date(2024, 1, 15)
+        assert dates[1] == date(2025, 1, 15)
+        assert dates[2] == date(2026, 1, 15)
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_with_end_date(self):
+        """Test pattern respects end_date."""
+        start = date(2024, 1, 1)
+        end = date(2024, 3, 31)
+        pattern = RecurrencePattern("monthly", start, end)
+        
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 12, 31)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 3  # Jan, Feb, Mar only
+        assert all(d <= end for d in dates)
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_empty_range(self):
+        """Test pattern returns empty list for invalid range."""
+        start = date(2024, 6, 1)
+        pattern = RecurrencePattern("monthly", start)
+        
+        # Request range before pattern starts
+        range_start = date(2024, 1, 1)
+        range_end = date(2024, 3, 31)
+        dates = pattern.get_dates(range_start, range_end)
+        
+        assert len(dates) == 0
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_get_monthly_frequency(self):
+        """Test get_monthly_frequency for different patterns."""
+        start = date(2024, 1, 1)
+        
+        # Test different frequencies
+        patterns_and_expected = [
+            ("once", 0.0),
+            ("daily", 30.4),
+            ("weekly", 4.35),
+            ("bi-weekly", 2.17),
+            ("semi-monthly", 2.0),
+            ("monthly", 1.0),
+            ("quarterly", 1/3),
+            ("semi-annually", 1/6),
+            ("annually", 1/12),
+        ]
+        
+        for freq, expected in patterns_and_expected:
+            pattern = RecurrencePattern(freq, start)
+            actual = pattern.get_monthly_frequency()
+            assert abs(actual - expected) < 0.01, f"Failed for {freq}"
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_str_with_end_date(self):
+        """Test string representation with end date."""
+        start = date(2024, 1, 1)
+        end = date(2024, 12, 31)
+        pattern = RecurrencePattern("monthly", start, end)
+        
+        pattern_str = str(pattern)
+        assert "monthly" in pattern_str.lower()
+        assert "2024-01-01" in pattern_str
+        assert "2024-12-31" in pattern_str
+
+    @pytest.mark.unit
+    def test_recurrence_pattern_str_without_end_date(self):
+        """Test string representation without end date."""
+        start = date(2024, 1, 1)
+        pattern = RecurrencePattern("weekly", start)
+        
+        pattern_str = str(pattern)
+        assert "weekly" in pattern_str.lower()
+        assert "2024-01-01" in pattern_str
+        assert "no end date" in pattern_str.lower()
