@@ -71,7 +71,7 @@ The Financial Debt Optimizer has been successfully prepared for its version 2.0.
 
 **Configuration System**
 - YAML-based config files with sensible defaults
-- Multiple config locations: `~/.debt-optimizer/config.yaml`, `./debt-optimizer.yaml`
+- Multiple config locations: `~/.debt_optimizer/config.yaml`, `./debt_optimizer.yaml`
 - Environment variable overrides (`DEBT_OPTIMIZER_*`)
 - Config management commands: `init`, `show`, `get`, `set`
 - CLI arguments take precedence over config
@@ -138,30 +138,30 @@ collected 167 items
 
 ```bash
 # Standard installation
-pip install financial-debt-optimizer
+pip install financial-debt_optimizer
 
 # With Quicken integration support
-pip install financial-debt-optimizer[balance]
+pip install financial-debt_optimizer[balance]
 ```
 
 ### Quick Start Workflow
 
 ```bash
 # 1. Create configuration (one-time setup)
-debt-optimizer config init
+debt_optimizer config init
 
-# 2. Edit ~/.debt-optimizer/config.yaml with your settings
+# 2. Edit ~/.debt_optimizer/config.yaml with your settings
 
 # 3. Generate template
-debt-optimizer generate-template my-debts.xlsx
+debt_optimizer generate-template my-debts.xlsx
 
 # 4. Fill in your data in Excel
 
 # 5. Update balances from Quicken (optional)
-debt-optimizer update-balances
+debt_optimizer update-balances
 
 # 6. Analyze with automatic balance update
-debt-optimizer analyze -u
+debt_optimizer analyze -u
 
 # 7. Review the generated report
 ```
@@ -169,7 +169,7 @@ debt-optimizer analyze -u
 ### Configuration Example
 
 ```yaml
-# ~/.debt-optimizer/config.yaml
+# ~/.debt_optimizer/config.yaml
 input_file: ~/finances/my-debts.xlsx
 output_file: ~/finances/debt-analysis.xlsx
 quicken_db_path: ~/Documents/MyQuicken.quicken/data
@@ -185,10 +185,10 @@ auto_backup: true
 ## 📦 Files Modified/Created
 
 ### Modified Files (Version 2.0 Changes)
-- `debt-optimizer/__version__.py` - Version 2.0.0
-- `debt-optimizer/cli/commands.py` - Version 2.0.0 display
-- `debt-optimizer/core/balance_updater.py` - Smart update logic
-- `debt-optimizer/excel_io/excel_writer.py` - Fixed surplus calculation
+- `debt_optimizer/__version__.py` - Version 2.0.0
+- `debt_optimizer/cli/commands.py` - Version 2.0.0 display
+- `debt_optimizer/core/balance_updater.py` - Smart update logic
+- `debt_optimizer/excel_io/excel_writer.py` - Fixed surplus calculation
 - `setup.py` - Version 2.0.0
 - `CHANGELOG.md` - Comprehensive v2.0 changelog
 - `README.md` - Updated with v2.0 features

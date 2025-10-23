@@ -3,7 +3,7 @@ Contributing
 
 We welcome contributions to the Financial Debt Optimizer project! This page provides information for developers and contributors.
 
-For detailed contribution guidelines, please see our `CONTRIBUTING.md <https://github.com/bryankemp/financial-debt-optimizer/blob/main/CONTRIBUTING.md>`_ file on GitHub.
+For detailed contribution guidelines, please see our `CONTRIBUTING.md <https://github.com/bryankemp/financial-debt_optimizer/blob/main/CONTRIBUTING.md>`_ file on GitHub.
 
 Quick Start for Contributors
 ----------------------------
@@ -11,8 +11,8 @@ Quick Start for Contributors
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally::
 
-    git clone https://github.com/yourusername/financial-debt-optimizer.git
-    cd financial-debt-optimizer
+    git clone https://github.com/yourusername/financial-debt_optimizer.git
+    cd financial-debt_optimizer
 
 3. **Set up development environment**::
 
@@ -47,8 +47,8 @@ Development Setup
 **Installation:**
 ::
 
-    git clone https://github.com/bryankemp/financial-debt-optimizer.git
-    cd financial-debt-optimizer
+    git clone https://github.com/bryankemp/financial-debt_optimizer.git
+    cd financial-debt_optimizer
     python -m venv venv
     source venv/bin/activate
     pip install -e ".[dev]"
@@ -85,12 +85,12 @@ Pull Request Process
 5. **Ensure all tests pass**
 6. **Submit pull request** with detailed description
 
-For complete details, see `CONTRIBUTING.md <https://github.com/bryankemp/financial-debt-optimizer/blob/main/CONTRIBUTING.md>`_.
+For complete details, see `CONTRIBUTING.md <https://github.com/bryankemp/financial-debt_optimizer/blob/main/CONTRIBUTING.md>`_.
 
 Reporting Issues
 ----------------
 
-When reporting bugs or requesting features, please use our `GitHub Issues <https://github.com/bryankemp/financial-debt-optimizer/issues>`_ page.
+When reporting bugs or requesting features, please use our `GitHub Issues <https://github.com/bryankemp/financial-debt_optimizer/issues>`_ page.
 
 Include:
 - Clear description of the issue

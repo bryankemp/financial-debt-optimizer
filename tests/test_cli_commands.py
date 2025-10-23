@@ -5,11 +5,11 @@ Tests all CLI commands including generate-template, analyze, validate, and info
 with various parameter combinations and edge cases.
 """
 
-# Add debt-optimizer to Python path for testing
+# Add debt_optimizer to Python path for testing
 import sys
 from pathlib import Path
 
-src_path = Path(__file__).parent.parent / "debt-optimizer"
+src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
 import shutil  # noqa: E402
@@ -482,8 +482,8 @@ class TestCLIInfo:
 
         assert result.exit_code == 0
         assert "Tips:" in result.output
-        assert "debt-optimizer validate" in result.output
-        assert "debt-optimizer generate-template" in result.output
+        assert "debt_optimizer validate" in result.output
+        assert "debt_optimizer generate-template" in result.output
 
     @pytest.mark.cli
     def test_info_help(self):

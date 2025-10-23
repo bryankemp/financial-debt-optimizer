@@ -5,11 +5,11 @@ Tests ExcelReader, ExcelWriter, ExcelTemplateGenerator, and related functionalit
 for reading, writing, and generating Excel files.
 """
 
-# Add debt-optimizer to Python path for testing
+# Add debt_optimizer to Python path for testing
 import sys
 from pathlib import Path
 
-src_path = Path(__file__).parent.parent / "debt-optimizer"
+src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
 import shutil  # noqa: E402

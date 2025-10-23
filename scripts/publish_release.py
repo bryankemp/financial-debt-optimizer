@@ -97,7 +97,7 @@ class ReleasePublisher:
         version_file = self.project_root / "src" / "__version__.py"
 
         if not version_file.exists():
-            raise ValueError("Version file not found: debt-optimizer/__version__.py")
+            raise ValueError("Version file not found: debt_optimizer/__version__.py")
 
         content = version_file.read_text()
 
@@ -108,7 +108,7 @@ class ReleasePublisher:
         match = re.search(version_pattern, content)
 
         if not match:
-            raise ValueError("Version not found in debt-optimizer/__version__.py")
+            raise ValueError("Version not found in debt_optimizer/__version__.py")
 
         self.current_version = match.group(1)
         return self.current_version
@@ -383,7 +383,7 @@ class ReleasePublisher:
         # But we can also trigger manually if needed
         print("✅ ReadTheDocs will build automatically from pushed tags")
         print(
-            "💡 Check build status at: https://readthedocs.org/projects/financial-debt-optimizer/"
+            "💡 Check build status at: https://readthedocs.org/projects/financial-debt_optimizer/"
         )
 
         return True
@@ -438,11 +438,11 @@ class ReleasePublisher:
             print(f"🎉 Version {self.get_current_version()} published")
             if not skip_github:
                 print(
-                    f"🔗 GitHub: https://github.com/bryankemp/financial-debt-optimizer/releases/tag/v{self.get_current_version()}"
+                    f"🔗 GitHub: https://github.com/bryankemp/financial-debt_optimizer/releases/tag/v{self.get_current_version()}"
                 )
             if not skip_pypi:
                 pypi_url = "https://test.pypi.org" if test_pypi else "https://pypi.org"
-                print(f"📦 PyPI: {pypi_url}/project/financial-debt-optimizer/")
+                print(f"📦 PyPI: {pypi_url}/project/financial-debt_optimizer/")
         else:
             print("❌ RELEASE HAD ISSUES!")
             print("Failed steps:")

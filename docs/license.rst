@@ -3,7 +3,7 @@ License
 
 The Financial Debt Optimizer is licensed under the BSD 3-Clause License.
 
-For the complete license text, please see the `LICENSE <https://github.com/bryankemp/financial-debt-optimizer/blob/main/LICENSE>`_ file in the project repository.
+For the complete license text, please see the `LICENSE <https://github.com/bryankemp/financial-debt_optimizer/blob/main/LICENSE>`_ file in the project repository.
 
 BSD 3-Clause License Summary
 ----------------------------
@@ -58,7 +58,7 @@ Full License Text
 -----------------
 
 For the complete license text with all legal details, please visit:
-https://github.com/bryankemp/financial-debt-optimizer/blob/main/LICENSE
+https://github.com/bryankemp/financial-debt_optimizer/blob/main/LICENSE
 
 Third-Party Licenses
 --------------------

@@ -93,7 +93,7 @@ class ReleaseWorkflow:
         version_file = self.project_root / "src" / "__version__.py"
 
         if not version_file.exists():
-            raise ValueError("Version file not found: debt-optimizer/__version__.py")
+            raise ValueError("Version file not found: debt_optimizer/__version__.py")
 
         content = version_file.read_text()
 
@@ -104,7 +104,7 @@ class ReleaseWorkflow:
         match = re.search(version_pattern, content)
 
         if not match:
-            raise ValueError("Version not found in debt-optimizer/__version__.py")
+            raise ValueError("Version not found in debt_optimizer/__version__.py")
 
         return match.group(1)
 
@@ -299,15 +299,15 @@ class ReleaseWorkflow:
                 print("✅ RELEASE WORKFLOW COMPLETED SUCCESSFULLY!")
                 print(f"🎉 Version {current_version} → {new_version} released")
                 print(
-                    f"🔗 GitHub: https://github.com/bryankemp/financial-debt-optimizer/releases"
+                    f"🔗 GitHub: https://github.com/bryankemp/financial-debt_optimizer/releases"
                 )
                 if not test_pypi:
                     print(
-                        f"📦 PyPI: https://pypi.org/project/financial-debt-optimizer/"
+                        f"📦 PyPI: https://pypi.org/project/financial-debt_optimizer/"
                     )
                 else:
                     print(
-                        f"📦 Test PyPI: https://test.pypi.org/project/financial-debt-optimizer/"
+                        f"📦 Test PyPI: https://test.pypi.org/project/financial-debt_optimizer/"
                     )
         else:
             print("❌ RELEASE WORKFLOW FAILED!")

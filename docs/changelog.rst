@@ -3,7 +3,7 @@ Changelog
 
 This page tracks all notable changes to the Financial Debt Optimizer project.
 
-For the most up-to-date changelog, please see our `CHANGELOG.md <https://github.com/bryankemp/financial-debt-optimizer/blob/main/CHANGELOG.md>`_ file on GitHub.
+For the most up-to-date changelog, please see our `CHANGELOG.md <https://github.com/bryankemp/financial-debt_optimizer/blob/main/CHANGELOG.md>`_ file on GitHub.
 
 Version 1.1.0 (Latest)
 -----------------------
@@ -56,7 +56,7 @@ Version 1.0.0
 View Full Changelog
 -------------------
 
-For detailed information about all releases, including bug fixes, technical changes, and migration notes, please visit our complete `CHANGELOG.md <https://github.com/bryankemp/financial-debt-optimizer/blob/main/CHANGELOG.md>`_ on GitHub.
+For detailed information about all releases, including bug fixes, technical changes, and migration notes, please visit our complete `CHANGELOG.md <https://github.com/bryankemp/financial-debt_optimizer/blob/main/CHANGELOG.md>`_ on GitHub.
 
 Release Notes Format
 --------------------
@@ -81,4 +81,4 @@ To stay informed about new releases:
 - **Subscribe** to release notifications
 - **Follow** the project for updates
 
-All releases are also available on `PyPI <https://pypi.org/project/financial-debt-optimizer/>`_.
+All releases are also available on `PyPI <https://pypi.org/project/financial-debt_optimizer/>`_.

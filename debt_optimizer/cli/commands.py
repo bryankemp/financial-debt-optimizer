@@ -11,7 +11,7 @@ from core.validation import validate_financial_scenario
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
 from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
 
-# Add debt-optimizer to path to allow imports
+# Add debt_optimizer to path to allow imports
 src_path = Path(__file__).parent.parent
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
@@ -110,7 +110,7 @@ def generate_template(output: str, sample_data: bool):
         click.echo("\nNext steps:")
         click.echo(f"  1. Open {output} in Excel or similar spreadsheet program")
         click.echo("  2. Fill in your actual financial data")
-        click.echo(f"  3. Run analysis: debt-optimizer analyze -i {output}")
+        click.echo(f"  3. Run analysis: debt_optimizer analyze -i {output}")
 
     except Exception as e:
         click.echo(f"✗ Error generating template: {e}", err=True)
@@ -132,7 +132,7 @@ def config_init(path, force):
     if path:
         config_path = Path(path).expanduser()
     else:
-        config_path = Path.home() / ".debt-optimizer"
+        config_path = Path.home() / ".debt_optimizer"
 
     if config_path.exists() and not force:
         click.echo(f"✗ Config file already exists: {config_path}")
@@ -144,8 +144,8 @@ def config_init(path, force):
         click.echo(f"✓ Configuration file created: {config_path}")
         click.echo("\nEdit this file to customize default settings.")
         click.echo("\nAlternatively, place a config file at:")
-        click.echo("  • ~/.debt-optimizer (in home directory)")
-        click.echo("  • ./debt-optimizer.yaml (in current directory)")
+        click.echo("  • ~/.debt_optimizer (in home directory)")
+        click.echo("  • ./debt_optimizer.yaml (in current directory)")
     except Exception as e:
         click.echo(f"✗ Error creating config file: {e}", err=True)
         sys.exit(1)
@@ -198,7 +198,7 @@ def config_set(ctx, key, value):
 
     if not cfg.config_path:
         click.echo(
-            "✗ No config file loaded. Create one with 'debt-optimizer config init'",
+            "✗ No config file loaded. Create one with 'debt_optimizer config init'",
             err=True,
         )
         sys.exit(1)
@@ -300,7 +300,7 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
     except ImportError as e:
         click.echo(f"✗ {e}", err=True)
         click.echo("\nInstall balance update dependencies with:", err=True)
-        click.echo("  pip install debt-optimizer[balance]", err=True)
+        click.echo("  pip install debt_optimizer[balance]", err=True)
         sys.exit(1)
     except Exception as e:
         click.echo(f"✗ Unexpected error: {e}", err=True)
@@ -703,9 +703,9 @@ def info():
     click.echo("   • Provides most financial flexibility\n")
 
     click.echo("💡 Tips:")
-    click.echo("   • Use 'debt-optimizer validate' to check your data first")
+    click.echo("   • Use 'debt_optimizer validate' to check your data first")
     click.echo("   • Try '--compare-strategies' to see all options")
-    click.echo("   • Start with a template: 'debt-optimizer generate-template'")
+    click.echo("   • Start with a template: 'debt_optimizer generate-template'")
     click.echo("   • Set your actual current bank balance in the Settings sheet")
     click.echo("   • Emergency fund of 3-6 months expenses is recommended")
     click.echo(

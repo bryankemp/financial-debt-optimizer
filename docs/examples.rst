@@ -24,7 +24,7 @@ Example 1: Simple Credit Card Debt
 **Command Line Usage:**
 ::
 
-    debt-optimizer --input credit_cards.xlsx --strategy avalanche --output results.xlsx
+    debt_optimizer --input credit_cards.xlsx --strategy avalanche --output results.xlsx
 
 **Expected Results:**
 - Master Card paid off first (higher interest rate: 24.99%)
@@ -34,7 +34,7 @@ Example 1: Simple Credit Card Debt
 **With $200 extra payment:**
 ::
 
-    debt-optimizer --input credit_cards.xlsx --strategy avalanche --extra-payment 200 --output results_extra.xlsx
+    debt_optimizer --input credit_cards.xlsx --strategy avalanche --extra-payment 200 --output results_extra.xlsx
 
 **Expected Results:**
 - Total payoff time: ~18 months
@@ -213,7 +213,7 @@ Example 5: New Graduate with Student Loans and Credit Cards
 **Analysis Strategy:**
 ::
 
-    debt-optimizer --input graduate_debts.xlsx --strategy avalanche --extra-payment 150 --charts --output graduate_analysis.xlsx
+    debt_optimizer --input graduate_debts.xlsx --strategy avalanche --extra-payment 150 --charts --output graduate_analysis.xlsx
 
 **Key Insights:**
 - Credit card should be eliminated first (highest rate: 21.99%)

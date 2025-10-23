@@ -36,8 +36,8 @@ This project adheres to a code of conduct that fosters an open and welcoming env
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/your-username/financial-debt-optimizer.git
-   cd financial-debt-optimizer
+   git clone https://github.com/your-username/financial-debt_optimizer.git
+   cd financial-debt_optimizer
    ```
 
 ## Development Setup
@@ -55,7 +55,7 @@ This project adheres to a code of conduct that fosters an open and welcoming env
 
 3. **Verify installation**:
    ```bash
-   debt-optimizer --help
+   debt_optimizer --help
    pytest
    ```
 
@@ -234,12 +234,12 @@ def test_should_optimize_debts_using_avalanche_strategy(sample_debts):
 
 3. **Format code**:
    ```bash
-   black debt-optimizer/ tests/
+   black debt_optimizer/ tests/
    ```
 
 4. **Run linting**:
    ```bash
-   pylint debt-optimizer/
+   pylint debt_optimizer/
    ```
 
 ### Pull Request Guidelines

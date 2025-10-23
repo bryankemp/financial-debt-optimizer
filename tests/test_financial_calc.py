@@ -5,11 +5,11 @@ Tests all financial calculation classes: Debt, Income, RecurringExpense,
 FutureIncome, FutureExpense, and related utility functions.
 """
 
-# Add debt-optimizer to Python path for testing
+# Add debt_optimizer to Python path for testing
 import sys
 from pathlib import Path
 
-src_path = Path(__file__).parent.parent / "debt-optimizer"
+src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
 from datetime import date, datetime, timedelta  # noqa: E402

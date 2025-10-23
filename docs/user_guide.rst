@@ -159,14 +159,14 @@ The system performs several validation checks:
 Command Line Interface
 ----------------------
 
-The ``debt-optimizer`` command provides a powerful CLI for debt analysis.
+The ``debt_optimizer`` command provides a powerful CLI for debt analysis.
 
 Basic Syntax
 ~~~~~~~~~~~~
 
 ::
 
-    debt-optimizer [OPTIONS] --input INPUT_FILE --output OUTPUT_FILE --strategy STRATEGY
+    debt_optimizer [OPTIONS] --input INPUT_FILE --output OUTPUT_FILE --strategy STRATEGY
 
 Required Options
 ~~~~~~~~~~~~~~~~
@@ -204,25 +204,25 @@ Advanced Usage Examples
 **Basic debt analysis:**
 ::
 
-    debt-optimizer -i my_debts.xlsx -o results.xlsx -s avalanche
+    debt_optimizer -i my_debts.xlsx -o results.xlsx -s avalanche
 
 **With extra monthly payment:**
 ::
 
-    debt-optimizer -i debts.xlsx -o results.xlsx -s snowball -e 500
+    debt_optimizer -i debts.xlsx -o results.xlsx -s snowball -e 500
 
 **Generate charts and verbose output:**
 ::
 
-    debt-optimizer -i debts.xlsx -o results.xlsx -s hybrid -c -v
+    debt_optimizer -i debts.xlsx -o results.xlsx -s hybrid -c -v
 
 **Compare multiple strategies:**
 ::
 
     # Run each strategy separately
-    debt-optimizer -i debts.xlsx -o avalanche_results.xlsx -s avalanche -c
-    debt-optimizer -i debts.xlsx -o snowball_results.xlsx -s snowball -c
-    debt-optimizer -i debts.xlsx -o hybrid_results.xlsx -s hybrid -c
+    debt_optimizer -i debts.xlsx -o avalanche_results.xlsx -s avalanche -c
+    debt_optimizer -i debts.xlsx -o snowball_results.xlsx -s snowball -c
+    debt_optimizer -i debts.xlsx -o hybrid_results.xlsx -s hybrid -c
 
 Python API Usage
 ----------------

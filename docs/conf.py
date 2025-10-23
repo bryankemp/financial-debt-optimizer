@@ -7,7 +7,7 @@ import os
 import sys
 
 # Add the source directory to the Python path
-sys.path.insert(0, os.path.abspath('../debt-optimizer'))
+sys.path.insert(0, os.path.abspath('../debt_optimizer'))
 sys.path.insert(0, os.path.abspath('..'))
 
 # Add custom extensions directory to Python path
@@ -152,7 +152,7 @@ test_reports_run_on_build = True
 html_context = {
     "display_github": True,
     "github_user": "bryankemp",
-    "github_repo": "financial-debt-optimizer",
+    "github_repo": "financial-debt_optimizer",
     "github_version": "main",
     "conf_py_path": "/docs/",
 }

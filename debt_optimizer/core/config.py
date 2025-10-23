@@ -20,9 +20,9 @@ class Config:
     """Configuration manager for debt optimizer."""
 
     DEFAULT_CONFIG_PATHS = [
-        Path.home() / ".debt-optimizer",
-        Path("debt-optimizer.yaml"),
-        Path("debt-optimizer.yml"),
+        Path.home() / ".debt_optimizer",
+        Path("debt_optimizer.yaml"),
+        Path("debt_optimizer.yml"),
     ]
 
     DEFAULT_VALUES = {

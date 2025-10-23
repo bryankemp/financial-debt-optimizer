@@ -3,16 +3,16 @@ Financial Debt Optimizer Documentation
 
 Welcome to the comprehensive documentation for Financial Debt Optimizer, a powerful Python tool designed to help you analyze and optimize your debt repayment strategies.
 
-.. image:: https://img.shields.io/pypi/v/financial-debt-optimizer.svg
-   :target: https://pypi.org/project/financial-debt-optimizer/
+.. image:: https://img.shields.io/pypi/v/financial-debt_optimizer.svg
+   :target: https://pypi.org/project/financial-debt_optimizer/
    :alt: PyPI Version
 
-.. image:: https://img.shields.io/pypi/pyversions/financial-debt-optimizer.svg
-   :target: https://pypi.org/project/financial-debt-optimizer/
+.. image:: https://img.shields.io/pypi/pyversions/financial-debt_optimizer.svg
+   :target: https://pypi.org/project/financial-debt_optimizer/
    :alt: Python Versions
 
-.. image:: https://img.shields.io/github/license/bryankemp/financial-debt-optimizer.svg
-   :target: https://github.com/bryankemp/financial-debt-optimizer/blob/main/LICENSE
+.. image:: https://img.shields.io/github/license/bryankemp/financial-debt_optimizer.svg
+   :target: https://github.com/bryankemp/financial-debt_optimizer/blob/main/LICENSE
    :alt: License
 
 Overview
@@ -65,13 +65,13 @@ Quick Start
 
    .. code-block:: bash
    
-      pip install financial-debt-optimizer
+      pip install financial-debt_optimizer
 
 2. **Basic Usage**
 
    .. code-block:: bash
    
-      debt-optimizer --input my_debts.xlsx --strategy avalanche --output results.xlsx
+      debt_optimizer --input my_debts.xlsx --strategy avalanche --output results.xlsx
 
 3. **Python API**
 

@@ -5,11 +5,11 @@ Tests end-to-end workflows from Excel template generation through analysis
 and report creation, ensuring all components work together correctly.
 """
 
-# Add debt-optimizer to Python path for testing
+# Add debt_optimizer to Python path for testing
 import sys
 from pathlib import Path
 
-src_path = Path(__file__).parent.parent / "debt-optimizer"
+src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
 import shutil  # noqa: E402
