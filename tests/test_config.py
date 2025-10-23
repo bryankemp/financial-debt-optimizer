@@ -135,14 +135,14 @@ class TestConfigFileOperations:
         """Test saving and loading configuration file."""
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "test_config.yaml"
-            
+
             # Create and save config
             config1 = Config()
             config1.set("test_key", "test_value")
             config1.save_to_file(config_path)
-            
+
             assert config_path.exists()
-            
+
             # Load config and verify
             config2 = Config(config_path=config_path)
             assert config2.get("test_key") == "test_value"
@@ -151,10 +151,10 @@ class TestConfigFileOperations:
         """Test save_to_file creates parent directories."""
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "nested" / "dir" / "config.yaml"
-            
+
             config = Config()
             config.save_to_file(config_path)
-            
+
             assert config_path.exists()
             assert config_path.parent.exists()
 
@@ -168,10 +168,10 @@ class TestConfigFileOperations:
         """Test save_to_file with explicit path."""
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "config.yaml"
-            
+
             config = Config()
             config.save_to_file(config_path)
-            
+
             assert config.config_path == config_path
 
     def test_load_invalid_yaml(self):
@@ -179,7 +179,7 @@ class TestConfigFileOperations:
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "invalid.yaml"
             config_path.write_text("invalid: yaml: content: [")
-            
+
             with pytest.raises(ValueError, match="Invalid YAML"):
                 Config(config_path=config_path)
 
@@ -188,7 +188,7 @@ class TestConfigFileOperations:
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "empty.yaml"
             config_path.write_text("")
-            
+
             config = Config(config_path=config_path)
             # Should still have default values
             assert config.get("input_file") == "default.xlsx"
@@ -197,9 +197,9 @@ class TestConfigFileOperations:
         """Test creating default configuration file."""
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "default_config.yaml"
-            
+
             config = Config.create_default_config(config_path)
-            
+
             assert config_path.exists()
             assert config.get("input_file") == "default.xlsx"
             assert config.config_path == config_path
@@ -208,14 +208,14 @@ class TestConfigFileOperations:
         """Test load_from_file updates config_path attribute."""
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "config.yaml"
-            
+
             # Create initial config file
             Config.create_default_config(config_path)
-            
+
             # Load into new config instance
             config = Config()
             config.load_from_file(config_path)
-            
+
             assert config.config_path == config_path
 
 
@@ -227,14 +227,10 @@ class TestConfigDefaultPaths:
         # Create a config in one of the default locations
         config_file = tmp_path / "debt_optimizer.yaml"
         config_file.write_text("test_key: test_value\n")
-        
+
         # Mock DEFAULT_CONFIG_PATHS to include our test path
-        monkeypatch.setattr(
-            Config,
-            "DEFAULT_CONFIG_PATHS",
-            [config_file]
-        )
-        
+        monkeypatch.setattr(Config, "DEFAULT_CONFIG_PATHS", [config_file])
+
         config = Config()
         assert config.get("test_key") == "test_value"
 
@@ -242,6 +238,6 @@ class TestConfigDefaultPaths:
         """Test Config uses default values when no config files found."""
         # Mock DEFAULT_CONFIG_PATHS to be empty
         monkeypatch.setattr(Config, "DEFAULT_CONFIG_PATHS", [])
-        
+
         config = Config()
         assert config.get("input_file") == "default.xlsx"

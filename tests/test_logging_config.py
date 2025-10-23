@@ -54,7 +54,9 @@ class TestSetupLogging:
         """Test setup_logging with console output enabled."""
         logger = setup_logging(console_output=True)
         console_handlers = [
-            h for h in logger.handlers if isinstance(h, logging.StreamHandler)
+            h
+            for h in logger.handlers
+            if isinstance(h, logging.StreamHandler)
             and not isinstance(h, logging.FileHandler)
         ]
         assert len(console_handlers) >= 1
@@ -63,7 +65,9 @@ class TestSetupLogging:
         """Test setup_logging with console output disabled."""
         logger = setup_logging(console_output=False)
         console_handlers = [
-            h for h in logger.handlers if isinstance(h, logging.StreamHandler)
+            h
+            for h in logger.handlers
+            if isinstance(h, logging.StreamHandler)
             and not isinstance(h, logging.FileHandler)
         ]
         assert len(console_handlers) == 0
@@ -73,7 +77,7 @@ class TestSetupLogging:
         with tempfile.TemporaryDirectory() as tmpdir:
             log_file = str(Path(tmpdir) / "test.log")
             logger = setup_logging(log_file=log_file)
-            
+
             file_handlers = [
                 h for h in logger.handlers if isinstance(h, logging.FileHandler)
             ]
@@ -91,20 +95,20 @@ class TestSetupLogging:
         # Setup twice to ensure handlers are replaced, not duplicated
         logger1 = setup_logging()
         handler_count_1 = len(logger1.handlers)
-        
+
         logger2 = setup_logging()
         handler_count_2 = len(logger2.handlers)
-        
+
         assert handler_count_1 == handler_count_2
 
     def test_setup_logging_formatter(self):
         """Test setup_logging creates proper formatter."""
         logger = setup_logging()
         assert len(logger.handlers) > 0
-        
+
         handler = logger.handlers[0]
         assert handler.formatter is not None
-        
+
         # Check that formatter includes expected components
         log_record = logging.LogRecord(
             name="test",
@@ -113,7 +117,7 @@ class TestSetupLogging:
             lineno=0,
             msg="Test message",
             args=(),
-            exc_info=None
+            exc_info=None,
         )
         formatted = handler.formatter.format(log_record)
         assert "Test message" in formatted
@@ -123,7 +127,7 @@ class TestSetupLogging:
         with tempfile.TemporaryDirectory() as tmpdir:
             log_file = str(Path(tmpdir) / "test.log")
             logger = setup_logging(level="INFO", log_file=log_file)
-            
+
             file_handlers = [
                 h for h in logger.handlers if isinstance(h, logging.FileHandler)
             ]
@@ -136,9 +140,9 @@ class TestSetupLogging:
         with tempfile.TemporaryDirectory() as tmpdir:
             log_file = str(Path(tmpdir) / "test.log")
             logger = setup_logging(level="INFO", log_file=log_file)
-            
+
             logger.info("Test log message")
-            
+
             log_path = Path(log_file)
             assert log_path.exists()
             content = log_path.read_text()
@@ -175,9 +179,9 @@ class TestGetLogger:
         """Test get_logger inherits configuration from parent logger."""
         # Setup parent logger
         parent_logger = setup_logging(level="DEBUG")
-        
+
         # Get child logger
         child_logger = get_logger("child")
-        
+
         # Child should inherit parent's level
         assert child_logger.getEffectiveLevel() == logging.DEBUG
