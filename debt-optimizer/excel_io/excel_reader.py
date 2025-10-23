@@ -3,6 +3,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+
 from core.financial_calc import (
     Debt,
     FutureExpense,
@@ -10,8 +13,6 @@ from core.financial_calc import (
     Income,
     RecurringExpense,
 )
-from openpyxl import Workbook
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 
 class ExcelReader:

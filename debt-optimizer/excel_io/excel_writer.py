@@ -2,8 +2,9 @@ from typing import Any, Dict, Optional
 
 import pandas as pd
 import xlsxwriter
-from core.debt_optimizer import OptimizationResult
 from xlsxwriter.workbook import Workbook
+
+from core.debt_optimizer import OptimizationResult
 
 
 class ExcelReportWriter:

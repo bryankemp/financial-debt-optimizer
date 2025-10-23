@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import click
+
 from core.balance_updater import BalanceUpdater, BalanceUpdaterError
 from core.config import Config
 from core.debt_optimizer import DebtOptimizer, OptimizationGoal

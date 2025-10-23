@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
+
 from core.debt_optimizer import OptimizationResult
 from core.financial_calc import Debt
 
