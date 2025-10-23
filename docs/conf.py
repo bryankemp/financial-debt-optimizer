@@ -35,7 +35,7 @@ extensions = [
     'sphinx.ext.autosummary',  # Added for better API documentation
     'sphinx_autodoc_typehints',
     'myst_parser',
-    'test_reports',  # Custom extension for test report integration
+    'report_generator',  # Custom extension for test report integration
 ]
 
 # Generate autosummary stubs automatically
