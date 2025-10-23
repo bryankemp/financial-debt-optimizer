@@ -550,7 +550,7 @@ class TestPerformanceIntegration:
         for i in range(20):  # 20 debts
             many_debts.append(
                 Debt(
-                    f"Debt {i+1}",
+                    f"Debt {i + 1}",
                     5000.0 + (i * 1000),
                     100.0 + (i * 10),
                     5.0 + (i * 0.5),
@@ -566,7 +566,7 @@ class TestPerformanceIntegration:
         for i in range(10):  # 10 recurring expenses
             many_expenses.append(
                 RecurringExpense(
-                    f"Expense {i+1}",
+                    f"Expense {i + 1}",
                     200.0 + (i * 50),
                     "monthly",
                     (i % 28) + 1,

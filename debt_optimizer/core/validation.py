@@ -30,12 +30,12 @@ def validate_debt_data(debt_data) -> List[str]:
                 # Just check for any logical issues
                 try:
                     if not debt.name or debt.name.strip() == "":
-                        errors.append(f"Debt {i+1}: Name cannot be empty")
+                        errors.append(f"Debt {i + 1}: Name cannot be empty")
                     # Additional validation can go here if needed
                 except Exception:
-                    errors.append(f"Debt {i+1}: Invalid debt data")
+                    errors.append(f"Debt {i + 1}: Invalid debt data")
             else:
-                errors.append(f"Item {i+1}: Expected Debt object, got {type(debt)}")
+                errors.append(f"Item {i + 1}: Expected Debt object, got {type(debt)}")
         return errors
 
     # Handle dictionary format (original functionality)
@@ -109,13 +109,13 @@ def validate_income_data(income_data) -> List[str]:
                 # Income objects have their own validation in __post_init__
                 try:
                     if not income.source or income.source.strip() == "":
-                        errors.append(f"Income {i+1}: Source cannot be empty")
+                        errors.append(f"Income {i + 1}: Source cannot be empty")
                     if income.amount <= 0:
-                        errors.append(f"Income {i+1}: Amount must be positive")
+                        errors.append(f"Income {i + 1}: Amount must be positive")
                 except Exception:
-                    errors.append(f"Income {i+1}: Invalid income data")
+                    errors.append(f"Income {i + 1}: Invalid income data")
             else:
-                errors.append(f"Item {i+1}: Expected Income object, got {type(income)}")
+                errors.append(f"Item {i + 1}: Expected Income object, got {type(income)}")  # noqa: E501
         return errors
 
     # Handle dictionary format (original functionality)
@@ -168,14 +168,14 @@ def validate_expense_data(expense_data) -> List[str]:
                 # RecurringExpense objects have their own validation in __post_init__
                 try:
                     if not expense.description or expense.description.strip() == "":
-                        errors.append(f"Expense {i+1}: Description cannot be empty")
+                        errors.append(f"Expense {i + 1}: Description cannot be empty")
                     if expense.amount <= 0:
-                        errors.append(f"Expense {i+1}: Amount must be positive")
+                        errors.append(f"Expense {i + 1}: Amount must be positive")
                 except Exception:
-                    errors.append(f"Expense {i+1}: Invalid expense data")
+                    errors.append(f"Expense {i + 1}: Invalid expense data")
             else:
                 errors.append(
-                    f"Item {i+1}: Expected RecurringExpense object, got {type(expense)}"
+                    f"Item {i + 1}: Expected RecurringExpense object, got {type(expense)}"  # noqa: E501
                 )
         return errors
 
