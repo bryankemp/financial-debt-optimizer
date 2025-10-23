@@ -26,7 +26,7 @@ def validate_debt_data(debt_data) -> List[str]:
     if isinstance(debt_data, list):
         for i, debt in enumerate(debt_data):
             if isinstance(debt, Debt):
-                # Since the Debt object was created successfully, it passed __post_init__ validation
+                # Since the Debt object was created successfully, it passed __post_init__ validation  # noqa: E501
                 # Just check for any logical issues
                 try:
                     if not debt.name or debt.name.strip() == "":
@@ -151,10 +151,10 @@ def validate_income_data(income_data) -> List[str]:
 
 
 def validate_expense_data(expense_data) -> List[str]:
-    """Validate expense data - can handle both dictionaries and lists of RecurringExpense objects.
+    """Validate expense data - can handle both dictionaries and lists of RecurringExpense objects.  # noqa: E501
 
     Args:
-        expense_data: Dictionary containing expense information or list of RecurringExpense objects
+        expense_data: Dictionary containing expense information or list of RecurringExpense objects  # noqa: E501
 
     Returns:
         List of validation error messages (empty if valid)
@@ -294,12 +294,12 @@ def validate_financial_scenario(
             total_debt > total_monthly_income * 60
         ):  # More than 5 years of income in debt
             warnings.append(
-                f"Very high debt-to-income ratio: ${total_debt:.2f} debt vs ${total_monthly_income:.2f} monthly income"
+                f"Very high debt-to-income ratio: ${total_debt:.2f} debt vs ${total_monthly_income:.2f} monthly income"  # noqa: E501
             )
 
         if available_cashflow < 100:
             warnings.append(
-                f"Very tight cash flow: Only ${available_cashflow:.2f} available after minimums and expenses"
+                f"Very tight cash flow: Only ${available_cashflow:.2f} available after minimums and expenses"  # noqa: E501
             )
 
     # Validate settings

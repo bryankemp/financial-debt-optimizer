@@ -169,7 +169,7 @@ class RecurrencePattern:
                     if effective_start <= current_date <= effective_end:
                         dates.append(current_date)
                 except ValueError:
-                    # Handle month lengths - use last day of month if target_day exceeds month length
+                    # Handle month lengths - use last day of month if target_day exceeds month length  # noqa: E501
                     last_day = calendar.monthrange(current_year, current_month)[1]
                     current_date = Date(current_year, current_month, last_day)
                     if effective_start <= current_date <= effective_end:
@@ -350,7 +350,7 @@ class RecurrencePattern:
     def __str__(self) -> str:
         """Return a human-readable representation of the pattern."""
         if self.end_date:
-            return f"{self.frequency.capitalize()} from {self.start_date} to {self.end_date}"
+            return f"{self.frequency.capitalize()} from {self.start_date} to {self.end_date}"  # noqa: E501
         else:
             return f"{self.frequency.capitalize()} from {self.start_date} (no end date)"
 
@@ -554,7 +554,7 @@ class RecurringExpense:
         dates = []
         today = Date.today()
 
-        # Handle weekly and bi-weekly frequencies differently since they're not tied to month boundaries
+        # Handle weekly and bi-weekly frequencies differently since they're not tied to month boundaries  # noqa: E501
         if self.frequency == "weekly":
             # Start from the expense start_date or today, whichever is later
             current_date = max(self.start_date, today)
@@ -673,7 +673,7 @@ class FutureIncome:
         if self.amount <= 0:
             raise ValueError("Income amount must be positive")
 
-        # Handle backward compatibility - if 'date' is provided, use it as start_date for one-time event
+        # Handle backward compatibility - if 'date' is provided, use it as start_date for one-time event  # noqa: E501
         if self.date is not None:
             self.start_date = self.date
             self.frequency = None
@@ -755,9 +755,9 @@ class FutureIncome:
         """Return a human-readable representation of the income."""
         if self.is_recurring():
             if self.end_date:
-                return f"{self.description}: ${self.amount:.2f} {self.frequency} from {self.start_date} to {self.end_date}"
+                return f"{self.description}: ${self.amount:.2f} {self.frequency} from {self.start_date} to {self.end_date}"  # noqa: E501
             else:
-                return f"{self.description}: ${self.amount:.2f} {self.frequency} starting {self.start_date}"
+                return f"{self.description}: ${self.amount:.2f} {self.frequency} starting {self.start_date}"  # noqa: E501
         else:
             return f"{self.description}: ${self.amount:.2f} on {self.start_date}"
 
@@ -784,7 +784,7 @@ class FutureExpense:
         if self.amount <= 0:
             raise ValueError("Expense amount must be positive")
 
-        # Handle backward compatibility - if 'date' is provided, use it as start_date for one-time event
+        # Handle backward compatibility - if 'date' is provided, use it as start_date for one-time event  # noqa: E501
         if self.date is not None:
             self.start_date = self.date
             self.frequency = None
@@ -866,9 +866,9 @@ class FutureExpense:
         """Return a human-readable representation of the expense."""
         if self.is_recurring():
             if self.end_date:
-                return f"{self.description}: ${self.amount:.2f} {self.frequency} from {self.start_date} to {self.end_date}"
+                return f"{self.description}: ${self.amount:.2f} {self.frequency} from {self.start_date} to {self.end_date}"  # noqa: E501
             else:
-                return f"{self.description}: ${self.amount:.2f} {self.frequency} starting {self.start_date}"
+                return f"{self.description}: ${self.amount:.2f} {self.frequency} starting {self.start_date}"  # noqa: E501
         else:
             return f"{self.description}: ${self.amount:.2f} on {self.start_date}"
 

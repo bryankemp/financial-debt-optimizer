@@ -362,7 +362,7 @@ def main():
         epilog="""
 Examples:
   %(prog)s patch                    # Patch release (1.0.0 -> 1.0.1)
-  %(prog)s minor                    # Minor release (1.0.0 -> 1.1.0)  
+  %(prog)s minor                    # Minor release (1.0.0 -> 1.1.0)
   %(prog)s major                    # Major release (1.0.0 -> 2.0.0)
   %(prog)s patch --prerelease rc.1  # Prerelease (1.0.0 -> 1.0.1-rc.1)
   %(prog)s patch --dry-run          # Dry run (no changes)

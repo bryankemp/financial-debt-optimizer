@@ -14,19 +14,20 @@ import pytest
 
 matplotlib.use("Agg")  # Use non-interactive backend for testing
 
-# Import the classes to test
-import sys
-from datetime import date
-from pathlib import Path
-
-import matplotlib.pyplot as plt
+# Add debt-optimizer to Python path for testing
+import sys  # noqa: E402
+from pathlib import Path  # noqa: E402
 
 src_path = Path(__file__).parent.parent / "debt-optimizer"
 sys.path.insert(0, str(src_path))
 
-from core.debt_optimizer import DebtOptimizer, OptimizationGoal, OptimizationResult
-from core.financial_calc import Debt, Income, RecurringExpense
-from visualization.charts import DebtVisualization
+from datetime import date  # noqa: E402
+
+import matplotlib.pyplot as plt  # noqa: E402
+
+from core.debt_optimizer import DebtOptimizer, OptimizationGoal, OptimizationResult  # noqa: E402
+from core.financial_calc import Debt, Income, RecurringExpense  # noqa: E402
+from visualization.charts import DebtVisualization  # noqa: E402
 
 
 class TestDebtVisualization:

@@ -267,22 +267,22 @@ class VersionBumper:
         new_entry = f"""## [{self.new_version}] - {current_date}
 
 ### Added
-- 
+-
 
 ### Changed
-- 
+-
 
 ### Deprecated
-- 
+-
 
 ### Removed
-- 
+-
 
 ### Fixed
-- 
+-
 
 ### Security
-- 
+-
 
 """
 

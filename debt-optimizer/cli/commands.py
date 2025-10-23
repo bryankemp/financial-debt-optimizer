@@ -272,13 +272,13 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
                 auto_str = "(auto)" if update["auto"] else "(approved)"
                 if update["excel_name_old"] != update["excel_name_new"]:
                     click.echo(
-                        f"  • Row {update['row']}: {update['excel_name_old']} → {update['excel_name_new']} "
-                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"
+                        f"  • Row {update['row']}: {update['excel_name_old']} → {update['excel_name_new']} "  # noqa: E501
+                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"  # noqa: E501
                     )
                 else:
                     click.echo(
                         f"  • Row {update['row']}: {update['excel_name_new']} "
-                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"
+                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"  # noqa: E501
                     )
         else:
             click.echo("  No debt updates (all balances current or no matches found)")
@@ -286,7 +286,7 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
         if result["settings_update"]:
             su = result["settings_update"]
             click.echo(
-                f"\n🏦 Bank balance updated: {su['name']} = ${su['balance']:.2f} ({su['matched']})"
+                f"\n🏦 Bank balance updated: {su['name']} = ${su['balance']:.2f} ({su['matched']})"  # noqa: E501
             )
 
         click.echo(f"\n✓ Workbook saved: {result['workbook_path']}")
@@ -408,7 +408,7 @@ def analyze(
 
         click.echo("📊 Starting debt optimization analysis...")
         logger.info(
-            f"Starting analysis with input={input_path}, goal={goal}, extra_payment={extra_payment_val}"
+            f"Starting analysis with input={input_path}, goal={goal}, extra_payment={extra_payment_val}"  # noqa: E501
         )
 
         # Read input data
@@ -485,7 +485,7 @@ def analyze(
             f"  Current Bank Balance: ${debt_summary['current_bank_balance']:,.2f}"
         )
         click.echo(
-            f"  Available Extra Payment: ${debt_summary['available_extra_payment']:,.2f}"
+            f"  Available Extra Payment: ${debt_summary['available_extra_payment']:,.2f}"  # noqa: E501
         )
 
         if debt_summary["available_cash_flow"] < 0:
@@ -555,9 +555,9 @@ def analyze(
         click.echo(f"✓ Report generated: {output_path.absolute()}")
 
         # Summary message
-        months_years = f"{result.total_months_to_freedom // 12} years and {result.total_months_to_freedom % 12} months"
+        months_years = f"{result.total_months_to_freedom // 12} years and {result.total_months_to_freedom % 12} months"  # noqa: E501
         click.echo(
-            f"\n🎉 Summary: Using the {result.strategy.replace('_', ' ').title()} strategy, "
+            f"\n🎉 Summary: Using the {result.strategy.replace('_', ' ').title()} strategy, "  # noqa: E501
             f"you can be debt-free in {months_years} while saving "
             f"${result.savings_vs_minimum['interest_saved']:,.2f} in interest!"
         )
@@ -651,7 +651,7 @@ def validate(input_file: str):
         click.echo(f"  Income Sources: {len(income_sources)}")
         click.echo(f"  Total Debt: ${sum(debt.balance for debt in debts):,.2f}")
         click.echo(
-            f"  Monthly Income: ${sum(income.get_monthly_amount() for income in income_sources):,.2f}"
+            f"  Monthly Income: ${sum(income.get_monthly_amount() for income in income_sources):,.2f}"  # noqa: E501
         )
 
         sys.exit(1 if errors else 0)

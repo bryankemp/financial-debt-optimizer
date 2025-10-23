@@ -8,7 +8,7 @@ sys.path.insert(0, src_path)
 
 try:
     from __version__ import (
-        __version__, __title__, __description__, __author__, 
+        __version__, __title__, __description__, __author__,
         __author_email__, __license__, __url__
     )
 except ImportError:

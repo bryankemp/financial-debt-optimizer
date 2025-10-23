@@ -5,20 +5,21 @@ Tests the DebtOptimizer class including optimization strategies, debt summary
 generation, strategy comparisons, and financial calculations.
 """
 
-# Import the classes to test
+# Add debt-optimizer to Python path for testing
 import sys
-from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import List
-
-import pandas as pd
-import pytest
 
 src_path = Path(__file__).parent.parent / "debt-optimizer"
 sys.path.insert(0, str(src_path))
 
-from core.debt_optimizer import DebtOptimizer, OptimizationGoal, OptimizationResult
-from core.financial_calc import (
+from datetime import date, datetime, timedelta  # noqa: E402
+from typing import List  # noqa: E402
+
+import pandas as pd  # noqa: E402
+import pytest  # noqa: E402
+
+from core.debt_optimizer import DebtOptimizer, OptimizationGoal, OptimizationResult  # noqa: E402
+from core.financial_calc import (  # noqa: E402
     Debt,
     FutureExpense,
     FutureIncome,
@@ -331,7 +332,7 @@ class TestDebtOptimizer:
         # Available extra payment should consider emergency fund
         assert summary["available_extra_payment"] >= 0
 
-        # If current balance is less than emergency fund, extra payment should be limited
+        # If current balance is less than emergency fund, extra payment should be limited  # noqa: E501
         if summary["current_bank_balance"] < self.settings["emergency_fund"]:
             assert summary["available_extra_payment"] <= summary["available_cash_flow"]
 

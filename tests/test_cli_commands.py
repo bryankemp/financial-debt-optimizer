@@ -5,23 +5,23 @@ Tests all CLI commands including generate-template, analyze, validate, and info
 with various parameter combinations and edge cases.
 """
 
-import shutil
-
-# Import the classes to test
+# Add debt-optimizer to Python path for testing
 import sys
-import tempfile
-from datetime import date
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
-from click.testing import CliRunner
 
 src_path = Path(__file__).parent.parent / "debt-optimizer"
 sys.path.insert(0, str(src_path))
 
-from cli.commands import analyze, generate_template, info, main, validate
-from excel_io.excel_reader import ExcelTemplateGenerator
+import shutil  # noqa: E402
+import tempfile  # noqa: E402
+from datetime import date  # noqa: E402
+from unittest.mock import MagicMock, patch  # noqa: E402
+
+import pytest  # noqa: E402
+from click.testing import CliRunner  # noqa: E402
+
+from cli.commands import analyze, generate_template, info, main, validate  # noqa: E402
+from excel_io.excel_reader import ExcelTemplateGenerator  # noqa: E402
 
 
 class TestCLIGenerateTemplate:

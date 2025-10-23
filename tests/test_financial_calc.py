@@ -5,18 +5,19 @@ Tests all financial calculation classes: Debt, Income, RecurringExpense,
 FutureIncome, FutureExpense, and related utility functions.
 """
 
-# Import the classes to test
+# Add debt-optimizer to Python path for testing
 import sys
-from datetime import date, datetime, timedelta
-from decimal import Decimal
 from pathlib import Path
-
-import pytest
 
 src_path = Path(__file__).parent.parent / "debt-optimizer"
 sys.path.insert(0, str(src_path))
 
-from core.financial_calc import (
+from datetime import date, datetime, timedelta  # noqa: E402
+from decimal import Decimal  # noqa: E402
+
+import pytest  # noqa: E402
+
+from core.financial_calc import (  # noqa: E402
     Debt,
     FutureExpense,
     FutureIncome,

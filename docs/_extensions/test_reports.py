@@ -22,11 +22,11 @@ def generate_test_reports(app: Sphinx) -> None:
     """Generate test reports before documentation build."""
     if app.config.test_reports_enabled:
         logger.info("Generating test reports...")
-        
+
         # Get project root (assuming docs is in project root)
         project_root = Path(app.srcdir).parent
         script_path = project_root / "scripts" / "generate_test_reports.py"
-        
+
         if script_path.exists():
             try:
                 # Run the test report generator
@@ -37,14 +37,14 @@ def generate_test_reports(app: Sphinx) -> None:
                     text=True,
                     check=False
                 )
-                
+
                 if result.returncode == 0:
                     logger.info("Test reports generated successfully")
                 else:
                     logger.warning(f"Test report generation failed: {result.stderr}")
                     if app.config.test_reports_fail_on_error:
                         raise RuntimeError(f"Test report generation failed: {result.stderr}")
-                
+
             except Exception as e:
                 logger.error(f"Error running test report generator: {e}")
                 if app.config.test_reports_fail_on_error:
@@ -139,15 +139,15 @@ def add_test_report_css(app: Sphinx, exception: Exception = None) -> None:
     font-weight: bold;
 }
 """
-        
+
         # Write CSS to static directory
         static_dir = Path(app.outdir) / "_static"
         static_dir.mkdir(exist_ok=True)
-        
+
         css_file = static_dir / "test_reports.css"
         with open(css_file, 'w') as f:
             f.write(css_content)
-        
+
         # Add CSS to HTML
         if hasattr(app.builder, 'add_css_file'):
             app.builder.add_css_file('test_reports.css')
@@ -155,16 +155,16 @@ def add_test_report_css(app: Sphinx, exception: Exception = None) -> None:
 
 def setup(app: Sphinx) -> Dict[str, Any]:
     """Set up the test reports extension."""
-    
+
     # Add configuration options
     app.add_config_value('test_reports_enabled', True, 'html')
     app.add_config_value('test_reports_fail_on_error', False, 'html')
     app.add_config_value('test_reports_run_on_build', True, 'html')
-    
+
     # Connect to Sphinx events
     app.connect('builder-inited', generate_test_reports)
     app.connect('build-finished', add_test_report_css)
-    
+
     return {
         'version': '1.0.0',
         'parallel_read_safe': True,
