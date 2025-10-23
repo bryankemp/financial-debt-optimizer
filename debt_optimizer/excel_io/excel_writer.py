@@ -1078,7 +1078,7 @@ class ExcelReportWriter:
                 row,
                 2,
                 (
-                    f"{(total_principal/total_payments*100):.1f}%"
+                    f"{(total_principal / total_payments * 100):.1f}%"
                     if total_payments > 0
                     else "0%"
                 ),
@@ -1090,7 +1090,7 @@ class ExcelReportWriter:
                 row,
                 2,
                 (
-                    f"{(total_interest/total_payments*100):.1f}%"
+                    f"{(total_interest / total_payments * 100):.1f}%"
                     if total_payments > 0
                     else "0%"
                 ),
@@ -1142,7 +1142,7 @@ class ExcelReportWriter:
                 row,
                 1,
                 (
-                    f"{(total_reduction/initial_total*100):.1f}%"
+                    f"{(total_reduction / initial_total * 100):.1f}%"
                     if initial_total > 0
                     else "100%"
                 ),
