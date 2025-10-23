@@ -115,7 +115,9 @@ def validate_income_data(income_data) -> List[str]:
                 except Exception:
                     errors.append(f"Income {i + 1}: Invalid income data")
             else:
-                errors.append(f"Item {i + 1}: Expected Income object, got {type(income)}")  # noqa: E501
+                errors.append(
+                    f"Item {i + 1}: Expected Income object, got {type(income)}"
+                )  # noqa: E501
         return errors
 
     # Handle dictionary format (original functionality)
