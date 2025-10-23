@@ -16,6 +16,7 @@ class TestSetupLogging:
         """Clean up logger handlers after each test."""
         logger = logging.getLogger("financial_debt_optimizer")
         for handler in logger.handlers[:]:
+            handler.close()
             logger.removeHandler(handler)
 
     def test_setup_logging_default(self):
@@ -84,6 +85,11 @@ class TestSetupLogging:
             assert len(file_handlers) == 1
             assert Path(log_file).exists()
 
+            # Close file handler explicitly for Windows compatibility
+            for handler in file_handlers:
+                handler.close()
+                logger.removeHandler(handler)
+
     def test_setup_logging_file_invalid_path(self):
         """Test setup_logging handles invalid file path gracefully."""
         # This should not raise an exception, just log a warning
@@ -135,6 +141,11 @@ class TestSetupLogging:
             # File handler should always be DEBUG level
             assert file_handlers[0].level == logging.DEBUG
 
+            # Close file handler explicitly for Windows compatibility
+            for handler in file_handlers:
+                handler.close()
+                logger.removeHandler(handler)
+
     def test_setup_logging_write_log_message(self):
         """Test that setup_logging actually writes log messages."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -142,6 +153,14 @@ class TestSetupLogging:
             logger = setup_logging(level="INFO", log_file=log_file)
 
             logger.info("Test log message")
+
+            # Close file handler before reading to ensure all data is flushed
+            file_handlers = [
+                h for h in logger.handlers if isinstance(h, logging.FileHandler)
+            ]
+            for handler in file_handlers:
+                handler.close()
+                logger.removeHandler(handler)
 
             log_path = Path(log_file)
             assert log_path.exists()
