@@ -10,7 +10,7 @@ import sqlite3
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from thefuzz import fuzz, process
@@ -192,7 +192,7 @@ class BalanceUpdater:
         Returns:
             List of update records
         """
-        updates = []
+        updates: List[Dict] = []
 
         if ws.max_row < 2:
             return updates
@@ -339,7 +339,7 @@ class BalanceUpdater:
 
     def update_workbook(
         self, xlsx_path: Path, interactive: bool = True
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """Update Excel workbook with balances from Quicken database.
 
         Args:

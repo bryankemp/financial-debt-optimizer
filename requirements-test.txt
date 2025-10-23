@@ -19,6 +19,9 @@ flake8>=6.0.0
 pycodestyle>=2.11.0  # PEP 8 style checker (replaces deprecated pep8)
 mypy>=1.0.0
 
+# Type stubs for mypy
+types-PyYAML>=6.0.0  # Type stubs for yaml library
+
 # Security scanning
 safety>=2.3.0  # Vulnerability scanning for dependencies
 bandit>=1.7.0  # Security linting for Python code
