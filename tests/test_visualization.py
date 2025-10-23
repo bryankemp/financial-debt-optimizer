@@ -25,11 +25,11 @@ from datetime import date  # noqa: E402
 
 import matplotlib.pyplot as plt  # noqa: E402
 
-from core.debt_optimizer import (
+from core.debt_optimizer import (  # noqa: E402
     DebtOptimizer,
     OptimizationGoal,
     OptimizationResult,
-)  # noqa: E402
+)
 from core.financial_calc import Debt, Income, RecurringExpense  # noqa: E402
 from visualization.charts import DebtVisualization  # noqa: E402
 

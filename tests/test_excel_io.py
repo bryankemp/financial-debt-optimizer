@@ -20,11 +20,11 @@ import pandas as pd  # noqa: E402
 import pytest  # noqa: E402
 from openpyxl import load_workbook  # noqa: E402
 
-from core.debt_optimizer import (
+from core.debt_optimizer import (  # noqa: E402
     DebtOptimizer,
     OptimizationGoal,
     OptimizationResult,
-)  # noqa: E402
+)
 from core.financial_calc import (  # noqa: E402
     Debt,
     FutureExpense,
@@ -33,10 +33,10 @@ from core.financial_calc import (  # noqa: E402
     RecurringExpense,
 )
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator  # noqa: E402
-from excel_io.excel_writer import (
+from excel_io.excel_writer import (  # noqa: E402
     ExcelReportWriter,
     generate_simple_summary_report,
-)  # noqa: E402
+)
 
 
 class TestExcelTemplateGenerator:

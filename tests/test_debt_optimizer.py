@@ -18,11 +18,11 @@ from typing import List  # noqa: E402
 import pandas as pd  # noqa: E402
 import pytest  # noqa: E402
 
-from core.debt_optimizer import (
+from core.debt_optimizer import (  # noqa: E402
     DebtOptimizer,
     OptimizationGoal,
     OptimizationResult,
-)  # noqa: E402
+)
 from core.financial_calc import (  # noqa: E402
     Debt,
     FutureExpense,
