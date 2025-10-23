@@ -371,3 +371,40 @@ TODO.md
 NOTES.md
 DEV_NOTES.md
 *.backup.*
+
+# ==============================================================================
+# PERSONAL DATA - NEVER COMMIT
+# ==============================================================================
+
+# User configuration files with personal paths/settings
+debt-optimizer.yaml
+.debt-optimizer
+~/.debt-optimizer
+debt-optimizer.yml
+.debt-optimizer.yml
+
+# Quicken database files
+*.quicken/
+*.quickendata/
+*.qdf
+*.qdfm
+*.qdb
+data
+
+# Personal Excel files (be explicit)
+default.xlsx
+debt_analysis.xlsx
+my_*.xlsx
+personal_*.xlsx
+finance*.xlsx
+quicken*.xlsx
+
+# Backup files created by the tool
+*.backup.*
+*.xlsx.backup.*
+
+# Any user-specific config
+user_config.*
+local_config.*
+.local.*
+

@@ -12,8 +12,9 @@ input_file: default.xlsx
 output_file: debt_analysis.xlsx
 
 # Path to Quicken SQLite database for balance updates
+# Example: ~/Documents/YourName.quicken/data
 # Adjust this to match your Quicken data location
-quicken_db_path: ~/Documents/Bryan.quicken/data
+quicken_db_path: ~/Documents/Quicken.quicken/data
 
 # Analysis Settings
 # -----------------
@@ -32,7 +33,8 @@ emergency_fund: 1000.0
 fuzzy_match_threshold: 80
 
 # Name of checking account to use for current bank balance in Settings sheet
-bank_account_name: PECU Checking
+# Example: "My Checking Account" or "Primary Checking"
+bank_account_name: Primary Checking
 
 # Automatically create timestamped backup before updating balances
 auto_backup: true
