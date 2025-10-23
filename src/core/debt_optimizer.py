@@ -1367,10 +1367,17 @@ class DebtOptimizer:
         total_interest = 0.0
 
         for debt in self.debts:
+            # Skip debts with zero balance
+            if debt.balance <= 0:
+                continue
+                
             schedule = generate_amortization_schedule(
                 debt, debt.minimum_payment, date.today()
             )
-            total_interest += schedule["interest"].sum()
+            
+            # Check if schedule has data before summing interest
+            if not schedule.empty and "interest" in schedule.columns:
+                total_interest += schedule["interest"].sum()
 
         return total_interest
 

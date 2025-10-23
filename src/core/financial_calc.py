@@ -432,6 +432,10 @@ class Income:
 
     def get_monthly_amount(self) -> float:
         """Convert income to monthly equivalent amount."""
+        # One-time income doesn't have a monthly equivalent
+        if self.frequency == PaymentFrequency.ONCE.value:
+            return 0.0
+        
         frequency_multipliers = {
             PaymentFrequency.WEEKLY.value: 52 / 12,
             PaymentFrequency.BI_WEEKLY.value: 26 / 12,
@@ -446,6 +450,12 @@ class Income:
         """Generate list of payment dates within the given date range."""
         dates = []
         today = Date.today()
+
+        # Handle one-time income
+        if self.frequency == PaymentFrequency.ONCE.value:
+            if start_date <= self.start_date <= end_date and self.start_date >= today:
+                return [self.start_date]
+            return []
 
         # Start from the income start_date, but find the first payment on or after today
         current_date = self.start_date
