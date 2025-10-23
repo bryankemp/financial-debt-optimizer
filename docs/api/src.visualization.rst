@@ -1,7 +1,7 @@
-src.visualization package
+debt_optimizer.visualization package
 =========================
 
-.. automodule:: src.visualization
+.. automodule:: debt_optimizer.visualization
    :members:
    :show-inheritance:
    :undoc-members:
@@ -12,4 +12,4 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   src.visualization.charts
+   debt_optimizer.visualization.charts

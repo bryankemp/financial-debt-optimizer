@@ -9,7 +9,7 @@ from core.validation import validate_financial_scenario
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
 from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
 
-# Add src to path to allow imports
+# Add debt-optimizer to path to allow imports
 src_path = Path(__file__).parent.parent
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))

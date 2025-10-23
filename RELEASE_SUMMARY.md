@@ -9,8 +9,8 @@ The Financial Debt Optimizer has been successfully refactored, documented, and p
 ### ✅ Project Structure & Organization
 - **Clean codebase**: Removed build artifacts and temporary files
 - **Proper packaging**: Modern setuptools configuration with metadata
-- **Modular architecture**: Well-organized src/ directory structure
-- **Version management**: Centralized version control with `src/__version__.py`
+- **Modular architecture**: Well-organized debt-optimizer/ directory structure
+- **Version management**: Centralized version control with `debt-optimizer/__version__.py`
 
 ### ✅ Licensing & Legal
 - **BSD 3-Clause License**: Professional open-source licensing
@@ -109,7 +109,7 @@ financial-debt-optimizer/
 ├── examples/                  # Sample data and documentation
 │   ├── README.md             # Usage examples
 │   └── sample_data.xlsx      # Sample financial data
-├── src/                       # Source code
+├── debt-optimizer/                       # Source code
 │   ├── __version__.py        # Version management
 │   ├── core/                 # Core optimization engine
 │   │   ├── debt_optimizer.py # Main optimization logic

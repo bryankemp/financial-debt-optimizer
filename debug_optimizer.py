@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import sys
-sys.path.insert(0, 'src')
+sys.path.insert(0, 'debt-optimizer')
 
-from src.excel_io.excel_reader import ExcelReader
-from src.core.debt_optimizer import DebtOptimizer, OptimizationGoal
+from excel_io.excel_reader import ExcelReader
+from core.debt_optimizer import DebtOptimizer, OptimizationGoal
 
 try:
     reader = ExcelReader('default.xlsx')

@@ -45,7 +45,7 @@ For developers working on the project:
    pytest
    
    # Run with coverage report
-   pytest --cov=src --cov-report=html
+   pytest --cov=debt-optimizer --cov-report=html
    
    # Run specific test categories
    pytest -m unit          # Unit tests only

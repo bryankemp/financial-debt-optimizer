@@ -21,7 +21,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-src_path = Path(__file__).parent.parent / "src"
+src_path = Path(__file__).parent.parent / "debt-optimizer"
 sys.path.insert(0, str(src_path))
 
 from core.debt_optimizer import DebtOptimizer, OptimizationGoal, OptimizationResult

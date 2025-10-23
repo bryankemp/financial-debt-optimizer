@@ -7,7 +7,7 @@ import os
 import sys
 
 # Add the source directory to the Python path
-sys.path.insert(0, os.path.abspath('../src'))
+sys.path.insert(0, os.path.abspath('../debt-optimizer'))
 sys.path.insert(0, os.path.abspath('..'))
 
 # Add custom extensions directory to Python path

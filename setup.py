@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 import os
 import sys
 
-# Add src to path to import version
-src_path = os.path.join(os.path.dirname(__file__), 'src')
+# Add debt-optimizer to path to import version
+src_path = os.path.join(os.path.dirname(__file__), 'debt-optimizer')
 sys.path.insert(0, src_path)
 
 try:
@@ -55,8 +55,8 @@ setup(
         "Source": __url__,
         "Documentation": f"{__url__}#readme",
     },
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
+    packages=find_packages(where="debt-optimizer"),
+    package_dir={"": "debt-optimizer"},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: End Users/Desktop",

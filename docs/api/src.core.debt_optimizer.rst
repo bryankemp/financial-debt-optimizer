@@ -1,7 +1,7 @@
-src.core.debt\_optimizer module
+debt_optimizer.core.debt\_optimizer module
 ===============================
 
-.. automodule:: src.core.debt_optimizer
+.. automodule:: debt_optimizer.core.debt_optimizer
    :members:
    :show-inheritance:
    :undoc-members:

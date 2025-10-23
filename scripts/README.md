@@ -244,7 +244,7 @@ export TWINE_PASSWORD=pypi-your-test-pypi-token-here
 ## Configuration Files
 
 The scripts read configuration from:
-- `src/__version__.py` - Version information
+- `debt-optimizer/__version__.py` - Version information
 - `setup.py` - Package configuration
 - `docs/conf.py` - Documentation configuration
 - `CHANGELOG.md` - Release notes (created automatically)

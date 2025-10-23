@@ -1,7 +1,7 @@
-src.core package
+debt_optimizer.core package
 ================
 
-.. automodule:: src.core
+.. automodule:: debt_optimizer.core
    :members:
    :show-inheritance:
    :undoc-members:
@@ -12,7 +12,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   src.core.debt_optimizer
-   src.core.financial_calc
-   src.core.logging_config
-   src.core.validation
+   debt_optimizer.core.debt_optimizer
+   debt_optimizer.core.financial_calc
+   debt_optimizer.core.logging_config
+   debt_optimizer.core.validation

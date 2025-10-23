@@ -1,7 +1,7 @@
-src.excel\_io.excel\_reader module
+debt_optimizer.excel\_io.excel\_reader module
 ==================================
 
-.. automodule:: src.excel_io.excel_reader
+.. automodule:: debt_optimizer.excel_io.excel_reader
    :members:
    :show-inheritance:
    :undoc-members:

@@ -18,59 +18,59 @@ Coverage by File
      - Statements
      - Missing
      - Coverage %
-   * - 🟢 ``src/__init__.py``
+   * - 🟢 ``debt-optimizer/__init__.py``
      - 0
      - 0
      - 100.0%
-   * - 🔴 ``src/__version__.py``
+   * - 🔴 ``debt-optimizer/__version__.py``
      - 7
      - 7
      - 0.0%
-   * - 🟢 ``src/cli/__init__.py``
+   * - 🟢 ``debt-optimizer/cli/__init__.py``
      - 0
      - 0
      - 100.0%
-   * - 🟡 ``src/cli/commands.py``
+   * - 🟡 ``debt-optimizer/cli/commands.py``
      - 232
      - 43
      - 81.47%
-   * - 🟢 ``src/core/__init__.py``
+   * - 🟢 ``debt-optimizer/core/__init__.py``
      - 0
      - 0
      - 100.0%
-   * - 🟢 ``src/core/debt_optimizer.py``
+   * - 🟢 ``debt-optimizer/core/debt_optimizer.py``
      - 536
      - 44
      - 91.79%
-   * - 🔴 ``src/core/financial_calc.py``
+   * - 🔴 ``debt-optimizer/core/financial_calc.py``
      - 559
      - 244
      - 56.35%
-   * - 🔴 ``src/core/logging_config.py``
+   * - 🔴 ``debt-optimizer/core/logging_config.py``
      - 28
      - 20
      - 28.57%
-   * - 🟡 ``src/core/validation.py``
+   * - 🟡 ``debt-optimizer/core/validation.py``
      - 169
      - 40
      - 76.33%
-   * - 🟢 ``src/excel_io/__init__.py``
+   * - 🟢 ``debt-optimizer/excel_io/__init__.py``
      - 0
      - 0
      - 100.0%
-   * - 🟡 ``src/excel_io/excel_reader.py``
+   * - 🟡 ``debt-optimizer/excel_io/excel_reader.py``
      - 465
      - 93
      - 80.0%
-   * - 🟡 ``src/excel_io/excel_writer.py``
+   * - 🟡 ``debt-optimizer/excel_io/excel_writer.py``
      - 734
      - 165
      - 77.52%
-   * - 🟢 ``src/visualization/__init__.py``
+   * - 🟢 ``debt-optimizer/visualization/__init__.py``
      - 0
      - 0
      - 100.0%
-   * - 🔴 ``src/visualization/charts.py``
+   * - 🔴 ``debt-optimizer/visualization/charts.py``
      - 232
      - 70
      - 69.83%
@@ -94,10 +94,10 @@ Coverage Goals and Recommendations
 
 **Priority Actions:**
 
-* Improve coverage for ``src/__version__.py`` (currently 0.0%)
-* Improve coverage for ``src/core/logging_config.py`` (currently 28.57%)
-* Improve coverage for ``src/core/financial_calc.py`` (currently 56.35%)
-* Improve coverage for ``src/visualization/charts.py`` (currently 69.83%)
+* Improve coverage for ``debt-optimizer/__version__.py`` (currently 0.0%)
+* Improve coverage for ``debt-optimizer/core/logging_config.py`` (currently 28.57%)
+* Improve coverage for ``debt-optimizer/core/financial_calc.py`` (currently 56.35%)
+* Improve coverage for ``debt-optimizer/visualization/charts.py`` (currently 69.83%)
 
 **Best Practices:**
 

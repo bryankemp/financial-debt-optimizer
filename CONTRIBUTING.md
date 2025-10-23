@@ -234,12 +234,12 @@ def test_should_optimize_debts_using_avalanche_strategy(sample_debts):
 
 3. **Format code**:
    ```bash
-   black src/ tests/
+   black debt-optimizer/ tests/
    ```
 
 4. **Run linting**:
    ```bash
-   pylint src/
+   pylint debt-optimizer/
    ```
 
 ### Pull Request Guidelines

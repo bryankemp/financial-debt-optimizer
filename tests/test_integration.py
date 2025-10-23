@@ -17,7 +17,7 @@ import pandas as pd
 import pytest
 from click.testing import CliRunner
 
-src_path = Path(__file__).parent.parent / "src"
+src_path = Path(__file__).parent.parent / "debt-optimizer"
 sys.path.insert(0, str(src_path))
 
 from cli.commands import analyze, generate_template, main, validate
