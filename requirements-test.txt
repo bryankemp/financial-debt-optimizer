@@ -20,8 +20,8 @@ pycodestyle>=2.11.0  # PEP 8 style checker (replaces deprecated pep8)
 mypy>=1.0.0
 
 # Security scanning
-safety>=3.0.0  # Vulnerability scanning for dependencies
-bandit>=1.8.0  # Security linting for Python code
+safety>=2.3.0  # Vulnerability scanning for dependencies
+bandit>=1.7.0  # Security linting for Python code
 
 # Additional testing utilities
 factory-boy>=3.2.0  # For test data generation
