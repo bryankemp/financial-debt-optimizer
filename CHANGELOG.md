@@ -1,5 +1,54 @@
 # Changelog
 
+All notable changes to the Financial Debt Optimizer project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.1] - 2025-10-24
+
+### 🐛 Bug Fixes
+- Fixed all mypy type errors (List, Tuple imports, type annotations)
+- Fixed Windows file handle issues in logging tests
+- Fixed all black formatting issues
+- Fixed ReadTheDocs documentation configuration
+- Fixed setup.py package discovery issue
+
+### ✅ Test Coverage Improvements
+- **Increased test coverage from 70% to 74.46%**
+- Added 88 new tests (167 → 255 total tests)
+- New comprehensive test modules:
+  - `test_config.py` - Full Config class coverage (37% → 95%)
+  - `test_logging_config.py` - Complete logging setup testing (54% → 100%)
+  - `test_version.py` - Version metadata testing (0% → 100%)
+- Enhanced `test_financial_calc.py` with 83 additional tests:
+  - Debt class validation and calculation methods
+  - Income validation tests
+  - RecurrencePattern tests for all 9 frequencies
+  - FutureExpense and PaymentFrequency enum tests
+
+### 📊 Coverage by Module
+- **config.py**: 37% → 95%
+- **logging_config.py**: 54% → 100%
+- **__version__.py**: 0% → 100%
+- **financial_calc.py**: 56% → 72%
+- **Overall**: 70% → 74.46%
+
+### 🔧 Technical Improvements
+- Cross-platform compatibility fixes for Windows file handling
+- Improved type safety with comprehensive mypy coverage
+- Better test infrastructure with proper teardown handling
+- Updated GitHub Actions to v4 artifact upload (v3 deprecated)
+- Added HTML coverage report uploads to GitHub Actions artifacts
+- Enhanced documentation with corrected ReadTheDocs configuration
+
+### 📖 Documentation
+- Fixed ReadTheDocs URLs (changed mixed dash/underscore to all dashes)
+- Updated documentation version to 2.0.1
+- Fixed API documentation generation path
+- Added Codecov and GitHub Actions badges to README
+- Disabled test report generation in ReadTheDocs (reports available via GitHub)
+
 ## [2.0.0] - 2025-10-23
 
 ### 🎉 Major Release - Complete Integration & Optimization
@@ -69,11 +118,6 @@
 - Added `pyyaml>=6.0` for configuration file support
 - Added optional `rapidfuzz>=3.0.0` for balance updates (install with `pip install debt_optimizer[balance]`)
 - All dependencies updated to modern versions with proper version constraints
-All notable changes to the Financial Debt Optimizer project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
 ## [1.1.1] - 2025-01-14
 
 ### Fixed
