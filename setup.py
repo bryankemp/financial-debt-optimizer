@@ -56,8 +56,7 @@ setup(
         "Source": __url__,
         "Documentation": f"{__url__}#readme",
     },
-    packages=find_packages(where="debt_optimizer"),
-    package_dir={"": "debt_optimizer"},
+    packages=find_packages(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: End Users/Desktop",
