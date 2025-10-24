@@ -4,6 +4,8 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Documentation Status](https://readthedocs.org/projects/financial-debt-optimizer/badge/?version=latest)](https://financial-debt-optimizer.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/bryankemp/financial-debt-optimizer/branch/main/graph/badge.svg)](https://codecov.io/gh/bryankemp/financial-debt-optimizer)
+[![Tests](https://github.com/bryankemp/financial-debt-optimizer/actions/workflows/test.yml/badge.svg)](https://github.com/bryankemp/financial-debt-optimizer/actions/workflows/test.yml)
 
 A comprehensive Python tool for analyzing and optimizing debt repayment strategies to help you become debt-free faster while minimizing interest costs.
 
