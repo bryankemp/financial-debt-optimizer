@@ -1,9 +1,9 @@
-# Financial Debt Optimizer 2.0.0
+# Financial Debt Optimizer 2.0.1
 
 [![PyPI Version](https://img.shields.io/pypi/v/financial-debt_optimizer.svg)](https://pypi.org/project/financial-debt_optimizer/)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Documentation Status](https://readthedocs.org/projects/financial-debt_optimizer/badge/?version=latest)](https://financial-debt_optimizer.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/financial-debt-optimizer/badge/?version=latest)](https://financial-debt-optimizer.readthedocs.io/en/latest/?badge=latest)
 
 A comprehensive Python tool for analyzing and optimizing debt repayment strategies to help you become debt-free faster while minimizing interest costs.
 
@@ -276,18 +276,18 @@ This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICE
 
 ## Documentation
 
-📖 **[Complete Documentation](https://financial-debt_optimizer.readthedocs.io/)**
+📖 **[Complete Documentation](https://financial-debt-optimizer.readthedocs.io/)**
 
-- **[Installation Guide](https://financial-debt_optimizer.readthedocs.io/en/latest/installation.html)** - Detailed installation instructions
-- **[Quick Start](https://financial-debt_optimizer.readthedocs.io/en/latest/quickstart.html)** - Get started in minutes
-- **[User Guide](https://financial-debt_optimizer.readthedocs.io/en/latest/user_guide.html)** - Comprehensive usage documentation
-- **[Examples](https://financial-debt_optimizer.readthedocs.io/en/latest/examples.html)** - Real-world use cases and scenarios
-- **[API Reference](https://financial-debt_optimizer.readthedocs.io/en/latest/modules.html)** - Complete API documentation
-- **[FAQ](https://financial-debt_optimizer.readthedocs.io/en/latest/faq.html)** - Frequently asked questions
+- **[Installation Guide](https://financial-debt-optimizer.readthedocs.io/en/latest/installation.html)** - Detailed installation instructions
+- **[Quick Start](https://financial-debt-optimizer.readthedocs.io/en/latest/quickstart.html)** - Get started in minutes
+- **[User Guide](https://financial-debt-optimizer.readthedocs.io/en/latest/user_guide.html)** - Comprehensive usage documentation
+- **[Examples](https://financial-debt-optimizer.readthedocs.io/en/latest/examples.html)** - Real-world use cases and scenarios
+- **[API Reference](https://financial-debt-optimizer.readthedocs.io/en/latest/modules.html)** - Complete API documentation
+- **[FAQ](https://financial-debt-optimizer.readthedocs.io/en/latest/faq.html)** - Frequently asked questions
 
 ## Support
 
-- **📖 Documentation**: [https://financial-debt_optimizer.readthedocs.io/](https://financial-debt_optimizer.readthedocs.io/)
+- **📖 Documentation**: [https://financial-debt-optimizer.readthedocs.io/](https://financial-debt-optimizer.readthedocs.io/)
 - **🐛 Issues**: [GitHub Issues](https://github.com/bryankemp/financial-debt_optimizer/issues)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/bryankemp/financial-debt_optimizer/discussions)
 - **📧 Email**: bryan@kempville.com
@@ -303,5 +303,5 @@ This tool is for educational and informational purposes only. It does not consti
 ---
 
 **Author**: Bryan Kemp (bryan@kempville.com)  
-**Version**: 2.0.0  
+**Version**: 2.0.1  
 **License**: BSD 3-Clause
