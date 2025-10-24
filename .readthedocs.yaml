@@ -11,7 +11,7 @@ build:
   jobs:
     pre_build:
       # Generate API documentation
-      - sphinx-apidoc -f -o docs/api src --separate --module-first --implicit-namespaces
+      - sphinx-apidoc -f -o docs/api debt_optimizer --separate --module-first --implicit-namespaces
       # Generate test reports  
       - python scripts/generate_test_reports.py || echo "Test report generation failed, continuing..."
     

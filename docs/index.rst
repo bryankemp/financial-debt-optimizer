@@ -56,7 +56,7 @@ Key Features
    Handles large datasets efficiently with optimized algorithms and memory management.
 
 🧪 **Thoroughly Tested**
-   167 comprehensive tests ensuring reliability and correctness of all financial calculations.
+   255 comprehensive tests with 74% code coverage ensuring reliability and correctness of all financial calculations.
 
 Quick Start
 -----------
@@ -77,9 +77,9 @@ Quick Start
 
    .. code-block:: python
 
-      from core.debt_optimizer import DebtOptimizer, OptimizationGoal
-      from excel_io.excel_reader import ExcelReader
-      from excel_io.excel_writer import ExcelReportWriter
+      from debt_optimizer.core.debt_optimizer import DebtOptimizer, OptimizationGoal
+      from debt_optimizer.excel_io.excel_reader import ExcelReader
+      from debt_optimizer.excel_io.excel_writer import ExcelReportWriter
       
       # Load debt data from Excel
       reader = ExcelReader("my_debts.xlsx")
