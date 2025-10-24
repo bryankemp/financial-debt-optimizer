@@ -144,9 +144,9 @@ myst_enable_extensions = [
 ]
 
 # -- Options for test reports extension -------------------------------------
-test_reports_enabled = True
+test_reports_enabled = False  # Disabled for ReadTheDocs - reports not needed
 test_reports_fail_on_error = False  # Don't fail docs build if tests fail
-test_reports_run_on_build = True
+test_reports_run_on_build = False
 
 # -- HTML context variables -------------------------------------------------
 html_context = {

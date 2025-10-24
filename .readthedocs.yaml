@@ -12,8 +12,6 @@ build:
     pre_build:
       # Generate API documentation
       - sphinx-apidoc -f -o docs/api debt_optimizer --separate --module-first --implicit-namespaces
-      # Generate test reports  
-      - python scripts/generate_test_reports.py || echo "Test report generation failed, continuing..."
     
 # Build documentation in the docs/ directory with Sphinx
 sphinx:

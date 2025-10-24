@@ -118,8 +118,7 @@ Quick Start
    :maxdepth: 1
    :caption: Quality Assurance:
    
-   test_report
-   test_coverage
+   testing
 
 .. toctree::
    :maxdepth: 1
