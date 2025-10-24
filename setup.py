@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 import os
 import sys
 
-# Add debt-optimizer to path to import version
-src_path = os.path.join(os.path.dirname(__file__), 'debt-optimizer')
+# Add debt_optimizer to path to import version
+src_path = os.path.join(os.path.dirname(__file__), 'debt_optimizer')
 sys.path.insert(0, src_path)
 
 try:
     from __version__ import (
-        __version__, __title__, __description__, __author__, 
+        __version__, __title__, __description__, __author__,
         __author_email__, __license__, __url__
     )
 except ImportError:
@@ -18,7 +18,7 @@ except ImportError:
     __author__ = "Bryan Kemp"
     __author_email__ = "bryan@kempville.com"
     __license__ = "BSD-3-Clause"
-    __url__ = "https://github.com/bryankemp/financial-debt-optimizer"
+    __url__ = "https://github.com/bryankemp/financial-debt_optimizer"
 
 # Read README if it exists
 try:
@@ -43,7 +43,7 @@ except FileNotFoundError:
     ]
 
 setup(
-    name="financial-debt-optimizer",
+    name="financial-debt_optimizer",
     version=__version__,
     author=__author__,
     author_email=__author_email__,
@@ -56,8 +56,8 @@ setup(
         "Source": __url__,
         "Documentation": f"{__url__}#readme",
     },
-    packages=find_packages(where="debt-optimizer"),
-    package_dir={"": "debt-optimizer"},
+    packages=find_packages(where="debt_optimizer"),
+    package_dir={"": "debt_optimizer"},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: End Users/Desktop",
@@ -84,7 +84,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "debt-optimizer=cli.commands:main",
+            "debt_optimizer=cli.commands:main",
         ],
     },
     include_package_data=True,

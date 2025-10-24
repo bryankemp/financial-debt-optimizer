@@ -6,7 +6,7 @@ Supports loading configuration from YAML files with CLI overrides.
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import yaml
@@ -20,9 +20,9 @@ class Config:
     """Configuration manager for debt optimizer."""
 
     DEFAULT_CONFIG_PATHS = [
-        Path.home() / ".debt-optimizer",
-        Path("debt-optimizer.yaml"),
-        Path("debt-optimizer.yml"),
+        Path.home() / ".debt_optimizer",
+        Path("debt_optimizer.yaml"),
+        Path("debt_optimizer.yml"),
     ]
 
     DEFAULT_VALUES = {
@@ -159,7 +159,7 @@ class Config:
         """
         return self._config.copy()
 
-    def validate(self) -> tuple[bool, list[str]]:
+    def validate(self) -> Tuple[bool, List[str]]:
         """Validate configuration values.
 
         Returns:

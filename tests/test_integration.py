@@ -5,34 +5,37 @@ Tests end-to-end workflows from Excel template generation through analysis
 and report creation, ensuring all components work together correctly.
 """
 
-import shutil
-
-# Import the classes to test
+# Add debt_optimizer to Python path for testing
 import sys
-import tempfile
-from datetime import date, datetime, timedelta
 from pathlib import Path
 
-import pandas as pd
-import pytest
-from click.testing import CliRunner
-
-src_path = Path(__file__).parent.parent / "debt-optimizer"
+src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
-from cli.commands import analyze, generate_template, main, validate
-from core.debt_optimizer import DebtOptimizer, OptimizationGoal
-from core.financial_calc import (
+import shutil  # noqa: E402
+import tempfile  # noqa: E402
+from datetime import date, datetime, timedelta  # noqa: E402
+
+import pandas as pd  # noqa: E402
+import pytest  # noqa: E402
+from click.testing import CliRunner  # noqa: E402
+
+from cli.commands import analyze, generate_template, main, validate  # noqa: E402
+from core.debt_optimizer import DebtOptimizer, OptimizationGoal  # noqa: E402
+from core.financial_calc import (  # noqa: E402
     Debt,
     FutureExpense,
     FutureIncome,
     Income,
     RecurringExpense,
 )
-from core.validation import validate_financial_scenario
-from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
-from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
-from visualization.charts import DebtVisualization
+from core.validation import validate_financial_scenario  # noqa: E402
+from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator  # noqa: E402
+from excel_io.excel_writer import (  # noqa: E402
+    ExcelReportWriter,
+    generate_simple_summary_report,
+)
+from visualization.charts import DebtVisualization  # noqa: E402
 
 
 class TestCompleteWorkflow:
@@ -547,7 +550,7 @@ class TestPerformanceIntegration:
         for i in range(20):  # 20 debts
             many_debts.append(
                 Debt(
-                    f"Debt {i+1}",
+                    f"Debt {i + 1}",
                     5000.0 + (i * 1000),
                     100.0 + (i * 10),
                     5.0 + (i * 0.5),
@@ -563,7 +566,7 @@ class TestPerformanceIntegration:
         for i in range(10):  # 10 recurring expenses
             many_expenses.append(
                 RecurringExpense(
-                    f"Expense {i+1}",
+                    f"Expense {i + 1}",
                     200.0 + (i * 50),
                     "monthly",
                     (i % 28) + 1,
@@ -601,7 +604,7 @@ class TestPerformanceIntegration:
         assert len(result.payment_schedule) > 0
         # Payment schedule includes debt payments, income events, expenses, etc.
         # So it can be much larger than just debt payments
-        # Reasonable upper bound is monthly events * months * (debts + income + expenses)
+        # Reasonable upper bound is monthly events * months * (debts + income + expenses)  # noqa: E501
         max_expected_entries = (
             result.total_months_to_freedom
             * 30

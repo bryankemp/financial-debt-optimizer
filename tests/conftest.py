@@ -2,29 +2,29 @@
 Shared pytest fixtures and configuration for Financial Debt Optimizer tests.
 """
 
-import os
-import shutil
-
-# Add debt-optimizer to Python path for testing
+# Add debt_optimizer to Python path for testing
 import sys
-import tempfile
-from datetime import date
 from pathlib import Path
-from typing import List
 
-import pytest
-
-src_path = Path(__file__).parent.parent / "debt-optimizer"
+src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
-from core.financial_calc import (
+import os  # noqa: E402
+import shutil  # noqa: E402
+import tempfile  # noqa: E402
+from datetime import date  # noqa: E402
+from typing import List  # noqa: E402
+
+import pytest  # noqa: E402
+
+from core.financial_calc import (  # noqa: E402
     Debt,
     FutureExpense,
     FutureIncome,
     Income,
     RecurringExpense,
 )
-from excel_io.excel_reader import ExcelTemplateGenerator
+from excel_io.excel_reader import ExcelTemplateGenerator  # noqa: E402
 
 
 @pytest.fixture

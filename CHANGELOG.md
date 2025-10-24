@@ -16,7 +16,7 @@
   - `config init` command to create default configuration files
   - `config show` command to view current settings
   - `config get/set` commands for individual setting management
-  - Multiple config file locations: `~/.debt-optimizer/config.yaml`, `./debt-optimizer.yaml`
+  - Multiple config file locations: `~/.debt_optimizer/config.yaml`, `./debt_optimizer.yaml`
   - Environment variable overrides with `DEBT_OPTIMIZER_*` prefix
   - CLI arguments always take precedence over config file settings
 
@@ -67,7 +67,7 @@
 
 ### Dependencies
 - Added `pyyaml>=6.0` for configuration file support
-- Added optional `rapidfuzz>=3.0.0` for balance updates (install with `pip install debt-optimizer[balance]`)
+- Added optional `rapidfuzz>=3.0.0` for balance updates (install with `pip install debt_optimizer[balance]`)
 - All dependencies updated to modern versions with proper version constraints
 All notable changes to the Financial Debt Optimizer project will be documented in this file.
 

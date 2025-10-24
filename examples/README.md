@@ -20,17 +20,17 @@ This file can be used as:
 
 ### Run Analysis on Sample Data
 ```bash
-debt-optimizer analyze --input examples/sample_data.xlsx --output my-results.xlsx
+debt_optimizer analyze --input examples/sample_data.xlsx --output my-results.xlsx
 ```
 
 ### Generate New Template
 ```bash
-debt-optimizer generate-template my-template.xlsx
+debt_optimizer generate-template my-template.xlsx
 ```
 
 ### Compare Strategies
 ```bash
-debt-optimizer analyze \
+debt_optimizer analyze \
     --input examples/sample_data.xlsx \
     --output comprehensive-analysis.xlsx \
     --compare-strategies \

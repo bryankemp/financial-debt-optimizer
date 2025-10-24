@@ -41,7 +41,7 @@ class ExcelReportWriter:
                 self._create_strategy_comparison_sheet(strategy_comparison)
 
             self._create_charts_sheet(optimization_result)
-            # self._create_additional_charts_sheet(optimization_result)  # Disabled temporarily due to API issues
+            # self._create_additional_charts_sheet(optimization_result)  # Disabled temporarily due to API issues  # noqa: E501
 
         finally:
             self.workbook.close()
@@ -252,7 +252,7 @@ class ExcelReportWriter:
                 idx + 3, 2, row.get("description", ""), self.formats["header"]
             )
 
-            # Amount with color coding (green for income, red for payments, neutral for opening balance)
+            # Amount with color coding (green for income, red for payments, neutral for opening balance)  # noqa: E501
             if row["type"] == "opening_balance":
                 amount_format = self.formats["header"]
             elif row.get("amount", 0) > 0:
@@ -272,7 +272,7 @@ class ExcelReportWriter:
             )
             worksheet.write(idx + 3, 7, row.get("debt_name", "N/A"))
 
-            # Format debt balance with special formatting for zero balances (debt paid off)
+            # Format debt balance with special formatting for zero balances (debt paid off)  # noqa: E501
             debt_balance = row.get("debt_balance", 0)
             # Convert empty strings to 0 for comparison
             if isinstance(debt_balance, str):
@@ -294,7 +294,7 @@ class ExcelReportWriter:
                 debt_format = self.formats["success"]  # Green for paid off debts
             else:
                 debt_format = self.formats["currency"]
-            # Write the original value (could be empty string) but use numeric for formatting decision
+            # Write the original value (could be empty string) but use numeric for formatting decision  # noqa: E501
             worksheet.write(
                 idx + 3,
                 8,
@@ -321,7 +321,7 @@ class ExcelReportWriter:
         worksheet.set_column("J:J", 15)  # Bank Balance
 
     def _create_monthly_summary_sheet(self, monthly_summary: pd.DataFrame):
-        """Create enhanced monthly summary sheet with detailed income, expenses, and extra funds tracking."""
+        """Create enhanced monthly summary sheet with detailed income, expenses, and extra funds tracking."""  # noqa: E501
         worksheet = self.workbook.add_worksheet("Monthly Summary")
 
         # Title
@@ -481,7 +481,7 @@ class ExcelReportWriter:
         worksheet.set_column("N:N", 40)  # Details column
 
     def _create_enhanced_monthly_summary_sheet(self, result: OptimizationResult):
-        """Create enhanced monthly summary with extra funds tracking and allocation details."""
+        """Create enhanced monthly summary with extra funds tracking and allocation details."""  # noqa: E501
         worksheet = self.workbook.add_worksheet("Monthly Extra Funds")
 
         # Title
@@ -611,7 +611,7 @@ class ExcelReportWriter:
         worksheet.set_column("K:K", 15)  # Allocation Count
 
     def _create_decision_log_sheet(self, result: OptimizationResult):
-        """Create decision log sheet tracking all optimization decisions and rationale."""
+        """Create decision log sheet tracking all optimization decisions and rationale."""  # noqa: E501
         worksheet = self.workbook.add_worksheet("Decision Log")
 
         # Title
@@ -627,7 +627,7 @@ class ExcelReportWriter:
             worksheet.write(
                 4,
                 0,
-                "This feature requires running the enhanced optimization engine with decision tracking",
+                "This feature requires running the enhanced optimization engine with decision tracking",  # noqa: E501
             )
             return
 
@@ -885,7 +885,7 @@ class ExcelReportWriter:
         worksheet.set_column("B:F", 15)
 
     def _create_charts_sheet(self, result: OptimizationResult):
-        """Create enhanced charts and visualizations sheet with multiple useful charts."""
+        """Create enhanced charts and visualizations sheet with multiple useful charts."""  # noqa: E501
         worksheet = self.workbook.add_worksheet("Charts")
 
         # Title
@@ -916,7 +916,7 @@ class ExcelReportWriter:
         )
 
     def _create_debt_progression_chart(self, worksheet, debt_progression: pd.DataFrame):
-        """Create debt balance progression chart with individual debts and total summary."""
+        """Create debt balance progression chart with individual debts and total summary."""  # noqa: E501
         if debt_progression.empty:
             return
 
@@ -1078,7 +1078,7 @@ class ExcelReportWriter:
                 row,
                 2,
                 (
-                    f"{(total_principal/total_payments*100):.1f}%"
+                    f"{(total_principal / total_payments * 100):.1f}%"
                     if total_payments > 0
                     else "0%"
                 ),
@@ -1090,7 +1090,7 @@ class ExcelReportWriter:
                 row,
                 2,
                 (
-                    f"{(total_interest/total_payments*100):.1f}%"
+                    f"{(total_interest / total_payments * 100):.1f}%"
                     if total_payments > 0
                     else "0%"
                 ),
@@ -1142,7 +1142,7 @@ class ExcelReportWriter:
                 row,
                 1,
                 (
-                    f"{(total_reduction/initial_total*100):.1f}%"
+                    f"{(total_reduction / initial_total * 100):.1f}%"
                     if initial_total > 0
                     else "100%"
                 ),
@@ -1319,7 +1319,7 @@ class ExcelReportWriter:
         worksheet.set_column("B:D", 18)
 
     def _create_cash_flow_chart(self, worksheet, monthly_summary: pd.DataFrame):
-        """Create improved monthly cash flow chart with income, expenses, and payments."""
+        """Create improved monthly cash flow chart with income, expenses, and payments."""  # noqa: E501
         if monthly_summary.empty:
             return
 
@@ -1519,7 +1519,7 @@ class ExcelReportWriter:
 
         # Create temporary data in the worksheet for chart reference
         if payoff_data:
-            # Write data to worksheet for chart reference (starting at row 80 to avoid conflicts)
+            # Write data to worksheet for chart reference (starting at row 80 to avoid conflicts)  # noqa: E501
             start_row = 80
             worksheet.write(start_row, 0, "Debt Name", self.formats["header"])
             worksheet.write(start_row, 1, "Payoff Month", self.formats["header"])

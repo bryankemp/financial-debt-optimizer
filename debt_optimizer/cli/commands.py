@@ -11,7 +11,7 @@ from core.validation import validate_financial_scenario
 from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
 from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
 
-# Add debt-optimizer to path to allow imports
+# Add debt_optimizer to path to allow imports
 src_path = Path(__file__).parent.parent
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
@@ -110,7 +110,7 @@ def generate_template(output: str, sample_data: bool):
         click.echo("\nNext steps:")
         click.echo(f"  1. Open {output} in Excel or similar spreadsheet program")
         click.echo("  2. Fill in your actual financial data")
-        click.echo(f"  3. Run analysis: debt-optimizer analyze -i {output}")
+        click.echo(f"  3. Run analysis: debt_optimizer analyze -i {output}")
 
     except Exception as e:
         click.echo(f"✗ Error generating template: {e}", err=True)
@@ -132,7 +132,7 @@ def config_init(path, force):
     if path:
         config_path = Path(path).expanduser()
     else:
-        config_path = Path.home() / ".debt-optimizer"
+        config_path = Path.home() / ".debt_optimizer"
 
     if config_path.exists() and not force:
         click.echo(f"✗ Config file already exists: {config_path}")
@@ -144,8 +144,8 @@ def config_init(path, force):
         click.echo(f"✓ Configuration file created: {config_path}")
         click.echo("\nEdit this file to customize default settings.")
         click.echo("\nAlternatively, place a config file at:")
-        click.echo("  • ~/.debt-optimizer (in home directory)")
-        click.echo("  • ./debt-optimizer.yaml (in current directory)")
+        click.echo("  • ~/.debt_optimizer (in home directory)")
+        click.echo("  • ./debt_optimizer.yaml (in current directory)")
     except Exception as e:
         click.echo(f"✗ Error creating config file: {e}", err=True)
         sys.exit(1)
@@ -198,7 +198,7 @@ def config_set(ctx, key, value):
 
     if not cfg.config_path:
         click.echo(
-            "✗ No config file loaded. Create one with 'debt-optimizer config init'",
+            "✗ No config file loaded. Create one with 'debt_optimizer config init'",
             err=True,
         )
         sys.exit(1)
@@ -272,13 +272,13 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
                 auto_str = "(auto)" if update["auto"] else "(approved)"
                 if update["excel_name_old"] != update["excel_name_new"]:
                     click.echo(
-                        f"  • Row {update['row']}: {update['excel_name_old']} → {update['excel_name_new']} "
-                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"
+                        f"  • Row {update['row']}: {update['excel_name_old']} → {update['excel_name_new']} "  # noqa: E501
+                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"  # noqa: E501
                     )
                 else:
                     click.echo(
                         f"  • Row {update['row']}: {update['excel_name_new']} "
-                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"
+                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"  # noqa: E501
                     )
         else:
             click.echo("  No debt updates (all balances current or no matches found)")
@@ -286,7 +286,7 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
         if result["settings_update"]:
             su = result["settings_update"]
             click.echo(
-                f"\n🏦 Bank balance updated: {su['name']} = ${su['balance']:.2f} ({su['matched']})"
+                f"\n🏦 Bank balance updated: {su['name']} = ${su['balance']:.2f} ({su['matched']})"  # noqa: E501
             )
 
         click.echo(f"\n✓ Workbook saved: {result['workbook_path']}")
@@ -300,7 +300,7 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
     except ImportError as e:
         click.echo(f"✗ {e}", err=True)
         click.echo("\nInstall balance update dependencies with:", err=True)
-        click.echo("  pip install debt-optimizer[balance]", err=True)
+        click.echo("  pip install debt_optimizer[balance]", err=True)
         sys.exit(1)
     except Exception as e:
         click.echo(f"✗ Unexpected error: {e}", err=True)
@@ -408,7 +408,7 @@ def analyze(
 
         click.echo("📊 Starting debt optimization analysis...")
         logger.info(
-            f"Starting analysis with input={input_path}, goal={goal}, extra_payment={extra_payment_val}"
+            f"Starting analysis with input={input_path}, goal={goal}, extra_payment={extra_payment_val}"  # noqa: E501
         )
 
         # Read input data
@@ -485,7 +485,7 @@ def analyze(
             f"  Current Bank Balance: ${debt_summary['current_bank_balance']:,.2f}"
         )
         click.echo(
-            f"  Available Extra Payment: ${debt_summary['available_extra_payment']:,.2f}"
+            f"  Available Extra Payment: ${debt_summary['available_extra_payment']:,.2f}"  # noqa: E501
         )
 
         if debt_summary["available_cash_flow"] < 0:
@@ -555,9 +555,9 @@ def analyze(
         click.echo(f"✓ Report generated: {output_path.absolute()}")
 
         # Summary message
-        months_years = f"{result.total_months_to_freedom // 12} years and {result.total_months_to_freedom % 12} months"
+        months_years = f"{result.total_months_to_freedom // 12} years and {result.total_months_to_freedom % 12} months"  # noqa: E501
         click.echo(
-            f"\n🎉 Summary: Using the {result.strategy.replace('_', ' ').title()} strategy, "
+            f"\n🎉 Summary: Using the {result.strategy.replace('_', ' ').title()} strategy, "  # noqa: E501
             f"you can be debt-free in {months_years} while saving "
             f"${result.savings_vs_minimum['interest_saved']:,.2f} in interest!"
         )
@@ -651,7 +651,7 @@ def validate(input_file: str):
         click.echo(f"  Income Sources: {len(income_sources)}")
         click.echo(f"  Total Debt: ${sum(debt.balance for debt in debts):,.2f}")
         click.echo(
-            f"  Monthly Income: ${sum(income.get_monthly_amount() for income in income_sources):,.2f}"
+            f"  Monthly Income: ${sum(income.get_monthly_amount() for income in income_sources):,.2f}"  # noqa: E501
         )
 
         sys.exit(1 if errors else 0)
@@ -703,9 +703,9 @@ def info():
     click.echo("   • Provides most financial flexibility\n")
 
     click.echo("💡 Tips:")
-    click.echo("   • Use 'debt-optimizer validate' to check your data first")
+    click.echo("   • Use 'debt_optimizer validate' to check your data first")
     click.echo("   • Try '--compare-strategies' to see all options")
-    click.echo("   • Start with a template: 'debt-optimizer generate-template'")
+    click.echo("   • Start with a template: 'debt_optimizer generate-template'")
     click.echo("   • Set your actual current bank balance in the Settings sheet")
     click.echo("   • Emergency fund of 3-6 months expenses is recommended")
     click.echo(

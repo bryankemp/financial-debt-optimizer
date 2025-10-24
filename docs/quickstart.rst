@@ -15,11 +15,11 @@ Prerequisites
 
 1. **Install the package**::
 
-    pip install financial-debt-optimizer
+    pip install financial-debt_optimizer
 
 2. **Run with sample data**::
 
-    debt-optimizer --help
+    debt_optimizer --help
 
 That's it! You now have the Financial Debt Optimizer ready to use.
 
@@ -56,7 +56,7 @@ Step 2: Run Basic Analysis
 
 Compare different debt repayment strategies::
 
-    debt-optimizer --input my_debts.xlsx --strategy avalanche --output results.xlsx
+    debt_optimizer --input my_debts.xlsx --strategy avalanche --output results.xlsx
 
 This command will:
 
@@ -134,11 +134,11 @@ Common command-line options:
 
 **Basic Usage**::
 
-    debt-optimizer --input FILE --strategy STRATEGY --output FILE
+    debt_optimizer --input FILE --strategy STRATEGY --output FILE
 
 **Advanced Options**::
 
-    debt-optimizer \\
+    debt_optimizer \\
         --input my_debts.xlsx \\
         --strategy avalanche \\
         --output results.xlsx \\
@@ -171,17 +171,17 @@ Common Use Cases
 **"I want to pay off debt as quickly as possible"**
     Use the avalanche strategy with extra payments::
 
-        debt-optimizer --input debts.xlsx --strategy avalanche --extra-payment 500
+        debt_optimizer --input debts.xlsx --strategy avalanche --extra-payment 500
 
 **"I need motivation to stick with debt repayment"**
     Use the snowball strategy to build momentum::
 
-        debt-optimizer --input debts.xlsx --strategy snowball --charts
+        debt_optimizer --input debts.xlsx --strategy snowball --charts
 
 **"I want to see all options before deciding"**
     Generate a comprehensive comparison::
 
-        debt-optimizer --input debts.xlsx --strategy hybrid --output comparison.xlsx
+        debt_optimizer --input debts.xlsx --strategy hybrid --output comparison.xlsx
 
 **"I want to integrate with my own Python code"**
     Use the Python API for custom analysis and integration with other financial tools.
@@ -189,10 +189,10 @@ Common Use Cases
 Troubleshooting Quick Issues
 ----------------------------
 
-**"Command not found: debt-optimizer"**
+**"Command not found: debt_optimizer"**
     Make sure you've installed the package and it's in your PATH. Try::
 
-        python -m pip show financial-debt-optimizer
+        python -m pip show financial-debt_optimizer
 
 **"File not found error"**
     Ensure your Excel file exists and has the correct column names (Name, Balance, Rate, Min_Pay).

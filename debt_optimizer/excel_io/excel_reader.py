@@ -88,7 +88,7 @@ class ExcelReader:
             try:
                 # Handle interest rate format detection
                 raw_interest_rate = float(row["interest_rate"])
-                # If the rate is between 0 and 1, it's already in decimal format (from Excel %)
+                # If the rate is between 0 and 1, it's already in decimal format (from Excel %)  # noqa: E501
                 # Convert back to percentage for internal storage
                 if 0 <= raw_interest_rate <= 1:
                     interest_rate = raw_interest_rate * 100
@@ -261,7 +261,7 @@ class ExcelReader:
     def read_future_income(
         self, sheet_name: str = "Future Income"
     ) -> List[FutureIncome]:
-        """Read future income events from Excel file - supports both one-time and recurring income."""
+        """Read future income events from Excel file - supports both one-time and recurring income."""  # noqa: E501
         try:
             df = pd.read_excel(self.file_path, sheet_name=sheet_name)
         except ValueError:
@@ -284,7 +284,7 @@ class ExcelReader:
         else:
             raise ValueError(
                 "Future Income sheet must have either (description, amount, date) for "
-                "one-time events or (description, amount, start_date) for recurring events"
+                "one-time events or (description, amount, start_date) for recurring events"  # noqa: E501
             )
 
         missing_columns = [col for col in required_columns if col not in df.columns]
@@ -394,7 +394,7 @@ class ExcelReader:
     def read_future_expenses(
         self, sheet_name: str = "Future Expenses"
     ) -> List[FutureExpense]:
-        """Read future expense events from Excel file - supports both one-time and recurring expenses."""
+        """Read future expense events from Excel file - supports both one-time and recurring expenses."""  # noqa: E501
         try:
             df = pd.read_excel(self.file_path, sheet_name=sheet_name)
         except ValueError:
@@ -416,8 +416,8 @@ class ExcelReader:
             required_columns = ["description", "amount", "date"]
         else:
             raise ValueError(
-                "Future Expenses sheet must have either (description, amount, date) for "
-                "one-time events or (description, amount, start_date) for recurring events"
+                "Future Expenses sheet must have either (description, amount, date) for "  # noqa: E501
+                "one-time events or (description, amount, start_date) for recurring events"  # noqa: E501
             )
 
         missing_columns = [col for col in required_columns if col not in df.columns]
@@ -736,7 +736,7 @@ class ExcelTemplateGenerator:
             "• Description: What the expense is for",
             "• Amount: Cost per frequency period",
             "• Frequency: bi-weekly, monthly, quarterly, annually",
-            "• Due Date: Day of month/period when payment is due (1-31) - ignored for bi-weekly",
+            "• Due Date: Day of month/period when payment is due (1-31) - ignored for bi-weekly",  # noqa: E501
             "• Start Date: When this expense starts (YYYY-MM-DD format)",
         ]
 
@@ -748,7 +748,7 @@ class ExcelTemplateGenerator:
 
     @staticmethod
     def _create_future_income_sheet(workbook: Workbook, include_sample: bool):
-        """Create the future income sheet with headers and formatting - supports recurring income."""
+        """Create the future income sheet with headers and formatting - supports recurring income."""  # noqa: E501
         sheet = workbook.create_sheet("Future Income", 3)
 
         # Headers for new format with recurrence support
@@ -826,13 +826,13 @@ class ExcelTemplateGenerator:
             "• Description: What the income is for",
             "• Amount: Income amount per occurrence",
             "• Start Date: When income begins (YYYY-MM-DD format)",
-            "• Frequency: Use 'once' for one-time, or: daily, weekly, bi-weekly, monthly, quarterly, semi-annually, annually",
-            "• End Date: When recurring income stops (leave blank for indefinite, ignored for one-time)",
+            "• Frequency: Use 'once' for one-time, or: daily, weekly, bi-weekly, monthly, quarterly, semi-annually, annually",  # noqa: E501
+            "• End Date: When recurring income stops (leave blank for indefinite, ignored for one-time)",  # noqa: E501
             "",
             "Examples:",
-            "• One-time: Description='Tax Refund', Amount=1200, Start Date=2025-04-01, Frequency=once",
-            "• Recurring: Description='Raise', Amount=500, Start Date=2026-01-19, Frequency=monthly",
-            "• Limited recurring: Description='Contract', Amount=2000, Start Date=2025-12-01, "
+            "• One-time: Description='Tax Refund', Amount=1200, Start Date=2025-04-01, Frequency=once",  # noqa: E501
+            "• Recurring: Description='Raise', Amount=500, Start Date=2026-01-19, Frequency=monthly",  # noqa: E501
+            "• Limited recurring: Description='Contract', Amount=2000, Start Date=2025-12-01, "  # noqa: E501
             "Frequency=monthly, End Date=2026-06-30",
         ]
 
@@ -848,7 +848,7 @@ class ExcelTemplateGenerator:
 
     @staticmethod
     def _create_future_expenses_sheet(workbook: Workbook, include_sample: bool):
-        """Create the future expenses sheet with headers and formatting - supports recurring expenses."""
+        """Create the future expenses sheet with headers and formatting - supports recurring expenses."""  # noqa: E501
         sheet = workbook.create_sheet("Future Expenses", 4)
 
         # Headers for new format with recurrence support
@@ -914,13 +914,13 @@ class ExcelTemplateGenerator:
             "• Description: What the expense is for",
             "• Amount: Expense amount per occurrence",
             "• Start Date: When expense begins (YYYY-MM-DD format)",
-            "• Frequency: Use 'once' for one-time, or: daily, weekly, bi-weekly, monthly, quarterly, semi-annually, annually",
-            "• End Date: When recurring expense stops (leave blank for indefinite, ignored for one-time)",
+            "• Frequency: Use 'once' for one-time, or: daily, weekly, bi-weekly, monthly, quarterly, semi-annually, annually",  # noqa: E501
+            "• End Date: When recurring expense stops (leave blank for indefinite, ignored for one-time)",  # noqa: E501
             "",
             "Examples:",
-            "• One-time: Description='Car Repair', Amount=800, Start Date=2025-12-15, Frequency=once",
-            "• Recurring: Description='New Subscription', Amount=9.99, Start Date=2025-11-01, Frequency=monthly",
-            "• Limited recurring: Description='Temp Insurance', Amount=25, Start Date=2026-01-01, "
+            "• One-time: Description='Car Repair', Amount=800, Start Date=2025-12-15, Frequency=once",  # noqa: E501
+            "• Recurring: Description='New Subscription', Amount=9.99, Start Date=2025-11-01, Frequency=monthly",  # noqa: E501
+            "• Limited recurring: Description='Temp Insurance', Amount=25, Start Date=2026-01-01, "  # noqa: E501
             "Frequency=monthly, End Date=2026-12-31",
         ]
 
@@ -986,7 +986,7 @@ class ExcelTemplateGenerator:
             "Settings Help:",
             "• Emergency Fund: Amount to keep as emergency buffer",
             "• Current Bank Balance: Starting cash balance in your account",
-            "• Optimization Goal: minimize_interest, minimize_time, or maximize_cashflow",
+            "• Optimization Goal: minimize_interest, minimize_time, or maximize_cashflow",  # noqa: E501
         ]
 
         for idx, instruction in enumerate(instructions):

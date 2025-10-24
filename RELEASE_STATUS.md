@@ -122,10 +122,10 @@ Before tagging v2.0.0:
 pytest tests/ -v
 
 # Format code
-black debt-optimizer/ tests/ scripts/
+black debt_optimizer/ tests/ scripts/
 
 # Lint code  
-pylint debt-optimizer/
+pylint debt_optimizer/
 
 # Check dependencies
 pip list --outdated
@@ -134,7 +134,7 @@ pip list --outdated
 python setup.py sdist bdist_wheel
 
 # Test installation
-pip install dist/financial-debt-optimizer-2.0.0-py3-none-any.whl
+pip install dist/financial-debt_optimizer-2.0.0-py3-none-any.whl
 ```
 
 ## 📊 Current Status: 95% Complete

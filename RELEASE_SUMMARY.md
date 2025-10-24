@@ -9,13 +9,13 @@ The Financial Debt Optimizer has been successfully refactored, documented, and p
 ### ✅ Project Structure & Organization
 - **Clean codebase**: Removed build artifacts and temporary files
 - **Proper packaging**: Modern setuptools configuration with metadata
-- **Modular architecture**: Well-organized debt-optimizer/ directory structure
-- **Version management**: Centralized version control with `debt-optimizer/__version__.py`
+- **Modular architecture**: Well-organized debt_optimizer/ directory structure
+- **Version management**: Centralized version control with `debt_optimizer/__version__.py`
 
 ### ✅ Licensing & Legal
 - **BSD 3-Clause License**: Professional open-source licensing
 - **Author attribution**: Bryan Kemp (bryan@kempville.com)
-- **GitHub ready**: Prepared for github.com/bryankemp/financial-debt-optimizer
+- **GitHub ready**: Prepared for github.com/bryankemp/financial-debt_optimizer
 
 ### ✅ Documentation Suite
 - **Comprehensive README.md**: Installation, usage, examples, and API docs
@@ -97,7 +97,7 @@ The Financial Debt Optimizer has been successfully refactored, documented, and p
 ## 📁 Directory Structure
 
 ```
-financial-debt-optimizer/
+financial-debt_optimizer/
 ├── LICENSE                    # BSD 3-Clause license
 ├── README.md                  # Comprehensive documentation
 ├── CHANGELOG.md               # Version history
@@ -109,7 +109,7 @@ financial-debt-optimizer/
 ├── examples/                  # Sample data and documentation
 │   ├── README.md             # Usage examples
 │   └── sample_data.xlsx      # Sample financial data
-├── debt-optimizer/                       # Source code
+├── debt_optimizer/                       # Source code
 │   ├── __version__.py        # Version management
 │   ├── core/                 # Core optimization engine
 │   │   ├── debt_optimizer.py # Main optimization logic
@@ -142,7 +142,7 @@ The Financial Debt Optimizer 1.0 is now:
 
 ## 🚀 Next Steps
 
-1. **Push to GitHub**: Upload to github.com/bryankemp/financial-debt-optimizer
+1. **Push to GitHub**: Upload to github.com/bryankemp/financial-debt_optimizer
 2. **Tag release**: Create v1.0.0 tag for the release
 3. **PyPI publication**: Consider publishing to Python Package Index
 4. **Community engagement**: Share with financial and Python communities

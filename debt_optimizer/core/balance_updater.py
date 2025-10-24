@@ -10,7 +10,7 @@ import sqlite3
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from thefuzz import fuzz, process
@@ -57,7 +57,7 @@ class BalanceUpdater:
         if not HAS_FUZZ:
             raise ImportError(
                 "Fuzzy matching library required for balance updates. "
-                "Install one of: pip install 'thefuzz[speedup]' or pip install rapidfuzz"
+                "Install one of: pip install 'thefuzz[speedup]' or pip install rapidfuzz"  # noqa: E501
             )
 
         self.db_path = Path(db_path)
@@ -99,7 +99,7 @@ class BalanceUpdater:
         transactions up to the current date. Uses Apple Cocoa timestamp format.
 
         Returns:
-            Tuple of (accounts_by_name, credit_card_names, checking_names, savings_names)
+            Tuple of (accounts_by_name, credit_card_names, checking_names, savings_names)  # noqa: E501
         """
         conn = self.connect_db()
         conn.row_factory = sqlite3.Row
@@ -118,10 +118,10 @@ class BalanceUpdater:
                     a.ZACTIVE AS active,
                     COALESCE(
                         a.ZONLINEBANKINGLEDGERBALANCEAMOUNT,
-                        SUM(CASE 
+                        SUM(CASE
                             WHEN t.ZPOSTEDDATE IS NOT NULL AND t.ZPOSTEDDATE <= ?
-                            THEN t.ZAMOUNT 
-                            ELSE 0 
+                            THEN t.ZAMOUNT
+                            ELSE 0
                         END),
                         0
                     ) AS balance
@@ -129,7 +129,7 @@ class BalanceUpdater:
                 LEFT JOIN ZTRANSACTION t ON t.ZACCOUNT = a.Z_PK
                 WHERE a.ZACTIVE = 1
                   AND a.ZTYPENAME IN ('CREDITCARD','CHECKING','SAVINGS')
-                GROUP BY a.Z_PK, a.ZNAME, a.ZTYPENAME, a.ZACTIVE, a.ZONLINEBANKINGLEDGERBALANCEAMOUNT
+                GROUP BY a.Z_PK, a.ZNAME, a.ZTYPENAME, a.ZACTIVE, a.ZONLINEBANKINGLEDGERBALANCEAMOUNT  # noqa: E501
             """
             cur.execute(sql, (cocoa_now,))
             rows = cur.fetchall()
@@ -192,7 +192,7 @@ class BalanceUpdater:
         Returns:
             List of update records
         """
-        updates = []
+        updates: List[Dict] = []
 
         if ws.max_row < 2:
             return updates
@@ -339,7 +339,7 @@ class BalanceUpdater:
 
     def update_workbook(
         self, xlsx_path: Path, interactive: bool = True
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """Update Excel workbook with balances from Quicken database.
 
         Args:

@@ -31,7 +31,7 @@ PyPI (Recommended)
 
 The easiest way to install Financial Debt Optimizer is using pip::
 
-    pip install financial-debt-optimizer
+    pip install financial-debt_optimizer
 
 This will install the latest stable version from PyPI along with all required dependencies.
 
@@ -40,7 +40,7 @@ Install Specific Version
 
 To install a specific version::
 
-    pip install financial-debt-optimizer==1.1.0
+    pip install financial-debt_optimizer==1.1.0
 
 Development Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,8 +49,8 @@ If you want to contribute to the project or use the latest development version:
 
 1. **Clone the repository**::
 
-    git clone https://github.com/bryankemp/financial-debt-optimizer.git
-    cd financial-debt-optimizer
+    git clone https://github.com/bryankemp/financial-debt_optimizer.git
+    cd financial-debt_optimizer
 
 2. **Create a virtual environment** (recommended)::
 
@@ -71,23 +71,23 @@ Virtual Environment (Recommended)
 It's highly recommended to install the package in a virtual environment to avoid conflicts with other Python packages::
 
     # Create virtual environment
-    python -m venv debt-optimizer-env
+    python -m venv debt_optimizer-env
     
     # Activate virtual environment
     # On macOS/Linux:
-    source debt-optimizer-env/bin/activate
+    source debt_optimizer-env/bin/activate
     # On Windows:
-    debt-optimizer-env\Scripts\activate
+    debt_optimizer-env\Scripts\activate
     
     # Install the package
-    pip install financial-debt-optimizer
+    pip install financial-debt_optimizer
 
 Verification
 ------------
 
 To verify the installation was successful, run::
 
-    debt-optimizer --version
+    debt_optimizer --version
 
 You should see output similar to::
 
@@ -106,13 +106,13 @@ Common Issues
 **ImportError: No module named 'pandas'**
     This usually means the dependencies weren't installed correctly. Try reinstalling::
 
-        pip uninstall financial-debt-optimizer
-        pip install financial-debt-optimizer
+        pip uninstall financial-debt_optimizer
+        pip install financial-debt_optimizer
 
 **Permission denied errors**
     On some systems, you may need to use ``--user`` flag::
 
-        pip install --user financial-debt-optimizer
+        pip install --user financial-debt_optimizer
 
 **Python version compatibility**
     Ensure you're using Python 3.8 or higher::
@@ -127,7 +127,7 @@ Getting Help
 
 If you encounter issues:
 
-1. Check the `GitHub Issues <https://github.com/bryankemp/financial-debt-optimizer/issues>`_
+1. Check the `GitHub Issues <https://github.com/bryankemp/financial-debt_optimizer/issues>`_
 2. Create a new issue with:
    - Your operating system
    - Python version
@@ -139,17 +139,17 @@ Upgrading
 
 To upgrade to the latest version::
 
-    pip install --upgrade financial-debt-optimizer
+    pip install --upgrade financial-debt_optimizer
 
 To upgrade to a specific version::
 
-    pip install --upgrade financial-debt-optimizer==1.1.0
+    pip install --upgrade financial-debt_optimizer==1.1.0
 
 Uninstalling
 ------------
 
 To remove the package::
 
-    pip uninstall financial-debt-optimizer
+    pip uninstall financial-debt_optimizer
 
 This will remove the package but keep any Excel files or data you've created.

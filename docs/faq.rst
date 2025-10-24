@@ -45,7 +45,7 @@ This usually means:
 Try::
 
     python --version
-    pip show financial-debt-optimizer
+    pip show financial-debt_optimizer
 
 If Python isn't recognized, install it from `python.org <https://python.org>`_.
 
@@ -290,15 +290,15 @@ Error Messages
 
 Dependencies weren't installed. Try::
 
-    pip uninstall financial-debt-optimizer
-    pip install financial-debt-optimizer
+    pip uninstall financial-debt_optimizer
+    pip install financial-debt_optimizer
 
 "Permission denied" errors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Make sure the output directory exists and is writable
 - Close the output Excel file if it's open in another program
-- Try running with ``--user`` flag: ``pip install --user financial-debt-optimizer``
+- Try running with ``--user`` flag: ``pip install --user financial-debt_optimizer``
 
 "Invalid strategy" error
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -325,7 +325,7 @@ Where can I get additional support?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Documentation**: Check the complete :doc:`user_guide` and :doc:`examples`
-2. **GitHub Issues**: Report bugs or ask questions at https://github.com/bryankemp/financial-debt-optimizer/issues
+2. **GitHub Issues**: Report bugs or ask questions at https://github.com/bryankemp/financial-debt_optimizer/issues
 3. **Examples**: Review the :doc:`examples` section for similar use cases
 4. **Community**: Join discussions on the GitHub repository
 

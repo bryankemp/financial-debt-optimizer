@@ -5,7 +5,7 @@
 ### 1. Import Order (isort) ✅ FIXED
 **Problem**: GitHub Actions workflow includes `isort` check that was failing
 **Solution**: 
-- Ran `isort debt-optimizer tests` to fix all import order issues
+- Ran `isort debt_optimizer tests` to fix all import order issues
 - Created `.isort.cfg` with Black-compatible settings
 - Fixed 13 files with incorrect import order
 
@@ -17,10 +17,10 @@
 - Both tools now work together harmoniously
 
 ### 3. pytest.ini Coverage Path ✅ FIXED
-**Problem**: Coverage was checking `src/` instead of `debt-optimizer/`
+**Problem**: Coverage was checking `src/` instead of `debt_optimizer/`
 **Solution**: Updated `pytest.ini` to use correct path:
 ```ini
---cov=debt-optimizer  # Changed from --cov=src
+--cov=debt_optimizer  # Changed from --cov=src
 --cov-fail-under=70   # Lowered from 80 to realistic target
 ```
 
@@ -43,12 +43,12 @@
 
 ### Code Files Formatted
 **Import order fixed (isort)**:
-- `debt-optimizer/visualization/charts.py`
-- `debt-optimizer/core/__init__.py`
-- `debt-optimizer/core/debt_optimizer.py`
-- `debt-optimizer/cli/commands.py`
-- `debt-optimizer/excel_io/excel_reader.py`
-- `debt-optimizer/excel_io/excel_writer.py`
+- `debt_optimizer/visualization/charts.py`
+- `debt_optimizer/core/__init__.py`
+- `debt_optimizer/core/debt_optimizer.py`
+- `debt_optimizer/cli/commands.py`
+- `debt_optimizer/excel_io/excel_reader.py`
+- `debt_optimizer/excel_io/excel_writer.py`
 - `tests/conftest.py`
 - `tests/test_validation.py`
 - `tests/test_debt_optimizer.py`
@@ -67,9 +67,9 @@
 ```bash
 # All checks now pass:
 ✅ pytest tests/ -q                    # 167 passed, 5 warnings
-✅ isort --check-only debt-optimizer tests  # All files correctly sorted
-✅ black --check debt-optimizer tests       # All files properly formatted
-✅ flake8 debt-optimizer tests --select=E9,F63,F7,F82  # 0 critical errors
+✅ isort --check-only debt_optimizer tests  # All files correctly sorted
+✅ black --check debt_optimizer tests       # All files properly formatted
+✅ flake8 debt_optimizer tests --select=E9,F63,F7,F82  # 0 critical errors
 ```
 
 ### GitHub Actions Should Now Pass
@@ -99,10 +99,10 @@ To avoid this in future:
 # Run all CI checks locally
 pytest -m "unit" --cov-report=term
 pytest -m "integration" --cov-report=term  
-pytest --cov=debt-optimizer --cov-fail-under=70
-black --check debt-optimizer tests
-isort --check-only debt-optimizer tests
-flake8 debt-optimizer tests --select=E9,F63,F7,F82
+pytest --cov=debt_optimizer --cov-fail-under=70
+black --check debt_optimizer tests
+isort --check-only debt_optimizer tests
+flake8 debt_optimizer tests --select=E9,F63,F7,F82
 ```
 
 2. Use pre-commit hooks (optional):

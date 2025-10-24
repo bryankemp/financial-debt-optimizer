@@ -1,9 +1,9 @@
 # Financial Debt Optimizer 2.0.0
 
-[![PyPI Version](https://img.shields.io/pypi/v/financial-debt-optimizer.svg)](https://pypi.org/project/financial-debt-optimizer/)
+[![PyPI Version](https://img.shields.io/pypi/v/financial-debt_optimizer.svg)](https://pypi.org/project/financial-debt_optimizer/)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Documentation Status](https://readthedocs.org/projects/financial-debt-optimizer/badge/?version=latest)](https://financial-debt-optimizer.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/financial-debt_optimizer/badge/?version=latest)](https://financial-debt_optimizer.readthedocs.io/en/latest/?badge=latest)
 
 A comprehensive Python tool for analyzing and optimizing debt repayment strategies to help you become debt-free faster while minimizing interest costs.
 
@@ -50,12 +50,12 @@ A comprehensive Python tool for analyzing and optimizing debt repayment strategi
 
 ### PyPI Installation (Recommended)
 ```bash
-pip install financial-debt-optimizer
+pip install financial-debt_optimizer
 ```
 
 ### With Quicken Integration Support
 ```bash
-pip install financial-debt-optimizer[balance]
+pip install financial-debt_optimizer[balance]
 ```
 
 ### Requirements
@@ -65,15 +65,15 @@ pip install financial-debt-optimizer[balance]
 
 ### Install from Source
 ```bash
-git clone https://github.com/bryankemp/financial-debt-optimizer.git
-cd financial-debt-optimizer
+git clone https://github.com/bryankemp/financial-debt_optimizer.git
+cd financial-debt_optimizer
 pip install -e .
 ```
 
 ### Development Installation
 ```bash
-git clone https://github.com/bryankemp/financial-debt-optimizer.git
-cd financial-debt-optimizer
+git clone https://github.com/bryankemp/financial-debt_optimizer.git
+cd financial-debt_optimizer
 pip install -e .[dev]
 ```
 
@@ -81,10 +81,10 @@ pip install -e .[dev]
 
 ### 1. Create Configuration (One-time Setup)
 ```bash
-debt-optimizer config init
+debt_optimizer config init
 ```
 
-This creates `~/.debt-optimizer/config.yaml` with default settings. Edit it to set:
+This creates `~/.debt_optimizer/config.yaml` with default settings. Edit it to set:
 - Input/output file paths
 - Quicken database location
 - Optimization preferences
@@ -92,7 +92,7 @@ This creates `~/.debt-optimizer/config.yaml` with default settings. Edit it to s
 
 ### 2. Generate an Excel Template
 ```bash
-debt-optimizer generate-template my-debt-data.xlsx
+debt_optimizer generate-template my-debt-data.xlsx
 ```
 
 ### 3. Fill in Your Data
@@ -105,14 +105,14 @@ Open `my-debt-data.xlsx` and fill in:
 
 ### 4. Update Balances from Quicken (Optional)
 ```bash
-debt-optimizer update-balances --db ~/Documents/MyQuicken.quicken/data --xlsx my-debt-data.xlsx
+debt_optimizer update-balances --db ~/Documents/MyQuicken.quicken/data --xlsx my-debt-data.xlsx
 ```
 
 Or update automatically during analysis with the `-u` flag.
 
 ### 5. Run Analysis
 ```bash
-debt-optimizer analyze -u --input my-debt-data.xlsx --output debt-analysis.xlsx
+debt_optimizer analyze -u --input my-debt-data.xlsx --output debt-analysis.xlsx
 ```
 
 The `-u` flag automatically updates balances from Quicken before analyzing.
@@ -129,49 +129,49 @@ Open `debt-analysis.xlsx` to see:
 ### Configuration Management
 ```bash
 # Create configuration file
-debt-optimizer config init
+debt_optimizer config init
 
 # View current settings
-debt-optimizer config show
+debt_optimizer config show
 
 # Get specific setting
-debt-optimizer config get input_file
+debt_optimizer config get input_file
 
 # Set value
-debt-optimizer config set extra_payment 500.0
+debt_optimizer config set extra_payment 500.0
 ```
 
 ### Balance Updates
 ```bash
 # Update balances using config defaults
-debt-optimizer update-balances
+debt_optimizer update-balances
 
 # Update with custom paths
-debt-optimizer update-balances \
+debt_optimizer update-balances \
     --db ~/Documents/MyQuicken.quicken/data \
     --xlsx my-debts.xlsx \
     --threshold 85
 
 # Skip backup creation
-debt-optimizer update-balances --no-backup
+debt_optimizer update-balances --no-backup
 ```
 
 ### Basic Analysis
 ```bash
 # Analyze using config defaults
-debt-optimizer analyze
+debt_optimizer analyze
 
 # Analyze with balance update
-debt-optimizer analyze -u
+debt_optimizer analyze -u
 
 # Override config defaults
-debt-optimizer analyze -i my-debts.xlsx -o results.xlsx
+debt_optimizer analyze -i my-debts.xlsx -o results.xlsx
 ```
 
 ### Advanced Analysis
 ```bash
 # Full workflow: update balances, compare all strategies
-debt-optimizer analyze -u \
+debt_optimizer analyze -u \
     --input my-debts.xlsx \
     --output comprehensive-analysis.xlsx \
     --goal minimize_interest \
@@ -179,7 +179,7 @@ debt-optimizer analyze -u \
     --compare-strategies
 
 # Generate simple one-sheet report
-debt-optimizer analyze -u --simple-report
+debt_optimizer analyze -u --simple-report
 ```
 
 ### Available Goals
@@ -259,8 +259,8 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ### Development Setup
 ```bash
-git clone https://github.com/bryankemp/financial-debt-optimizer.git
-cd financial-debt-optimizer
+git clone https://github.com/bryankemp/financial-debt_optimizer.git
+cd financial-debt_optimizer
 pip install -e .[dev]
 ```
 
@@ -276,20 +276,20 @@ This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICE
 
 ## Documentation
 
-📖 **[Complete Documentation](https://financial-debt-optimizer.readthedocs.io/)**
+📖 **[Complete Documentation](https://financial-debt_optimizer.readthedocs.io/)**
 
-- **[Installation Guide](https://financial-debt-optimizer.readthedocs.io/en/latest/installation.html)** - Detailed installation instructions
-- **[Quick Start](https://financial-debt-optimizer.readthedocs.io/en/latest/quickstart.html)** - Get started in minutes
-- **[User Guide](https://financial-debt-optimizer.readthedocs.io/en/latest/user_guide.html)** - Comprehensive usage documentation
-- **[Examples](https://financial-debt-optimizer.readthedocs.io/en/latest/examples.html)** - Real-world use cases and scenarios
-- **[API Reference](https://financial-debt-optimizer.readthedocs.io/en/latest/modules.html)** - Complete API documentation
-- **[FAQ](https://financial-debt-optimizer.readthedocs.io/en/latest/faq.html)** - Frequently asked questions
+- **[Installation Guide](https://financial-debt_optimizer.readthedocs.io/en/latest/installation.html)** - Detailed installation instructions
+- **[Quick Start](https://financial-debt_optimizer.readthedocs.io/en/latest/quickstart.html)** - Get started in minutes
+- **[User Guide](https://financial-debt_optimizer.readthedocs.io/en/latest/user_guide.html)** - Comprehensive usage documentation
+- **[Examples](https://financial-debt_optimizer.readthedocs.io/en/latest/examples.html)** - Real-world use cases and scenarios
+- **[API Reference](https://financial-debt_optimizer.readthedocs.io/en/latest/modules.html)** - Complete API documentation
+- **[FAQ](https://financial-debt_optimizer.readthedocs.io/en/latest/faq.html)** - Frequently asked questions
 
 ## Support
 
-- **📖 Documentation**: [https://financial-debt-optimizer.readthedocs.io/](https://financial-debt-optimizer.readthedocs.io/)
-- **🐛 Issues**: [GitHub Issues](https://github.com/bryankemp/financial-debt-optimizer/issues)
-- **💬 Discussions**: [GitHub Discussions](https://github.com/bryankemp/financial-debt-optimizer/discussions)
+- **📖 Documentation**: [https://financial-debt_optimizer.readthedocs.io/](https://financial-debt_optimizer.readthedocs.io/)
+- **🐛 Issues**: [GitHub Issues](https://github.com/bryankemp/financial-debt_optimizer/issues)
+- **💬 Discussions**: [GitHub Discussions](https://github.com/bryankemp/financial-debt_optimizer/discussions)
 - **📧 Email**: bryan@kempville.com
 
 ## Changelog

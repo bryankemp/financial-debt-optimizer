@@ -1,7 +1,7 @@
 # Financial Debt Optimizer Configuration File
 # This file contains default settings for the debt optimizer tool.
-# Default location: ~/.debt-optimizer
-# Alternative: ./debt-optimizer.yaml in your project directory
+# Default location: ~/.debt_optimizer
+# Alternative: ./debt_optimizer.yaml in your project directory
 
 # File Paths
 # ----------
