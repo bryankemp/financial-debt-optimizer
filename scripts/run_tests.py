@@ -124,7 +124,7 @@ class TestRunner:
 
         # Black formatting check
         success &= self.run_command(
-            ["black", "--check", "--diff", "src", "tests", "scripts"],
+            ["black", "--check", "--diff", "debt_optimizer", "tests", "scripts"],
             "Black code formatting check",
         )
 
@@ -136,7 +136,7 @@ class TestRunner:
                 "black",
                 "--check-only",
                 "--diff",
-                "src",
+                "debt_optimizer",
                 "tests",
                 "scripts",
             ],
@@ -147,7 +147,7 @@ class TestRunner:
         success &= self.run_command(
             [
                 "flake8",
-                "src",
+                "debt_optimizer",
                 "tests",
                 "--count",
                 "--select=E9,F63,F7,F82",
@@ -161,7 +161,7 @@ class TestRunner:
         self.run_command(
             [
                 "flake8",
-                "src",
+                "debt_optimizer",
                 "tests",
                 "--count",
                 "--exit-zero",
@@ -180,7 +180,7 @@ class TestRunner:
         print("\n🔍 Running type checking...")
 
         return self.run_command(
-            ["mypy", "src", "--ignore-missing-imports", "--no-strict-optional"],
+            ["mypy", "debt_optimizer", "--ignore-missing-imports", "--no-strict-optional"],
             "MyPy type checking",
         )
 
@@ -199,7 +199,7 @@ class TestRunner:
 
         # Bandit security linting
         success &= self.run_command(
-            ["bandit", "-r", "src", "-f", "json"],
+            ["bandit", "-r", "debt_optimizer", "-f", "json"],
             "Bandit security linting",
             allow_failure=True,  # May have false positives
         )
@@ -215,7 +215,7 @@ class TestRunner:
                 "pytest",
                 "-m",
                 "unit",
-                "--cov=src",
+                "--cov=debt_optimizer",
                 "--cov-report=term",
                 "--cov-report=html:htmlcov/unit",
                 "--tb=short",
@@ -232,7 +232,7 @@ class TestRunner:
                 "pytest",
                 "-m",
                 "integration",
-                "--cov=src",
+                "--cov=debt_optimizer",
                 "--cov-append",
                 "--cov-report=term",
                 "--cov-report=html:htmlcov/integration",
@@ -258,7 +258,7 @@ class TestRunner:
         return self.run_command(
             [
                 "pytest",
-                "--cov=src",
+                "--cov=debt_optimizer",
                 "--cov-report=term",
                 "--cov-report=html:htmlcov/all",
                 "--cov-report=xml",
