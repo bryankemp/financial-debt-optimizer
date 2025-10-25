@@ -5,23 +5,23 @@ Tests all CLI commands including generate-template, analyze, validate, and info
 with various parameter combinations and edge cases.
 """
 
-# Add debt_optimizer to Python path for testing
-import sys
+import shutil
+import tempfile
+from datetime import date
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-src_path = Path(__file__).parent.parent / "debt_optimizer"
-sys.path.insert(0, str(src_path))
+import pytest
+from click.testing import CliRunner
 
-import shutil  # noqa: E402
-import tempfile  # noqa: E402
-from datetime import date  # noqa: E402
-from unittest.mock import MagicMock, patch  # noqa: E402
-
-import pytest  # noqa: E402
-from click.testing import CliRunner  # noqa: E402
-
-from cli.commands import analyze, generate_template, info, main, validate  # noqa: E402
-from excel_io.excel_reader import ExcelTemplateGenerator  # noqa: E402
+from debt_optimizer.cli.commands import (
+    analyze,
+    generate_template,
+    info,
+    main,
+    validate,
+)
+from debt_optimizer.excel_io.excel_reader import ExcelTemplateGenerator
 
 
 class TestCLIGenerateTemplate:
@@ -616,7 +616,7 @@ class TestCLIErrorHandling:
         """Test generate-template with permission denied error."""
         # Try to write to a directory without write permissions
         with patch(
-            "excel_io.excel_reader.ExcelTemplateGenerator.generate_template"
+            "debt_optimizer.excel_io.excel_reader.ExcelTemplateGenerator.generate_template"
         ) as mock_gen:
             mock_gen.side_effect = PermissionError("Permission denied")
 

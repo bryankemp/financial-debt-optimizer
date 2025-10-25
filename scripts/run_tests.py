@@ -180,7 +180,12 @@ class TestRunner:
         print("\n🔍 Running type checking...")
 
         return self.run_command(
-            ["mypy", "debt_optimizer", "--ignore-missing-imports", "--no-strict-optional"],
+            [
+                "mypy",
+                "debt_optimizer",
+                "--ignore-missing-imports",
+                "--no-strict-optional",
+            ],
             "MyPy type checking",
         )
 

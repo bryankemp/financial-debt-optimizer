@@ -12,8 +12,10 @@ from debt_optimizer.core.config import Config
 class TestConfig:
     """Test suite for Config class."""
 
-    def test_init_default(self):
+    def test_init_default(self, monkeypatch):
         """Test Config initialization with defaults."""
+        # Mock DEFAULT_CONFIG_PATHS to prevent loading actual config files
+        monkeypatch.setattr(Config, "DEFAULT_CONFIG_PATHS", [])
         config = Config()
         assert config.get("input_file") == "default.xlsx"
         assert config.get("optimization_goal") == "minimize_interest"
@@ -158,8 +160,10 @@ class TestConfigFileOperations:
             assert config_path.exists()
             assert config_path.parent.exists()
 
-    def test_save_without_path_raises_error(self):
+    def test_save_without_path_raises_error(self, monkeypatch):
         """Test save_to_file without path raises ValueError."""
+        # Mock DEFAULT_CONFIG_PATHS to prevent loading actual config files
+        monkeypatch.setattr(Config, "DEFAULT_CONFIG_PATHS", [])
         config = Config()
         with pytest.raises(ValueError, match="No path specified"):
             config.save_to_file()
@@ -193,10 +197,12 @@ class TestConfigFileOperations:
             # Should still have default values
             assert config.get("input_file") == "default.xlsx"
 
-    def test_create_default_config(self):
+    def test_create_default_config(self, monkeypatch):
         """Test creating default configuration file."""
         with tempfile.TemporaryDirectory() as tmpdir:
             config_path = Path(tmpdir) / "default_config.yaml"
+            # Mock DEFAULT_CONFIG_PATHS to prevent loading actual config files
+            monkeypatch.setattr(Config, "DEFAULT_CONFIG_PATHS", [])
 
             config = Config.create_default_config(config_path)
 

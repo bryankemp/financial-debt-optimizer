@@ -5,37 +5,31 @@ Tests end-to-end workflows from Excel template generation through analysis
 and report creation, ensuring all components work together correctly.
 """
 
-# Add debt_optimizer to Python path for testing
-import sys
+import shutil
+import tempfile
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
-src_path = Path(__file__).parent.parent / "debt_optimizer"
-sys.path.insert(0, str(src_path))
+import pandas as pd
+import pytest
+from click.testing import CliRunner
 
-import shutil  # noqa: E402
-import tempfile  # noqa: E402
-from datetime import date, datetime, timedelta  # noqa: E402
-
-import pandas as pd  # noqa: E402
-import pytest  # noqa: E402
-from click.testing import CliRunner  # noqa: E402
-
-from cli.commands import analyze, generate_template, main, validate  # noqa: E402
-from core.debt_optimizer import DebtOptimizer, OptimizationGoal  # noqa: E402
-from core.financial_calc import (  # noqa: E402
+from debt_optimizer.cli.commands import analyze, generate_template, main, validate
+from debt_optimizer.core.debt_optimizer import DebtOptimizer, OptimizationGoal
+from debt_optimizer.core.financial_calc import (
     Debt,
     FutureExpense,
     FutureIncome,
     Income,
     RecurringExpense,
 )
-from core.validation import validate_financial_scenario  # noqa: E402
-from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator  # noqa: E402
-from excel_io.excel_writer import (  # noqa: E402
+from debt_optimizer.core.validation import validate_financial_scenario
+from debt_optimizer.excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
+from debt_optimizer.excel_io.excel_writer import (
     ExcelReportWriter,
     generate_simple_summary_report,
 )
-from visualization.charts import DebtVisualization  # noqa: E402
+from debt_optimizer.visualization.charts import DebtVisualization
 
 
 class TestCompleteWorkflow:

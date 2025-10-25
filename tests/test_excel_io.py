@@ -5,35 +5,29 @@ Tests ExcelReader, ExcelWriter, ExcelTemplateGenerator, and related functionalit
 for reading, writing, and generating Excel files.
 """
 
-# Add debt_optimizer to Python path for testing
-import sys
+import shutil
+import tempfile
+from datetime import date
 from pathlib import Path
 
-src_path = Path(__file__).parent.parent / "debt_optimizer"
-sys.path.insert(0, str(src_path))
+import pandas as pd
+import pytest
+from openpyxl import load_workbook
 
-import shutil  # noqa: E402
-import tempfile  # noqa: E402
-from datetime import date  # noqa: E402
-
-import pandas as pd  # noqa: E402
-import pytest  # noqa: E402
-from openpyxl import load_workbook  # noqa: E402
-
-from core.debt_optimizer import (  # noqa: E402
+from debt_optimizer.core.debt_optimizer import (
     DebtOptimizer,
     OptimizationGoal,
     OptimizationResult,
 )
-from core.financial_calc import (  # noqa: E402
+from debt_optimizer.core.financial_calc import (
     Debt,
     FutureExpense,
     FutureIncome,
     Income,
     RecurringExpense,
 )
-from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator  # noqa: E402
-from excel_io.excel_writer import (  # noqa: E402
+from debt_optimizer.excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
+from debt_optimizer.excel_io.excel_writer import (
     ExcelReportWriter,
     generate_simple_summary_report,
 )
