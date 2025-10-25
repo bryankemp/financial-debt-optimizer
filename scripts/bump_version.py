@@ -367,10 +367,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
             # Check if all changes are in expected files or Python files (formatting)
             unexpected_changes = []
             for file_path in changed_files:
-                if (
-                    file_path not in expected_files
-                    and not file_path.endswith(".py")
-                ):
+                if file_path not in expected_files and not file_path.endswith(".py"):
                     unexpected_changes.append(file_path)
 
             if unexpected_changes:
@@ -435,7 +432,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
                 if (
                     file_path in {"docs/test_coverage.rst", "docs/test_report.rst"}
                     or file_path.endswith(".py")
-                    and (file_path.startswith("debt_optimizer/") or file_path.startswith("tests/"))
+                    and (
+                        file_path.startswith("debt_optimizer/")
+                        or file_path.startswith("tests/")
+                    )
                 ):
                     pre_release_files.append(file_path)
 

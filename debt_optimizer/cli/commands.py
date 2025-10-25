@@ -1,3 +1,8 @@
+"""Module documentation for commands.py.
+
+This module is part of the Financial Debt Optimizer project.
+"""
+
 import sys
 from pathlib import Path
 
@@ -9,8 +14,10 @@ from debt_optimizer.core.debt_optimizer import DebtOptimizer, OptimizationGoal
 from debt_optimizer.core.logging_config import get_logger, setup_logging
 from debt_optimizer.core.validation import validate_financial_scenario
 from debt_optimizer.excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
-from debt_optimizer.excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
-
+from debt_optimizer.excel_io.excel_writer import (
+    ExcelReportWriter,
+    generate_simple_summary_report,
+)
 
 
 @click.group()

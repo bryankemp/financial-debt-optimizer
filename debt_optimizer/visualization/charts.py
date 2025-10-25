@@ -1,3 +1,8 @@
+"""Module documentation for charts.py.
+
+This module is part of the Financial Debt Optimizer project.
+"""
+
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 

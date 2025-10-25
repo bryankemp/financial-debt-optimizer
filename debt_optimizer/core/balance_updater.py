@@ -100,7 +100,7 @@ class BalanceUpdater:
         - Otherwise sums:
           * All reconciled transactions (ZRECONCILESTATUS = 2)
           * All unreconciled transactions (ZRECONCILESTATUS != 2) up to current date
-        
+
         This matches Quicken's register balance which includes cleared/reconciled
         transactions plus any unreconciled transactions dated today or earlier.
         Uses Apple Cocoa timestamp format (seconds since 2001-01-01).

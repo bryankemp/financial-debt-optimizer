@@ -1,3 +1,8 @@
+"""Module documentation for debt_optimizer.py.
+
+This module is part of the Financial Debt Optimizer project.
+"""
+
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from enum import Enum
@@ -713,10 +718,14 @@ class DebtOptimizer:
                                         current_balance
                                     )
                                     min_payment_needed = min(
-                                        debt.minimum_payment, current_balance + interest_charge
+                                        debt.minimum_payment,
+                                        current_balance + interest_charge,
                                     )
                                     # Check if the income amount covers the payment
-                                    if future_event_data["amount"] >= min_payment_needed:
+                                    if (
+                                        future_event_data["amount"]
+                                        >= min_payment_needed
+                                    ):
                                         same_day_income = True
                                         break
                                 elif future_event_date > event_date:
@@ -728,7 +737,8 @@ class DebtOptimizer:
                                     current_balance
                                 )
                                 min_payment_needed = min(
-                                    debt.minimum_payment, current_balance + interest_charge
+                                    debt.minimum_payment,
+                                    current_balance + interest_charge,
                                 )
                                 reserved_for_minimums += float(min_payment_needed)
                     elif event_type == "expense":

@@ -35,7 +35,7 @@ def generate_test_reports(app: Sphinx) -> None:
                     cwd=project_root,
                     capture_output=True,
                     text=True,
-                    check=False
+                    check=False,
                 )
 
                 if result.returncode == 0:
@@ -43,7 +43,9 @@ def generate_test_reports(app: Sphinx) -> None:
                 else:
                     logger.warning(f"Test report generation failed: {result.stderr}")
                     if app.config.test_reports_fail_on_error:
-                        raise RuntimeError(f"Test report generation failed: {result.stderr}")
+                        raise RuntimeError(
+                            f"Test report generation failed: {result.stderr}"
+                        )
 
             except Exception as e:
                 logger.error(f"Error running test report generator: {e}")
@@ -55,7 +57,7 @@ def generate_test_reports(app: Sphinx) -> None:
 
 def add_test_report_css(app: Sphinx, exception: Exception = None) -> None:
     """Add custom CSS for test reports."""
-    if exception is None and app.builder.name == 'html':
+    if exception is None and app.builder.name == "html":
         # Add custom CSS for test report styling
         css_content = """
 /* Test Report Styling */
@@ -145,28 +147,28 @@ def add_test_report_css(app: Sphinx, exception: Exception = None) -> None:
         static_dir.mkdir(exist_ok=True)
 
         css_file = static_dir / "test_reports.css"
-        with open(css_file, 'w') as f:
+        with open(css_file, "w") as f:
             f.write(css_content)
 
         # Add CSS to HTML
-        if hasattr(app.builder, 'add_css_file'):
-            app.builder.add_css_file('test_reports.css')
+        if hasattr(app.builder, "add_css_file"):
+            app.builder.add_css_file("test_reports.css")
 
 
 def setup(app: Sphinx) -> Dict[str, Any]:
     """Set up the test reports extension."""
 
     # Add configuration options
-    app.add_config_value('test_reports_enabled', True, 'html')
-    app.add_config_value('test_reports_fail_on_error', False, 'html')
-    app.add_config_value('test_reports_run_on_build', True, 'html')
+    app.add_config_value("test_reports_enabled", True, "html")
+    app.add_config_value("test_reports_fail_on_error", False, "html")
+    app.add_config_value("test_reports_run_on_build", True, "html")
 
     # Connect to Sphinx events
-    app.connect('builder-inited', generate_test_reports)
-    app.connect('build-finished', add_test_report_css)
+    app.connect("builder-inited", generate_test_reports)
+    app.connect("build-finished", add_test_report_css)
 
     return {
-        'version': '1.0.0',
-        'parallel_read_safe': True,
-        'parallel_write_safe': True,
+        "version": "1.0.0",
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
     }

@@ -1,3 +1,8 @@
+"""Module documentation for excel_reader.py.
+
+This module is part of the Financial Debt Optimizer project.
+"""
+
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple

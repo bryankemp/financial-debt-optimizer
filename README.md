@@ -1,4 +1,4 @@
-# Financial Debt Optimizer 2.0.1
+# Financial Debt Optimizer 2.0.2
 
 [![PyPI Version](https://img.shields.io/pypi/v/financial-debt_optimizer.svg)](https://pypi.org/project/financial-debt_optimizer/)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
@@ -305,5 +305,5 @@ This tool is for educational and informational purposes only. It does not consti
 ---
 
 **Author**: Bryan Kemp (bryan@kempville.com)  
-**Version**: 2.0.1  
+**Version**: 2.0.2  
 **License**: BSD 3-Clause

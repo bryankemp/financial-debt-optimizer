@@ -1,20 +1,32 @@
+"""Module documentation for setup.py.
+
+This module is part of the Financial Debt Optimizer project.
+"""
+
 from setuptools import setup, find_packages
 import os
 import sys
 
 # Add debt_optimizer to path to import version
-src_path = os.path.join(os.path.dirname(__file__), 'debt_optimizer')
+src_path = os.path.join(os.path.dirname(__file__), "debt_optimizer")
 sys.path.insert(0, src_path)
 
 try:
     from __version__ import (
-        __version__, __title__, __description__, __author__,
-        __author_email__, __license__, __url__
+        __version__,
+        __title__,
+        __description__,
+        __author__,
+        __author_email__,
+        __license__,
+        __url__,
     )
 except ImportError:
     __version__ = "2.0.0"
     __title__ = "Financial Debt Optimizer"
-    __description__ = "A comprehensive tool for analyzing and optimizing debt repayment strategies"
+    __description__ = (
+        "A comprehensive tool for analyzing and optimizing debt repayment strategies"
+    )
     __author__ = "Bryan Kemp"
     __author_email__ = "bryan@kempville.com"
     __license__ = "BSD-3-Clause"
@@ -30,7 +42,9 @@ except FileNotFoundError:
 # Read requirements if it exists
 try:
     with open("requirements.txt", "r", encoding="utf-8") as fh:
-        requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
+        requirements = [
+            line.strip() for line in fh if line.strip() and not line.startswith("#")
+        ]
 except FileNotFoundError:
     requirements = [
         "pandas>=1.3.0",
@@ -39,7 +53,7 @@ except FileNotFoundError:
         "openpyxl>=3.0.0",
         "click>=8.0.0",
         "matplotlib>=3.5.0",
-        "pyyaml>=6.0"
+        "pyyaml>=6.0",
     ]
 
 setup(
@@ -75,7 +89,11 @@ setup(
     ],
     keywords="debt optimization finance calculator repayment strategy",
     python_requires=">=3.8",
-    install_requires=[req.split(">=")[0] for req in requirements if not req.startswith(("pytest", "black", "pylint"))],
+    install_requires=[
+        req.split(">=")[0]
+        for req in requirements
+        if not req.startswith(("pytest", "black", "pylint"))
+    ],
     extras_require={
         "dev": ["pytest>=6.2.5", "black>=21.5b2", "pylint>=2.8.2", "mypy>=0.910"],
         "test": ["pytest>=6.2.5", "pytest-cov>=2.12.0"],

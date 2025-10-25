@@ -1,3 +1,16 @@
+## [2.0.2] - 2025-10-25
+
+### Fixed
+- Fixed import paths throughout codebase to use absolute package imports (debt_optimizer. prefix)
+- Fixed deprecated matplotlib colormap API usage (matplotlib.cm.get_cmap → matplotlib.colormaps.get_cmap)
+- Fixed entry point path in setup.py for proper CLI installation
+- Fixed balance updater SQL query to accurately match Quicken register balance including reconciled and dated unreconciled transactions
+- Fixed cash flow calculation to avoid over-reserving funds when same-day income covers payments/expenses
+
+### Improved
+- Enhanced balance calculation logic with better date handling for Quicken transaction syncing
+- Improved monthly surplus calculations by properly accounting for same-day income
+
 # Changelog
 
 All notable changes to the Financial Debt Optimizer project will be documented in this file.
@@ -5,7 +18,7 @@ All notable changes to the Financial Debt Optimizer project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.1] - 2025-10-24
+## [2.0.2] - 2025-10-24
 
 ### 🐛 Bug Fixes
 - Fixed all mypy type errors (List, Tuple imports, type annotations)
@@ -44,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 📖 Documentation
 - Fixed ReadTheDocs URLs (changed mixed dash/underscore to all dashes)
-- Updated documentation version to 2.0.1
+- Updated documentation version to 2.0.2
 - Fixed API documentation generation path
 - Added Codecov and GitHub Actions badges to README
 - Disabled test report generation in ReadTheDocs (reports available via GitHub)

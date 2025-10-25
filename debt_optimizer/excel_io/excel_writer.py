@@ -1,3 +1,8 @@
+"""Module documentation for excel_writer.py.
+
+This module is part of the Financial Debt Optimizer project.
+"""
+
 from typing import Any, Dict, Optional
 
 import pandas as pd
