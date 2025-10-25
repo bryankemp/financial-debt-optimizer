@@ -348,7 +348,8 @@ class ExcelReader:
                     income = FutureIncome(
                         description=str(row["description"]).strip(),
                         amount=float(row["amount"]),
-                        date=income_date,  # Uses legacy date field
+                        start_date=income_date,  # Legacy: use date as start_date
+                        date=income_date,  # Also set legacy date field for compatibility
                     )
 
                 future_income.append(income)
@@ -481,7 +482,8 @@ class ExcelReader:
                     expense = FutureExpense(
                         description=str(row["description"]).strip(),
                         amount=float(row["amount"]),
-                        date=expense_date,  # Uses legacy date field
+                        start_date=expense_date,  # Legacy: use date as start_date
+                        date=expense_date,  # Also set legacy date field for compatibility
                     )
 
                 future_expenses.append(expense)
