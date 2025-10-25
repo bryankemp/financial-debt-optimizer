@@ -4,7 +4,7 @@ import pandas as pd
 import xlsxwriter
 from xlsxwriter.workbook import Workbook
 
-from core.debt_optimizer import OptimizationResult
+from debt_optimizer.core.debt_optimizer import OptimizationResult
 
 
 class ExcelReportWriter:

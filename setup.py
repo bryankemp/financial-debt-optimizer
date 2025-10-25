@@ -83,7 +83,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "debt_optimizer=cli.commands:main",
+            "debt_optimizer=debt_optimizer.cli.commands:main",
         ],
     },
     include_package_data=True,

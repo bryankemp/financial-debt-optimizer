@@ -3,18 +3,14 @@ from pathlib import Path
 
 import click
 
-from core.balance_updater import BalanceUpdater, BalanceUpdaterError
-from core.config import Config
-from core.debt_optimizer import DebtOptimizer, OptimizationGoal
-from core.logging_config import get_logger, setup_logging
-from core.validation import validate_financial_scenario
-from excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
-from excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
+from debt_optimizer.core.balance_updater import BalanceUpdater, BalanceUpdaterError
+from debt_optimizer.core.config import Config
+from debt_optimizer.core.debt_optimizer import DebtOptimizer, OptimizationGoal
+from debt_optimizer.core.logging_config import get_logger, setup_logging
+from debt_optimizer.core.validation import validate_financial_scenario
+from debt_optimizer.excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
+from debt_optimizer.excel_io.excel_writer import ExcelReportWriter, generate_simple_summary_report
 
-# Add debt_optimizer to path to allow imports
-src_path = Path(__file__).parent.parent
-if str(src_path) not in sys.path:
-    sys.path.insert(0, str(src_path))
 
 
 @click.group()

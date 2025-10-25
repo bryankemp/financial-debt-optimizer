@@ -351,9 +351,9 @@ class DebtVisualization:
                 (rate - min_rate) / (max_rate - min_rate) if max_rate > min_rate else 0
             )
             # Color from green (low) to red (high)
-            from matplotlib.cm import get_cmap
+            import matplotlib
 
-            colormap = get_cmap("RdYlGn_r")
+            colormap = matplotlib.colormaps.get_cmap("RdYlGn_r")
             color = colormap(norm_rate)
             bar.set_color(color)
 

@@ -6,7 +6,7 @@ import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
-from core.financial_calc import (
+from debt_optimizer.core.financial_calc import (
     Debt,
     FutureExpense,
     FutureIncome,
