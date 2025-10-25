@@ -94,7 +94,7 @@ class ReleasePublisher:
         Raises:
             ValueError: If version cannot be found
         """
-        version_file = self.project_root / "src" / "__version__.py"
+        version_file = self.project_root / "debt_optimizer" / "__version__.py"
 
         if not version_file.exists():
             raise ValueError("Version file not found: debt_optimizer/__version__.py")
