@@ -90,7 +90,7 @@ class ReleaseWorkflow:
         Returns:
             Current version string
         """
-        version_file = self.project_root / "src" / "__version__.py"
+        version_file = self.project_root / "debt_optimizer" / "__version__.py"
 
         if not version_file.exists():
             raise ValueError("Version file not found: debt_optimizer/__version__.py")
@@ -107,6 +107,62 @@ class ReleaseWorkflow:
             raise ValueError("Version not found in debt_optimizer/__version__.py")
 
         return match.group(1)
+
+    def compute_next_version(self, current: str, bump_type: str) -> str:
+        """Compute next version based on bump type.
+
+        Args:
+            current: Current version string (e.g., '2.0.1')
+            bump_type: Type of bump ('major', 'minor', 'patch')
+
+        Returns:
+            New version string
+        """
+        import re
+
+        version_pattern = r"^(\d+)\.(\d+)\.(\d+)"
+        match = re.match(version_pattern, current)
+
+        if not match:
+            raise ValueError(f"Invalid version format: {current}")
+
+        major, minor, patch = map(int, match.groups())
+
+        if bump_type == "major":
+            return f"{major + 1}.0.0"
+        elif bump_type == "minor":
+            return f"{major}.{minor + 1}.0"
+        else:  # patch
+            return f"{major}.{minor}.{patch + 1}"
+
+    def update_documentation(
+        self, to_version: str, from_version: Optional[str] = None, dry_run: bool = False
+    ) -> bool:
+        """Update documentation, version references, and CHANGELOG.
+
+        This is a mandatory step that runs for every release.
+
+        Args:
+            to_version: Target version (e.g., '2.0.2')
+            from_version: Previous version for doc updates (e.g., '2.0.1')
+            dry_run: Whether to perform a dry run
+
+        Returns:
+            True if documentation update succeeded, False otherwise
+        """
+        args = ["--to-version", to_version]
+
+        if from_version:
+            args.extend(["--from-version", from_version])
+
+        if dry_run:
+            args.append("--dry-run")
+
+        return self.run_script(
+            "update_documentation",
+            args=args,
+            description="Updating documentation (mandatory)",
+        )
 
     def run_tests(self, skip_slow: bool = False, skip_security: bool = False) -> bool:
         """Run the complete test suite.
@@ -223,6 +279,7 @@ class ReleaseWorkflow:
     def run_full_workflow(
         self,
         bump_type: str,
+        target_version: Optional[str] = None,
         prerelease: Optional[str] = None,
         skip_tests: bool = False,
         skip_docs: bool = False,
@@ -234,6 +291,7 @@ class ReleaseWorkflow:
 
         Args:
             bump_type: Type of version bump
+            target_version: Optional explicit target version (overrides bump_type)
             prerelease: Optional prerelease identifier
             skip_tests: Whether to skip running tests
             skip_docs: Whether to skip building documentation
@@ -245,10 +303,14 @@ class ReleaseWorkflow:
             True if workflow completed successfully, False otherwise
         """
         current_version = self.get_current_version()
+        next_version = target_version or self.compute_next_version(
+            current_version, bump_type
+        )
 
         print(f"\n🚀 Starting complete release workflow for Financial Debt Optimizer")
         print(f"📋 Current version: {current_version}")
-        print(f"📈 Bump type: {bump_type}")
+        print(f"📈 Target version: {next_version}")
+        print(f"📊 Bump type: {bump_type}")
         if prerelease:
             print(f"🏷️  Prerelease: {prerelease}")
         if dry_run:
@@ -266,17 +328,23 @@ class ReleaseWorkflow:
         if success or dry_run:
             success &= self.clean_code()
 
-        # Step 3: Build documentation (unless skipped)
+        # Step 3: Update documentation (MANDATORY - runs for every release)
+        if success or dry_run:
+            success &= self.update_documentation(
+                to_version=next_version, from_version=current_version, dry_run=dry_run
+            )
+
+        # Step 4: Build documentation (unless skipped)
         if (success or dry_run) and not skip_docs:
             success &= self.build_documentation()
         elif skip_docs:
             print("\n⚠️  SKIPPING DOCUMENTATION BUILD")
 
-        # Step 4: Bump version
+        # Step 5: Bump version
         if success or dry_run:
             success &= self.bump_version(bump_type, prerelease, dry_run=dry_run)
 
-        # Step 5: Publish release (unless dry run)
+        # Step 6: Publish release (unless dry run)
         if success and not dry_run:
             success &= self.publish_release(
                 test_pypi=test_pypi, draft_release=draft_release
@@ -379,6 +447,10 @@ Examples:
         help="Type of version bump to perform (default: patch)",
     )
     parser.add_argument(
+        "--target-version",
+        help="Explicit target version (e.g., '2.0.2') - overrides bump_type",
+    )
+    parser.add_argument(
         "--prerelease", help='Prerelease identifier (e.g., "alpha.1", "beta.2", "rc.1")'
     )
     parser.add_argument(
@@ -427,6 +499,7 @@ Examples:
     else:
         success = workflow.run_full_workflow(
             bump_type=args.bump_type,
+            target_version=args.target_version,
             prerelease=args.prerelease,
             skip_tests=args.skip_tests,
             skip_docs=args.skip_docs,
