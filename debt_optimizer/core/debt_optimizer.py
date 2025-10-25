@@ -697,13 +697,40 @@ class DebtOptimizer:
 
                         # Only reserve money for debts that still have balances
                         if current_balance > 0.01:
-                            interest_charge = debt.calculate_interest_charge(
-                                current_balance
-                            )
-                            min_payment_needed = min(
-                                debt.minimum_payment, current_balance + interest_charge
-                            )
-                            reserved_for_minimums += float(min_payment_needed)
+                            # Check if there's income on the same day as this payment
+                            same_day_income = False
+                            for (
+                                future_event_date,
+                                future_event_type,
+                                future_event_data,
+                            ) in events[i:]:
+                                if (
+                                    future_event_date == event_date
+                                    and future_event_type == "income"
+                                ):
+                                    # Calculate payment needed
+                                    interest_charge = debt.calculate_interest_charge(
+                                        current_balance
+                                    )
+                                    min_payment_needed = min(
+                                        debt.minimum_payment, current_balance + interest_charge
+                                    )
+                                    # Check if the income amount covers the payment
+                                    if future_event_data["amount"] >= min_payment_needed:
+                                        same_day_income = True
+                                        break
+                                elif future_event_date > event_date:
+                                    break
+
+                            # Only reserve if payment isn't covered by same-day income
+                            if not same_day_income:
+                                interest_charge = debt.calculate_interest_charge(
+                                    current_balance
+                                )
+                                min_payment_needed = min(
+                                    debt.minimum_payment, current_balance + interest_charge
+                                )
+                                reserved_for_minimums += float(min_payment_needed)
                     elif event_type == "expense":
                         # Only reserve money for expenses that DON'T happen on the same day as income  # noqa: E501
                         # Check if there's income on the same day as this expense
