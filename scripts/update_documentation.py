@@ -1,3 +1,8 @@
+"""Module documentation for update_documentation.py.
+
+This module is part of the Financial Debt Optimizer project.
+"""
+
 #!/usr/bin/env python3
 """Documentation update script for Financial Debt Optimizer releases.
 
@@ -17,7 +22,6 @@ Usage:
     python scripts/update_documentation.py --to-version 2.0.2 --from-version 2.0.1
     python scripts/update_documentation.py --to-version 2.1.0 --verbose --dry-run
 """
-
 from __future__ import annotations
 
 import argparse
