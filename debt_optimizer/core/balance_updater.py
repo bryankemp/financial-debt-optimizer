@@ -16,7 +16,7 @@ try:
     from thefuzz import fuzz, process
 
     HAS_FUZZ = True
-    FUZZ_LIBRARY = "thefuzz"
+    FUZZ_LIBRARY: Optional[str] = "thefuzz"
 except ImportError:
     try:
         from rapidfuzz import fuzz, process
@@ -25,7 +25,7 @@ except ImportError:
         FUZZ_LIBRARY = "rapidfuzz"
     except ImportError:
         HAS_FUZZ = False
-        FUZZ_LIBRARY = None
+        FUZZ_LIBRARY = "none"
 
 import openpyxl
 
