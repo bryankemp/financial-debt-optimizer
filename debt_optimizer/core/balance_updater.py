@@ -95,8 +95,15 @@ class BalanceUpdater:
     ) -> Tuple[Dict[str, Dict], List[str], List[str], List[str]]:
         """Load account balances from Quicken database.
 
-        Prefers ZONLINEBANKINGLEDGERBALANCEAMOUNT when available, otherwise sums
-        transactions up to the current date. Uses Apple Cocoa timestamp format.
+        Calculates balance as Quicken register shows it:
+        - Prefers ZONLINEBANKINGLEDGERBALANCEAMOUNT when available
+        - Otherwise sums:
+          * All reconciled transactions (ZRECONCILESTATUS = 2)
+          * All unreconciled transactions (ZRECONCILESTATUS != 2) up to current date
+        
+        This matches Quicken's register balance which includes cleared/reconciled
+        transactions plus any unreconciled transactions dated today or earlier.
+        Uses Apple Cocoa timestamp format (seconds since 2001-01-01).
 
         Returns:
             Tuple of (accounts_by_name, credit_card_names, checking_names, savings_names)  # noqa: E501
@@ -118,19 +125,25 @@ class BalanceUpdater:
                     a.ZACTIVE AS active,
                     COALESCE(
                         a.ZONLINEBANKINGLEDGERBALANCEAMOUNT,
-                        SUM(CASE
-                            WHEN t.ZPOSTEDDATE IS NOT NULL AND t.ZPOSTEDDATE <= ?
-                            THEN t.ZAMOUNT
-                            ELSE 0
-                        END),
+                        (
+                            SELECT COALESCE(SUM(t2.ZAMOUNT), 0)
+                            FROM ZTRANSACTION t2
+                            WHERE t2.ZACCOUNT = a.Z_PK
+                              AND t2.ZDELETIONCOUNT = 0
+                              AND (
+                                  t2.ZRECONCILESTATUS = 2
+                                  OR (
+                                      t2.ZRECONCILESTATUS != 2
+                                      AND COALESCE(NULLIF(t2.ZPOSTEDDATE, 0), NULLIF(t2.ZENTEREDDATE, 0), 0) <= ?
+                                  )
+                              )
+                        ),
                         0
                     ) AS balance
                 FROM ZACCOUNT a
-                LEFT JOIN ZTRANSACTION t ON t.ZACCOUNT = a.Z_PK
                 WHERE a.ZACTIVE = 1
                   AND a.ZTYPENAME IN ('CREDITCARD','CHECKING','SAVINGS')
-                GROUP BY a.Z_PK, a.ZNAME, a.ZTYPENAME, a.ZACTIVE, a.ZONLINEBANKINGLEDGERBALANCEAMOUNT  # noqa: E501
-            """
+            """  # noqa: E501
             cur.execute(sql, (cocoa_now,))
             rows = cur.fetchall()
 
