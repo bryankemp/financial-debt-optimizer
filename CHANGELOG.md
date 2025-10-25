@@ -1,5 +1,24 @@
 ## [2.0.2] - 2025-10-25
 
+### Added
+-
+
+### Changed
+-
+
+### Deprecated
+-
+
+### Removed
+-
+
+### Fixed
+-
+
+### Security
+-
+## [2.0.2] - 2025-10-25
+
 ### Fixed
 - Fixed import paths throughout codebase to use absolute package imports (debt_optimizer. prefix)
 - Fixed deprecated matplotlib colormap API usage (matplotlib.cm.get_cmap → matplotlib.colormaps.get_cmap)

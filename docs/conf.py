@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath("_extensions"))
 project = "Financial Debt Optimizer"
 copyright = "2025, Bryan Kemp"
 author = "Bryan Kemp"
-release = "2.0.1"
+release = "2.0.2"
 version = "2.0"
 
 # -- General configuration ---------------------------------------------------

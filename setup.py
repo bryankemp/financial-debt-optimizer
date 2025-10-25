@@ -22,7 +22,7 @@ try:
         __url__,
     )
 except ImportError:
-    __version__ = "2.0.0"
+    __version__ = "2.0.2"
     __title__ = "Financial Debt Optimizer"
     __description__ = (
         "A comprehensive tool for analyzing and optimizing debt repayment strategies"
