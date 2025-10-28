@@ -1,7 +1,5 @@
 """Tests for version information module."""
 
-import pytest
-
 from debt_optimizer.__version__ import (
     __author__,
     __author_email__,

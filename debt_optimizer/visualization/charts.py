@@ -9,8 +9,8 @@ from typing import Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from core.debt_optimizer import OptimizationResult
-from core.financial_calc import Debt
+from debt_optimizer.core.debt_optimizer import OptimizationResult
+from debt_optimizer.core.financial_calc import Debt
 
 
 class DebtVisualization:
@@ -81,11 +81,12 @@ class DebtVisualization:
         # Add grid
         ax.grid(True, alpha=0.3)
 
-        # Legend
-        if len(debt_columns) <= 6:
-            ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
-        else:
-            ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", ncol=2)
+        # Legend (only if there are debts to display)
+        if debt_columns:
+            if len(debt_columns) <= 6:
+                ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+            else:
+                ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", ncol=2)
 
         plt.tight_layout()
 
@@ -483,15 +484,15 @@ class DebtVisualization:
             sorted_debts = sorted(debts, key=lambda d: d.interest_rate, reverse=True)
             debt_names = [debt.name for debt in sorted_debts]
             interest_rates = [debt.interest_rate for debt in sorted_debts]
-            bars = ax4.barh(debt_names, interest_rates, color=self.colors[: len(debts)])
+            ax4.barh(debt_names, interest_rates, color=self.colors[: len(debts)])
             ax4.set_title("Interest Rates", fontsize=14, fontweight="bold")
             ax4.set_xlabel("Interest Rate (%)")
 
-        # Strategy Comparison (if available)
+            # Strategy Comparison (if available)
         if comparison_df is not None:
             ax5 = fig.add_subplot(gs[1, 2])
             strategies = comparison_df["strategy"].str.replace("_", " ").str.title()
-            bars = ax5.bar(
+            ax5.bar(
                 strategies,
                 comparison_df["total_interest"],
                 color=self.colors[: len(strategies)],

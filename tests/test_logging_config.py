@@ -4,8 +4,6 @@ import logging
 import tempfile
 from pathlib import Path
 
-import pytest
-
 from debt_optimizer.core.logging_config import get_logger, setup_logging
 
 
@@ -197,7 +195,7 @@ class TestGetLogger:
     def test_get_logger_inherits_configuration(self):
         """Test get_logger inherits configuration from parent logger."""
         # Setup parent logger
-        parent_logger = setup_logging(level="DEBUG")
+        setup_logging(level="DEBUG")
 
         # Get child logger
         child_logger = get_logger("child")

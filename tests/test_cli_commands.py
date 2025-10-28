@@ -7,9 +7,8 @@ with various parameter combinations and edge cases.
 
 import shutil
 import tempfile
-from datetime import date
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner

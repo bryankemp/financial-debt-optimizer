@@ -1,6 +1,5 @@
 """Tests for configuration management module."""
 
-import os
 import tempfile
 from pathlib import Path
 
@@ -132,6 +131,37 @@ class TestConfig:
 
 class TestConfigFileOperations:
     """Test suite for Config file operations (requires PyYAML)."""
+
+    def test_load_without_yaml(self, monkeypatch):
+        """Test load_from_file raises ImportError when PyYAML is not available."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = Path(tmpdir) / "test_config.yaml"
+            config_path.write_text("test: value")
+
+            # Mock HAS_YAML to False and empty default paths
+            import debt_optimizer.core.config as config_module
+
+            monkeypatch.setattr(config_module, "HAS_YAML", False)
+            monkeypatch.setattr(Config, "DEFAULT_CONFIG_PATHS", [])
+
+            config = Config()
+            with pytest.raises(ImportError, match="PyYAML is required to load"):
+                config.load_from_file(config_path)
+
+    def test_save_without_yaml(self, monkeypatch):
+        """Test save_to_file raises ImportError when PyYAML is not available."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = Path(tmpdir) / "test_config.yaml"
+
+            # Mock HAS_YAML to False and empty default paths
+            import debt_optimizer.core.config as config_module
+
+            monkeypatch.setattr(config_module, "HAS_YAML", False)
+            monkeypatch.setattr(Config, "DEFAULT_CONFIG_PATHS", [])
+
+            config = Config()
+            with pytest.raises(ImportError, match="PyYAML is required to save"):
+                config.save_to_file(config_path)
 
     def test_save_and_load(self):
         """Test saving and loading configuration file."""

@@ -51,7 +51,7 @@ def setup_logging(
     return logger
 
 
-def get_logger(name: str = None) -> logging.Logger:
+def get_logger(name: Optional[str] = None) -> logging.Logger:
     """Get a logger instance.
 
     Args:

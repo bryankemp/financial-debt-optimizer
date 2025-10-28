@@ -7,7 +7,7 @@ and report creation, ensuring all components work together correctly.
 
 import shutil
 import tempfile
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -241,7 +241,6 @@ class TestCompleteWorkflow:
         # Compare results - different goals should produce different outcomes
         interest_result = results["minimize_interest"]
         time_result = results["minimize_time"]
-        cashflow_result = results["maximize_cashflow"]
 
         # Interest minimization should generally pay less interest
         # (though not always, depending on the scenario)

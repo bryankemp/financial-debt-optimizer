@@ -9,7 +9,6 @@ from pathlib import Path
 src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
-import os  # noqa: E402
 import shutil  # noqa: E402
 import tempfile  # noqa: E402
 from datetime import date  # noqa: E402
