@@ -749,6 +749,8 @@ class FutureIncome:
             # One-time events don't have a meaningful monthly average
             return 0.0
 
+        if self._pattern is None:
+            return 0.0
         return self.amount * self._pattern.get_monthly_frequency()
 
     def __str__(self) -> str:
@@ -860,6 +862,8 @@ class FutureExpense:
             # One-time events don't have a meaningful monthly average
             return 0.0
 
+        if self._pattern is None:
+            return 0.0
         return self.amount * self._pattern.get_monthly_frequency()
 
     def __str__(self) -> str:

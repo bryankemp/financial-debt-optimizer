@@ -5,7 +5,7 @@ This module is part of the Financial Debt Optimizer project.
 
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 import pandas as pd
 from openpyxl import Workbook
@@ -348,7 +348,8 @@ class ExcelReader:
                     income = FutureIncome(
                         description=str(row["description"]).strip(),
                         amount=float(row["amount"]),
-                        date=income_date,  # Uses legacy date field
+                        start_date=income_date,  # Legacy: use date as start_date
+                        date=income_date,  # Also set legacy date field for compatibility
                     )
 
                 future_income.append(income)
@@ -375,7 +376,10 @@ class ExcelReader:
                         continue
                 # If specific formats fail, try pandas
                 try:
-                    return pd.to_datetime(date_value).date()
+                    parsed = pd.to_datetime(date_value)
+                    if parsed is not None:
+                        return cast(date, parsed.date())
+                    return None
                 except (ValueError, TypeError, pd.errors.ParserError):
                     return None
             elif isinstance(date_value, datetime):
@@ -385,11 +389,14 @@ class ExcelReader:
                     return None
             elif isinstance(date_value, pd.Timestamp):
                 if 1900 <= date_value.year <= 9999:
-                    return date_value.date()
+                    return cast(date, date_value.date())
                 else:
                     return None
-            elif hasattr(date_value, "date"):
-                return date_value.date()
+            elif hasattr(date_value, "date") and callable(date_value.date):
+                result = date_value.date()
+                if isinstance(result, date):
+                    return result
+                return None
         except (ValueError, TypeError, AttributeError, OverflowError):
             # Log the specific error for debugging purposes
             pass
@@ -481,7 +488,8 @@ class ExcelReader:
                     expense = FutureExpense(
                         description=str(row["description"]).strip(),
                         amount=float(row["amount"]),
-                        date=expense_date,  # Uses legacy date field
+                        start_date=expense_date,  # Legacy: use date as start_date
+                        date=expense_date,  # Also set legacy date field for compatibility
                     )
 
                 future_expenses.append(expense)

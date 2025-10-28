@@ -13,14 +13,11 @@ src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
 from datetime import date  # noqa: E402
-from typing import List  # noqa: E402
 
 import pytest  # noqa: E402
 
 from core.financial_calc import (  # noqa: E402
     Debt,
-    FutureExpense,
-    FutureIncome,
     Income,
     RecurringExpense,
 )

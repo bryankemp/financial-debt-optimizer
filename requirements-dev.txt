@@ -1,0 +1,21 @@
+# Development and testing dependencies for Financial Debt Optimizer
+# Install with: pip install -r requirements-dev.txt
+
+# Testing
+pytest>=8.0.0,<9
+pytest-cov>=4.0.0,<7
+
+# Code quality
+black>=25.0.0,<26
+isort>=5.0.0,<6
+flake8>=7.0.0,<8
+pylint>=3.0.0,<4
+mypy>=1.0.0,<2
+
+# Security scanning
+safety>=3.0.0,<4
+bandit>=1.7.0,<2
+
+# Build tools
+build>=1.0.0,<2
+twine>=5.0.0,<7

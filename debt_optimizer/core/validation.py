@@ -244,33 +244,29 @@ def validate_financial_scenario(
     errors = []
     warnings = []
 
-    # Handle None inputs
-    if debts is None:
-        debts = []
-    if income_sources is None:
-        income_sources = []
-    if recurring_expenses is None:
-        recurring_expenses = []
-    if settings is None:
-        settings = {}
+    # Handle None inputs by creating new local variables
+    debts_list = debts if debts is not None else []
+    income_list = income_sources if income_sources is not None else []
+    expenses_list = recurring_expenses if recurring_expenses is not None else []
+    settings_dict = settings if settings is not None else {}
 
     # Check if we have debts
-    if not debts:
+    if not debts_list:
         errors.append("No debts provided - nothing to optimize")
 
     # Check if we have income
-    if not income_sources:
+    if not income_list:
         errors.append("No income sources provided")
 
     # Calculate totals for validation
-    if debts and income_sources:
-        total_debt = sum(debt.balance for debt in debts)
-        total_minimum_payments = sum(debt.minimum_payment for debt in debts)
+    if debts_list and income_list:
+        total_debt = sum(debt.balance for debt in debts_list)
+        total_minimum_payments = sum(debt.minimum_payment for debt in debts_list)
         total_monthly_income = sum(
-            income.get_monthly_amount() for income in income_sources
+            income.get_monthly_amount() for income in income_list
         )
         total_monthly_expenses = sum(
-            expense.get_monthly_amount() for expense in recurring_expenses
+            expense.get_monthly_amount() for expense in expenses_list
         )
 
         # Check basic financial viability
@@ -305,9 +301,9 @@ def validate_financial_scenario(
             )
 
     # Validate settings
-    if "current_bank_balance" in settings:
+    if "current_bank_balance" in settings_dict:
         try:
-            bank_balance = float(settings["current_bank_balance"])
+            bank_balance = float(settings_dict["current_bank_balance"])
             if bank_balance < 0:
                 warnings.append("Negative bank balance may cause cash flow issues")
         except (ValueError, TypeError):

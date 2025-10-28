@@ -6,7 +6,7 @@ This module is part of the Financial Debt Optimizer project.
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
@@ -102,10 +102,10 @@ class DebtOptimizer:
         self,
         debts: List[Debt],
         income_sources: List[Income],
-        recurring_expenses: List[RecurringExpense] = None,
-        future_income: List[FutureIncome] = None,
-        future_expenses: List = None,
-        settings: Dict[str, Any] = None,
+        recurring_expenses: Optional[List[RecurringExpense]] = None,
+        future_income: Optional[List[FutureIncome]] = None,
+        future_expenses: Optional[List] = None,
+        settings: Optional[Dict[str, Any]] = None,
     ):
         """Initialize the debt optimizer with debts, income, expenses, and future income."""  # noqa: E501
         self.debts = debts.copy()
@@ -177,7 +177,7 @@ class DebtOptimizer:
         description: str,
         rationale: str,
         impact: str,
-        data_snapshot: Dict[str, Any] = None,
+        data_snapshot: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Log a decision for audit trail and learning purposes."""
         entry = DecisionLogEntry(
@@ -246,12 +246,17 @@ class DebtOptimizer:
                 for c in cashflow_comparisons
                 if c != best_result.monthly_cash_flow_improvement
             ]
-            return (
-                f"Selected for best cash flow: "
-                f"${best_result.monthly_cash_flow_improvement:,.2f}/month vs others: {other_flows}"  # noqa: E501
-            )
-        else:
-            return "Selected based on overall optimization metrics"
+        # MAXIMIZE_CASHFLOW
+        cashflow_comparisons = [r.monthly_cash_flow_improvement for r in all_results]
+        other_flows = [
+            f"${c:,.2f}"
+            for c in cashflow_comparisons
+            if c != best_result.monthly_cash_flow_improvement
+        ]
+        return (
+            f"Selected for best cash flow: "
+            f"${best_result.monthly_cash_flow_improvement:,.2f}/month vs others: {other_flows}"  # noqa: E501
+        )
 
     def optimize_debt_strategy(
         self,
@@ -1281,7 +1286,7 @@ class DebtOptimizer:
         )
 
         # Look for monthly extra funds entries that match this month
-        allocated_extra = 0
+        allocated_extra = 0.0
         for mef in self.monthly_extra_funds:
             # Check if this monthly extra fund entry is for this month
             if (
@@ -1427,10 +1432,8 @@ class DebtOptimizer:
             best = min(results, key=lambda r: r.total_interest_paid)
         elif goal == OptimizationGoal.MINIMIZE_TIME:
             best = min(results, key=lambda r: r.total_months_to_freedom)
-        elif goal == OptimizationGoal.MAXIMIZE_CASHFLOW:
+        else:  # OptimizationGoal.MAXIMIZE_CASHFLOW or any other
             best = max(results, key=lambda r: r.monthly_cash_flow_improvement)
-        else:
-            best = results[0]  # Default to first result
 
         # Update the goal in the result
         best.goal = goal.value

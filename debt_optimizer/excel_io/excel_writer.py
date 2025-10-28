@@ -51,10 +51,16 @@ class ExcelReportWriter:
         finally:
             self.workbook.close()
 
+    def _ensure_workbook(self) -> Workbook:
+        """Ensure workbook is initialized and return it."""
+        assert self.workbook is not None, "Workbook must be initialized"
+        return self.workbook
+
     def _setup_formats(self):
         """Set up cell formats for the workbook."""
+        workbook = self._ensure_workbook()
         self.formats = {
-            "title": self.workbook.add_format(
+            "title": workbook.add_format(
                 {
                     "bold": True,
                     "font_size": 16,
@@ -65,7 +71,7 @@ class ExcelReportWriter:
                     "border": 1,
                 }
             ),
-            "header": self.workbook.add_format(
+            "header": workbook.add_format(
                 {
                     "bold": True,
                     "bg_color": "#D9E1F2",
@@ -74,19 +80,15 @@ class ExcelReportWriter:
                     "valign": "vcenter",
                 }
             ),
-            "currency": self.workbook.add_format(
-                {"num_format": "$#,##0.00", "border": 1}
-            ),
-            "percentage": self.workbook.add_format(
-                {"num_format": "0.00%", "border": 1}
-            ),
-            "integer": self.workbook.add_format({"num_format": "#,##0", "border": 1}),
-            "date": self.workbook.add_format({"num_format": "yyyy-mm-dd", "border": 1}),
-            "highlight": self.workbook.add_format({"bg_color": "#FFEB9C", "border": 1}),
-            "success": self.workbook.add_format(
+            "currency": workbook.add_format({"num_format": "$#,##0.00", "border": 1}),
+            "percentage": workbook.add_format({"num_format": "0.00%", "border": 1}),
+            "integer": workbook.add_format({"num_format": "#,##0", "border": 1}),
+            "date": workbook.add_format({"num_format": "yyyy-mm-dd", "border": 1}),
+            "highlight": workbook.add_format({"bg_color": "#FFEB9C", "border": 1}),
+            "success": workbook.add_format(
                 {"bg_color": "#C6EFCE", "font_color": "#006100", "border": 1}
             ),
-            "warning": self.workbook.add_format(
+            "warning": workbook.add_format(
                 {"bg_color": "#FFC7CE", "font_color": "#9C0006", "border": 1}
             ),
         }
@@ -97,7 +99,8 @@ class ExcelReportWriter:
         """Create executive summary sheet."""
         if self.workbook is None:
             raise ValueError("Workbook not initialized")
-        worksheet = self.workbook.add_worksheet("Executive Summary")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Executive Summary")
 
         # Title
         worksheet.merge_range(
@@ -207,7 +210,8 @@ class ExcelReportWriter:
 
     def _create_payment_schedule_sheet(self, payment_schedule: pd.DataFrame):
         """Create detailed payment schedule sheet with income events and cash flow."""
-        worksheet = self.workbook.add_worksheet("Payment Schedule")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Payment Schedule")
 
         # Title
         worksheet.merge_range(
@@ -327,7 +331,8 @@ class ExcelReportWriter:
 
     def _create_monthly_summary_sheet(self, monthly_summary: pd.DataFrame):
         """Create enhanced monthly summary sheet with detailed income, expenses, and extra funds tracking."""  # noqa: E501
-        worksheet = self.workbook.add_worksheet("Monthly Summary")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Monthly Summary")
 
         # Title
         worksheet.merge_range(
@@ -487,7 +492,8 @@ class ExcelReportWriter:
 
     def _create_enhanced_monthly_summary_sheet(self, result: OptimizationResult):
         """Create enhanced monthly summary with extra funds tracking and allocation details."""  # noqa: E501
-        worksheet = self.workbook.add_worksheet("Monthly Extra Funds")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Monthly Extra Funds")
 
         # Title
         worksheet.merge_range(
@@ -617,7 +623,8 @@ class ExcelReportWriter:
 
     def _create_decision_log_sheet(self, result: OptimizationResult):
         """Create decision log sheet tracking all optimization decisions and rationale."""  # noqa: E501
-        worksheet = self.workbook.add_worksheet("Decision Log")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Decision Log")
 
         # Title
         worksheet.merge_range(
@@ -782,7 +789,8 @@ class ExcelReportWriter:
 
     def _create_debt_progression_sheet(self, debt_progression: pd.DataFrame):
         """Create debt progression over time sheet."""
-        worksheet = self.workbook.add_worksheet("Debt Progression")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Debt Progression")
 
         # Title
         worksheet.merge_range(
@@ -824,7 +832,8 @@ class ExcelReportWriter:
 
     def _create_strategy_comparison_sheet(self, comparison_df: pd.DataFrame):
         """Create strategy comparison sheet."""
-        worksheet = self.workbook.add_worksheet("Strategy Comparison")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Strategy Comparison")
 
         # Title
         worksheet.merge_range(
@@ -891,7 +900,8 @@ class ExcelReportWriter:
 
     def _create_charts_sheet(self, result: OptimizationResult):
         """Create enhanced charts and visualizations sheet with multiple useful charts."""  # noqa: E501
-        worksheet = self.workbook.add_worksheet("Charts")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Charts")
 
         # Title
         worksheet.merge_range(
@@ -926,7 +936,8 @@ class ExcelReportWriter:
             return
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "line"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "line"})
         chart.set_title({"name": "Individual Debt Balance Progression + Total Summary"})
         chart.set_x_axis({"name": "Month"})
         chart.set_y_axis({"name": "Balance ($)"})
@@ -975,7 +986,8 @@ class ExcelReportWriter:
             return
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "column", "subtype": "stacked"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "column", "subtype": "stacked"})
         chart.set_title(
             {
                 "name": "Monthly Payment Breakdown: Principal vs Interest",
@@ -1329,7 +1341,8 @@ class ExcelReportWriter:
             return
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "column"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "column"})
         chart.set_title(
             {
                 "name": "Monthly Cash Flow Analysis",
@@ -1423,7 +1436,8 @@ class ExcelReportWriter:
         ]
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "line"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "line"})
         chart.set_title(
             {
                 "name": "Total Debt Reduction Progress",
@@ -1486,7 +1500,8 @@ class ExcelReportWriter:
         ]
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "column"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "column"})
         chart.set_title(
             {"name": "Debt Payoff Timeline", "name_font": {"size": 14, "bold": True}}
         )
@@ -1572,7 +1587,8 @@ class ExcelReportWriter:
             return
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "column"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "column"})
         chart.set_title(
             {
                 "name": "Monthly Extra Funds Analysis",
@@ -1688,7 +1704,8 @@ class ExcelReportWriter:
             return
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "column"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "column"})
         chart.set_title({"name": "Debt Payoff Timeline"})
         chart.set_x_axis({"name": "Debt Name"})
         chart.set_y_axis({"name": "Payoff Month"})
@@ -1724,7 +1741,8 @@ class ExcelReportWriter:
             return
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "pie"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "pie"})
         chart.set_title({"name": "Total Payment Breakdown: Interest vs Principal"})
 
         # Create data for the pie chart
@@ -1755,7 +1773,8 @@ class ExcelReportWriter:
 
     def _create_additional_charts_sheet(self, result: OptimizationResult):
         """Create additional charts and analysis sheet."""
-        worksheet = self.workbook.add_worksheet("Additional Charts")
+        workbook = self._ensure_workbook()
+        worksheet = workbook.add_worksheet("Additional Charts")
 
         # Title
         worksheet.merge_range(
@@ -1790,7 +1809,8 @@ class ExcelReportWriter:
             return
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "area"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "area"})
         chart.set_title({"name": "Net Worth Improvement (Debt Reduction)"})
         chart.set_x_axis({"name": "Month"})
         chart.set_y_axis({"name": "Net Worth Improvement ($)"})
@@ -1862,7 +1882,8 @@ class ExcelReportWriter:
 
         if elimination_rates:
             # Create chart
-            chart = self.workbook.add_chart({"type": "column"})
+            workbook = self._ensure_workbook()
+            chart = workbook.add_chart({"type": "column"})
             chart.set_title({"name": "Monthly Debt Elimination Rate (%)"})
             chart.set_x_axis({"name": "Month"})
             chart.set_y_axis({"name": "Elimination Rate (%)"})
@@ -1897,7 +1918,8 @@ class ExcelReportWriter:
 
         if surplus_values:
             # Create chart
-            chart = self.workbook.add_chart({"type": "line"})
+            workbook = self._ensure_workbook()
+            chart = workbook.add_chart({"type": "line"})
             chart.set_title({"name": "Monthly Cash Flow Surplus After Debt Payments"})
             chart.set_x_axis({"name": "Month"})
             chart.set_y_axis({"name": "Surplus ($)"})
@@ -1931,7 +1953,8 @@ class ExcelReportWriter:
         ]
 
         # Create chart
-        chart = self.workbook.add_chart({"type": "area", "subtype": "stacked"})
+        workbook = self._ensure_workbook()
+        chart = workbook.add_chart({"type": "area", "subtype": "stacked"})
         chart.set_title({"name": "Debt Composition Over Time"})
         chart.set_x_axis({"name": "Month"})
         chart.set_y_axis({"name": "Balance ($)"})
@@ -1981,7 +2004,8 @@ class ExcelReportWriter:
 
         if cumulative_interest:
             # Create chart
-            chart = self.workbook.add_chart({"type": "line"})
+            workbook = self._ensure_workbook()
+            chart = workbook.add_chart({"type": "line"})
             chart.set_title({"name": "Cumulative Interest Paid Over Time"})
             chart.set_x_axis({"name": "Month"})
             chart.set_y_axis({"name": "Cumulative Interest ($)"})
@@ -2031,7 +2055,8 @@ class ExcelReportWriter:
 
         if efficiency_ratios:
             # Create chart
-            chart = self.workbook.add_chart({"type": "column"})
+            workbook = self._ensure_workbook()
+            chart = workbook.add_chart({"type": "column"})
             chart.set_title(
                 {"name": "Payment Efficiency: Principal as % of Total Payment"}
             )

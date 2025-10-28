@@ -10,7 +10,11 @@ import click
 
 from debt_optimizer.core.balance_updater import BalanceUpdater, BalanceUpdaterError
 from debt_optimizer.core.config import Config
-from debt_optimizer.core.debt_optimizer import DebtOptimizer, OptimizationGoal
+from debt_optimizer.core.debt_optimizer import (
+    DebtOptimizer,
+    OptimizationGoal,
+    OptimizationResult,
+)
 from debt_optimizer.core.logging_config import get_logger, setup_logging
 from debt_optimizer.core.validation import validate_financial_scenario
 from debt_optimizer.excel_io.excel_reader import ExcelReader, ExcelTemplateGenerator
@@ -401,8 +405,8 @@ def analyze(
                     bank_account_name=cfg.get("bank_account_name"),
                     auto_backup=cfg.get("auto_backup"),
                 )
-                result = updater.update_workbook(input_path)
-                debt_count = len(result["debt_updates"])
+                balance_update_result = updater.update_workbook(input_path)
+                debt_count = len(balance_update_result["debt_updates"])
                 click.echo(f"✓ Balances updated ({debt_count} debt(s))\n")
             except (FileNotFoundError, BalanceUpdaterError, ImportError) as e:
                 click.echo(f"✗ Balance update failed: {e}", err=True)
@@ -502,7 +506,7 @@ def analyze(
         click.echo(f"\n🔍 Optimizing for: {goal.replace('_', ' ').title()}")
 
         optimization_goal = OptimizationGoal(goal)
-        result = optimizer.optimize_debt_strategy(
+        result: OptimizationResult = optimizer.optimize_debt_strategy(
             goal=optimization_goal, extra_payment=settings.get("extra_payment", 0.0)
         )
 

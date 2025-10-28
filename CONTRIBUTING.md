@@ -112,22 +112,76 @@ from src.core.financial_calc import Debt
 ### Documentation
 
 - Write clear docstrings for all public functions and classes
-- Use Google-style docstrings:
-  ```python
-  def calculate_payment(balance: float, rate: float) -> float:
-      """Calculate monthly payment for a given balance and rate.
-      
-      Args:
-          balance: The outstanding debt balance
-          rate: Annual interest rate as a decimal
-          
-      Returns:
-          Monthly payment amount
-          
-      Raises:
-          ValueError: If balance or rate is negative
-      """
-  ```
+- Use Google-style docstrings (see example below)
+- Follow Black formatting with 88-character line length
+- Documentation is automatically updated during releases (see Release Workflow)
+
+**Google-style Docstring Example:**
+```python
+def calculate_payment(balance: float, rate: float) -> float:
+    """Calculate monthly payment for a given balance and rate.
+    
+    Args:
+        balance: The outstanding debt balance
+        rate: Annual interest rate as a decimal
+        
+    Returns:
+        Monthly payment amount
+        
+    Raises:
+        ValueError: If balance or rate is negative
+    """
+```
+
+### Release Workflow and Documentation
+
+**IMPORTANT**: This project uses a mandatory documentation update step that runs for every release (patch, minor, major). This step is non-skippable and automatically:
+
+- Updates and enhances docstrings in modified Python files
+- Updates version references throughout documentation
+- Generates CHANGELOG entries from git commits
+- Commits all changes before version bumping
+
+**Testing Documentation Updates Locally:**
+```bash
+# Preview changes without committing (dry-run)
+python scripts/update_documentation.py \
+    --from-version 2.0.2 \
+    --to-version 2.0.3 \
+    --verbose \
+    --dry-run
+
+# Apply documentation updates
+python scripts/update_documentation.py \
+    --from-version 2.0.2 \
+    --to-version 2.0.3 \
+    --verbose
+```
+
+**Complete Release Workflow:**
+```bash
+# The full release workflow automatically includes documentation updates
+python scripts/release_workflow.py patch --target-version 2.0.3
+
+# For minor releases
+python scripts/release_workflow.py minor --target-version 2.1.0
+
+# For major releases  
+python scripts/release_workflow.py major --target-version 3.0.0
+```
+
+**What Gets Updated Automatically:**
+1. Module docstrings added to files missing them
+2. Version references in `README.md`, `docs/`, and `.rst` files
+3. CHANGELOG.md with categorized bug fixes and improvements
+4. Code formatting with Black
+
+**Your Responsibilities as a Contributor:**
+- Write initial docstrings for new code (they'll be enhanced during release)
+- Use Google-style docstring format
+- Stay within 88-character line length
+- Write clear commit messages (they're used to generate CHANGELOG)
+- Run tests before submitting PRs
 
 ### Error Handling
 
