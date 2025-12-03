@@ -406,8 +406,26 @@ def analyze(
                     auto_backup=cfg.get("auto_backup"),
                 )
                 balance_update_result = updater.update_workbook(input_path)
+                
+                # Display detailed balance changes
                 debt_count = len(balance_update_result["debt_updates"])
-                click.echo(f"✓ Balances updated ({debt_count} debt(s))\n")
+                if debt_count > 0:
+                    click.echo(f"\n💳 Updated {debt_count} debt balance(s):")
+                    for update in balance_update_result["debt_updates"]:
+                        click.echo(
+                            f"  • {update['excel_name_new']}: "
+                            f"${update['old_balance']:.2f} → ${update['new_balance']:.2f}"
+                        )
+                else:
+                    click.echo("  No debt balance changes")
+                
+                if balance_update_result["settings_update"]:
+                    su = balance_update_result["settings_update"]
+                    click.echo(
+                        f"\n🏦 Bank balance updated: ${su['balance']:.2f}"
+                    )
+                
+                click.echo()
             except (FileNotFoundError, BalanceUpdaterError, ImportError) as e:
                 click.echo(f"✗ Balance update failed: {e}", err=True)
                 if not click.confirm("Continue with analysis anyway?"):
