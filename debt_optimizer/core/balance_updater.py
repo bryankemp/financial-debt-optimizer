@@ -16,7 +16,7 @@ try:
     from thefuzz import fuzz, process
 
     HAS_FUZZ = True
-    FUZZ_LIBRARY = "thefuzz"
+    FUZZ_LIBRARY: Optional[str] = "thefuzz"
 except ImportError:
     try:
         from rapidfuzz import fuzz, process
@@ -25,7 +25,7 @@ except ImportError:
         FUZZ_LIBRARY = "rapidfuzz"
     except ImportError:
         HAS_FUZZ = False
-        FUZZ_LIBRARY = None
+        FUZZ_LIBRARY = "none"
 
 import openpyxl
 
@@ -96,14 +96,13 @@ class BalanceUpdater:
         """Load account balances from Quicken database.
 
         Calculates balance as Quicken register shows it:
-        - Prefers ZONLINEBANKINGLEDGERBALANCEAMOUNT when available
-        - Otherwise sums:
-          * All reconciled transactions (ZRECONCILESTATUS = 2)
-          * All unreconciled transactions (ZRECONCILESTATUS != 2) up to current date
+        - Prioritizes register balance (sum of all transactions dated today or earlier)
+        - Falls back to ZONLINEBANKINGLEDGERBALANCEAMOUNT if no transactions exist
+        - Includes ALL transactions (reconciled, cleared, and uncleared) dated today or earlier
+        - Excludes only future-dated transactions
 
-        This matches Quicken's register balance which includes cleared/reconciled
-        transactions plus any unreconciled transactions dated today or earlier.
-        Uses Apple Cocoa timestamp format (seconds since 2001-01-01).
+        This matches Quicken's register balance which includes all transaction statuses
+        dated on or before today. Uses Apple Cocoa timestamp format (seconds since 2001-01-01).
 
         Returns:
             Tuple of (accounts_by_name, credit_card_names, checking_names, savings_names)  # noqa: E501
@@ -124,20 +123,14 @@ class BalanceUpdater:
                     a.ZTYPENAME AS type,
                     a.ZACTIVE AS active,
                     COALESCE(
-                        a.ZONLINEBANKINGLEDGERBALANCEAMOUNT,
                         (
-                            SELECT COALESCE(SUM(t2.ZAMOUNT), 0)
+                            SELECT SUM(t2.ZAMOUNT)
                             FROM ZTRANSACTION t2
                             WHERE t2.ZACCOUNT = a.Z_PK
                               AND t2.ZDELETIONCOUNT = 0
-                              AND (
-                                  t2.ZRECONCILESTATUS = 2
-                                  OR (
-                                      t2.ZRECONCILESTATUS != 2
-                                      AND COALESCE(NULLIF(t2.ZPOSTEDDATE, 0), NULLIF(t2.ZENTEREDDATE, 0), 0) <= ?
-                                  )
-                              )
+                              AND COALESCE(NULLIF(t2.ZPOSTEDDATE, 0), NULLIF(t2.ZENTEREDDATE, 0), 0) <= ?
                         ),
+                        a.ZONLINEBANKINGLEDGERBALANCEAMOUNT,
                         0
                     ) AS balance
                 FROM ZACCOUNT a
@@ -230,8 +223,8 @@ class BalanceUpdater:
                 qb = accounts_by_name[qname]["balance"]
                 new_balance = abs(qb)
 
-                # Only update if balance changed
-                if old_balance != new_balance:
+                # Only update if balance changed (use tolerance for floating point comparison)
+                if abs((old_balance or 0.0) - new_balance) > 0.01:
                     balance_cell.value = float(new_balance)
                     excel_name_cell.value = qname
                     updates.append(
@@ -272,21 +265,27 @@ class BalanceUpdater:
                 qb = accounts_by_name[candidate]["balance"]
                 new_balance = abs(qb)
 
-                # Only update if balance changed or name changed
-                if old_balance != new_balance or excel_name != candidate:
+                # Update cell if balance or name changed
+                balance_changed = abs((old_balance or 0.0) - new_balance) > 0.01
+                name_changed = excel_name != candidate
+                
+                if balance_changed or name_changed:
                     balance_cell.value = float(new_balance)
                     excel_name_cell.value = candidate
-                    updates.append(
-                        {
-                            "row": row,
-                            "excel_name_old": excel_name,
-                            "excel_name_new": candidate,
-                            "old_balance": old_balance,
-                            "new_balance": new_balance,
-                            "score": score,
-                            "auto": False,
-                        }
-                    )
+                    
+                    # Only report as update if balance actually changed
+                    if balance_changed:
+                        updates.append(
+                            {
+                                "row": row,
+                                "excel_name_old": excel_name,
+                                "excel_name_new": candidate,
+                                "old_balance": old_balance,
+                                "new_balance": new_balance,
+                                "score": score,
+                                "auto": False,
+                            }
+                        )
 
         return updates
 
@@ -313,8 +312,8 @@ class BalanceUpdater:
             bal = float(accounts_by_name[target_name]["balance"])
             old_balance = ws.cell(row=3, column=2).value
 
-            # Only update if balance changed
-            if old_balance != bal:
+            # Only update if balance changed (use tolerance for floating point comparison)
+            if abs((old_balance or 0.0) - bal) > 0.01:
                 ws.cell(row=3, column=2).value = bal
                 return {"name": target_name, "balance": bal, "matched": "exact"}
             return None

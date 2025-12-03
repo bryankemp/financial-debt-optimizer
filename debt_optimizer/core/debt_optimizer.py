@@ -5,8 +5,9 @@ This module is part of the Financial Debt Optimizer project.
 
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
+from decimal import Decimal, ROUND_HALF_UP
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
@@ -95,6 +96,102 @@ class DebtPaymentPlan:
     payoff_order: int
 
 
+def compute_min_payment_reserves(
+    now: date,
+    cash_on_hand: Decimal,
+    incomes: List[Dict[str, Any]],
+    obligations: List[Dict[str, Any]],
+) -> Tuple[Decimal, Dict[str, Decimal]]:
+    """Calculate minimum payment reserves needed to cover all obligations.
+
+    This function ensures that every minimum payment due on or before its due date
+    is fully covered by the sum of:
+    - Current cash on hand
+    - Plus incomes that arrive on or before each obligation's due date
+    - Minus reserves already committed to obligations with earlier due dates
+
+    Args:
+        now: Current date for which to calculate reserves
+        cash_on_hand: Current available cash (as Decimal)
+        incomes: List of future income events, each with 'date' and 'amount' keys
+        obligations: List of minimum payment obligations, each with 'debt_name',
+                    'due_date', and 'min_amount' keys
+
+    Returns:
+        Tuple of (total_required_reserve, per_obligation_reserve_map)
+        - total_required_reserve: Total amount that must be reserved
+        - per_obligation_reserve_map: Dict mapping debt_name to reserve amount
+
+    Policy:
+        - Incomes on the same day as the obligation due date are counted as available
+        - Obligations are processed in chronological order by due date
+        - Only the shortfall (if any) is reserved for each obligation
+
+    Example:
+        For the November 2025 scenario:
+        - now = 2025-11-11, cash_on_hand = 1523.75
+        - incomes = [{date: 2025-11-12, amount: 590}, {date: 2025-11-21, amount: 1492.37}]
+        - obligations = [{debt_name: "Prime Visa", due_date: 2025-11-19, min_amount: 805}]
+        - Result: total_reserve = 215.00 (805 - 590), per_obligation = {"Prime Visa": 215}
+    """
+    # Sort obligations by due date (earliest first)
+    sorted_obligations = sorted(obligations, key=lambda x: x["due_date"])
+
+    # Sort incomes by date
+    sorted_incomes = sorted(incomes, key=lambda x: x["date"])
+
+    # Track total reserve needed and per-obligation reserves
+    total_reserve = Decimal("0.00")
+    per_obligation_reserve = {}
+
+    # Running balance: what we'll have available as we move through time
+    # Start with current cash minus cumulative reserves
+    cumulative_reserved = Decimal("0.00")
+
+    for obligation in sorted_obligations:
+        debt_name = obligation["debt_name"]
+        due_date = obligation["due_date"]
+        min_amount = Decimal(str(obligation["min_amount"]))
+
+        # Calculate total income available by the due date (inclusive)
+        # This is income that will arrive AFTER now and ON OR BEFORE due date
+        income_by_due_date = sum(
+            Decimal(str(inc["amount"]))
+            for inc in sorted_incomes
+            if now < inc["date"] <= due_date
+        )
+
+        # Key insight: We need to reserve from CURRENT cash any shortfall between
+        # the obligation amount and future income. This ensures that if we spend
+        # the remaining cash on extra payments, we'll still have enough when
+        # combined with future income to meet the obligation.
+        #
+        # For example, if we need $805 on Nov 19, and will receive $590 on Nov 12,
+        # we must reserve $215 NOW (on Nov 11) to ensure we have enough.
+        
+        # Calculate shortfall: what portion of the minimum payment is NOT covered by future income
+        income_shortfall = max(Decimal("0.00"), min_amount - income_by_due_date)
+        
+        # But we can't reserve more than we have available after previous reservations
+        available_cash_now = cash_on_hand - cumulative_reserved
+        
+        # Reserve the lesser of the shortfall and available cash
+        # (if available cash is less than shortfall, we're in trouble, but reserve what we can)
+        shortfall = min(income_shortfall, available_cash_now)
+
+        # Reserve the shortfall
+        per_obligation_reserve[debt_name] = shortfall.quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+        cumulative_reserved += shortfall
+        total_reserve += shortfall
+
+    # Quantize total reserve to cents
+    total_reserve = total_reserve.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    return total_reserve, per_obligation_reserve
+
+
 class DebtOptimizer:
     """Main debt optimization engine."""
 
@@ -102,10 +199,10 @@ class DebtOptimizer:
         self,
         debts: List[Debt],
         income_sources: List[Income],
-        recurring_expenses: List[RecurringExpense] = None,
-        future_income: List[FutureIncome] = None,
-        future_expenses: List = None,
-        settings: Dict[str, Any] = None,
+        recurring_expenses: Optional[List[RecurringExpense]] = None,
+        future_income: Optional[List[FutureIncome]] = None,
+        future_expenses: Optional[List] = None,
+        settings: Optional[Dict[str, Any]] = None,
     ):
         """Initialize the debt optimizer with debts, income, expenses, and future income."""  # noqa: E501
         self.debts = debts.copy()
@@ -177,7 +274,7 @@ class DebtOptimizer:
         description: str,
         rationale: str,
         impact: str,
-        data_snapshot: Dict[str, Any] = None,
+        data_snapshot: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Log a decision for audit trail and learning purposes."""
         entry = DecisionLogEntry(
@@ -246,12 +343,17 @@ class DebtOptimizer:
                 for c in cashflow_comparisons
                 if c != best_result.monthly_cash_flow_improvement
             ]
-            return (
-                f"Selected for best cash flow: "
-                f"${best_result.monthly_cash_flow_improvement:,.2f}/month vs others: {other_flows}"  # noqa: E501
-            )
-        else:
-            return "Selected based on overall optimization metrics"
+        # MAXIMIZE_CASHFLOW
+        cashflow_comparisons = [r.monthly_cash_flow_improvement for r in all_results]
+        other_flows = [
+            f"${c:,.2f}"
+            for c in cashflow_comparisons
+            if c != best_result.monthly_cash_flow_improvement
+        ]
+        return (
+            f"Selected for best cash flow: "
+            f"${best_result.monthly_cash_flow_improvement:,.2f}/month vs others: {other_flows}"  # noqa: E501
+        )
 
     def optimize_debt_strategy(
         self,
@@ -670,105 +772,100 @@ class DebtOptimizer:
             # Step 4: After all same-day minimum payments, make extra payments with remaining cash  # noqa: E501
             # Only do this if we received income today or have sufficient cash flow
             if daily_income > 0 or bank_balance > 0:
-                # Calculate how much cash we need to reserve for upcoming minimum payments  # noqa: E501
-                # Look ahead to find all minimum payments due before the next income event  # noqa: E501
-                reserved_for_minimums = 0.0
-
-                # Find next income date after current date
-                next_income_date = None
-                for event_date, event_type, _ in events[i:]:
-                    if event_type == "income" and event_date > current_date:
-                        next_income_date = event_date
-                        break
-
-                # If no future income found, use a reasonable timeframe (30 days)
-                if next_income_date is None:
-                    next_income_date = current_date + timedelta(days=30)
-
-                # Calculate required reserves for all minimum payments AND recurring expenses until next income  # noqa: E501
-                reserved_for_expenses = 0
+                # DEBUG - write to file for November 2025
+                if current_date.year == 2025 and current_date.month == 11 and current_date.day == 11:
+                    with open('/tmp/debug_nov11.txt', 'a') as f:
+                        f.write(f"\n=== Processing Nov 11, 2025 ===\n")
+                        f.write(f"Bank balance: {bank_balance}\n")
+                        f.write(f"Daily income: {daily_income}\n")
+                
+                # Use the new compute_min_payment_reserves function to calculate reserves
+                # Collect future income events
+                future_incomes = []
                 for event_date, event_type, event_data in events[i:]:
-                    if event_date > next_income_date:
-                        break
+                    if event_type == "income":
+                        future_incomes.append({
+                            "date": event_date,
+                            "amount": event_data["amount"]
+                        })
+
+                # Collect future minimum payment obligations
+                future_obligations = []
+                for event_date, event_type, event_data in events[i:]:
                     if event_type == "debt_payment":
                         debt = event_data["debt"]
                         # Find current balance for this debt
+                        current_balance = 0.0
                         for idx, (d, bal) in enumerate(current_debts):
                             if d.name == debt.name:
                                 current_balance = bal
                                 break
-                        else:
-                            current_balance = 0.0
 
-                        # Only reserve money for debts that still have balances
+                        # Only include debts that still have balances
                         if current_balance > 0.01:
-                            # Check if there's income on the same day as this payment
-                            same_day_income = False
-                            for (
-                                future_event_date,
-                                future_event_type,
-                                future_event_data,
-                            ) in events[i:]:
-                                if (
-                                    future_event_date == event_date
-                                    and future_event_type == "income"
-                                ):
-                                    # Calculate payment needed
-                                    interest_charge = debt.calculate_interest_charge(
-                                        current_balance
-                                    )
-                                    min_payment_needed = min(
-                                        debt.minimum_payment,
-                                        current_balance + interest_charge,
-                                    )
-                                    # Check if the income amount covers the payment
-                                    if (
-                                        future_event_data["amount"]
-                                        >= min_payment_needed
-                                    ):
-                                        same_day_income = True
-                                        break
-                                elif future_event_date > event_date:
-                                    break
+                            interest_charge = debt.calculate_interest_charge(current_balance)
+                            min_payment_needed = min(
+                                debt.minimum_payment,
+                                current_balance + interest_charge,
+                            )
+                            future_obligations.append({
+                                "debt_name": debt.name,
+                                "due_date": event_date,
+                                "min_amount": min_payment_needed,
+                            })
 
-                            # Only reserve if payment isn't covered by same-day income
-                            if not same_day_income:
-                                interest_charge = debt.calculate_interest_charge(
-                                    current_balance
-                                )
-                                min_payment_needed = min(
-                                    debt.minimum_payment,
-                                    current_balance + interest_charge,
-                                )
-                                reserved_for_minimums += float(min_payment_needed)
-                    elif event_type == "expense":
-                        # Only reserve money for expenses that DON'T happen on the same day as income  # noqa: E501
-                        # Check if there's income on the same day as this expense
-                        same_day_income = False
-                        for (
-                            future_event_date,
-                            future_event_type,
-                            future_event_data,
-                        ) in events[i:]:
-                            if (
-                                future_event_date == event_date
-                                and future_event_type == "income"
-                            ):
-                                # Check if the income amount covers the expense
-                                if future_event_data["amount"] >= event_data["amount"]:
-                                    same_day_income = True
-                                    break
-                            elif future_event_date > event_date:
-                                break
+                # Collect future expense obligations
+                future_expenses = []
+                for event_date, event_type, event_data in events[i:]:
+                    if event_type == "expense":
+                        future_expenses.append({
+                            "date": event_date,
+                            "amount": event_data["amount"]
+                        })
 
-                        # Only reserve if expense isn't covered by same-day income
-                        if not same_day_income:
-                            expense_amount = event_data["amount"]
-                            reserved_for_expenses += expense_amount
+                # Calculate minimum payment reserves using the new function
+                from decimal import Decimal
+                total_min_reserve, per_debt_reserve = compute_min_payment_reserves(
+                    now=current_date,
+                    cash_on_hand=Decimal(str(bank_balance)),
+                    incomes=future_incomes,
+                    obligations=future_obligations,
+                )
+                reserved_for_minimums = float(total_min_reserve)
+                
+                # Calculate expense reserves using same logic as minimum payment reserves
+                # Convert future_expenses to obligations format
+                expense_obligations = [
+                    {
+                        "debt_name": f"Expense_{idx}",  # Unique name for tracking
+                        "due_date": expense["date"],
+                        "min_amount": expense["amount"],
+                    }
+                    for idx, expense in enumerate(future_expenses)
+                ]
+                
+                # Calculate expense reserves (account for cash already reserved for minimums)
+                total_expense_reserve, _ = compute_min_payment_reserves(
+                    now=current_date,
+                    cash_on_hand=Decimal(str(bank_balance)) - Decimal(str(reserved_for_minimums)),
+                    incomes=future_incomes,
+                    obligations=expense_obligations,
+                )
+                reserved_for_expenses = float(total_expense_reserve)
 
                 total_reserved = reserved_for_minimums + reserved_for_expenses
                 # Calculate available cash for extra payments (after reserving for minimum payments AND expenses)  # noqa: E501
                 available_for_extra = max(0, bank_balance - total_reserved)
+                
+                # Debug print for Nov 11
+                if current_date.year == 2025 and current_date.month == 11 and current_date.day == 11:
+                    with open('/tmp/debug_nov11.txt', 'a') as f:
+                        f.write(f"Future incomes: {future_incomes}\n")
+                        f.write(f"Future obligations: {future_obligations}\n")
+                        f.write(f"Reserved for minimums: {reserved_for_minimums}\n")
+                        f.write(f"Reserved for expenses: {reserved_for_expenses}\n")
+                        f.write(f"Total reserved: {total_reserved}\n")
+                        f.write(f"Available for extra: {available_for_extra}\n")
 
                 if available_for_extra > 0.01:
                     # Find the priority debt (first debt in ordered list with remaining balance)  # noqa: E501
@@ -1281,7 +1378,7 @@ class DebtOptimizer:
         )
 
         # Look for monthly extra funds entries that match this month
-        allocated_extra = 0
+        allocated_extra = 0.0
         for mef in self.monthly_extra_funds:
             # Check if this monthly extra fund entry is for this month
             if (
@@ -1427,10 +1524,8 @@ class DebtOptimizer:
             best = min(results, key=lambda r: r.total_interest_paid)
         elif goal == OptimizationGoal.MINIMIZE_TIME:
             best = min(results, key=lambda r: r.total_months_to_freedom)
-        elif goal == OptimizationGoal.MAXIMIZE_CASHFLOW:
+        else:  # OptimizationGoal.MAXIMIZE_CASHFLOW or any other
             best = max(results, key=lambda r: r.monthly_cash_flow_improvement)
-        else:
-            best = results[0]  # Default to first result
 
         # Update the goal in the result
         best.goal = goal.value

@@ -179,10 +179,22 @@ class TestRunner:
         """Run type checking with mypy."""
         print("\n🔍 Running type checking...")
 
-        return self.run_command(
-            ["mypy", "debt_optimizer", "--ignore-missing-imports", "--no-strict-optional"],
-            "MyPy type checking",
-        )
+        # Check if mypy.ini exists, otherwise use command-line options
+        if Path("mypy.ini").exists():
+            return self.run_command(
+                ["mypy", "debt_optimizer", "--config-file", "mypy.ini"],
+                "MyPy type checking",
+            )
+        else:
+            return self.run_command(
+                [
+                    "mypy",
+                    "debt_optimizer",
+                    "--ignore-missing-imports",
+                    "--no-strict-optional",
+                ],
+                "MyPy type checking",
+            )
 
     def run_security_checks(self) -> bool:
         """Run security vulnerability checks."""
@@ -190,11 +202,28 @@ class TestRunner:
 
         success = True
 
-        # Safety check for known vulnerabilities
+        # Safety scan for known vulnerabilities (new command)
+        # Scan requirements files if they exist, otherwise scan environment
+        requirements_files = []
+        if Path("requirements.txt").exists():
+            requirements_files.extend(["-r", "requirements.txt"])
+        if Path("requirements-dev.txt").exists():
+            requirements_files.extend(["-r", "requirements-dev.txt"])
+
+        safety_cmd = ["safety", "scan", "--output", "screen"]
+        if requirements_files:
+            safety_cmd.extend(requirements_files)
+            print(
+                f"   Scanning: {', '.join([f for f in requirements_files if f != '-r'])}"
+            )
+        else:
+            print("   Scanning: environment")
+
+        # Safety scan should fail the build if vulnerabilities are found
         success &= self.run_command(
-            ["safety", "check", "--json"],
-            "Safety vulnerability check",
-            allow_failure=True,  # May have false positives
+            safety_cmd,
+            "Safety vulnerability scan",
+            allow_failure=False,  # Treat vulnerabilities as build failures
         )
 
         # Bandit security linting

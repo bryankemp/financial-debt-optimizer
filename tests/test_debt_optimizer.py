@@ -12,8 +12,7 @@ from pathlib import Path
 src_path = Path(__file__).parent.parent / "debt_optimizer"
 sys.path.insert(0, str(src_path))
 
-from datetime import date, datetime, timedelta  # noqa: E402
-from typing import List  # noqa: E402
+from datetime import date, timedelta  # noqa: E402
 
 import pandas as pd  # noqa: E402
 import pytest  # noqa: E402
@@ -287,8 +286,7 @@ class TestDebtOptimizer:
             goal=OptimizationGoal.MINIMIZE_INTEREST, extra_payment=200.0
         )
 
-        # Total payments should be greater than total debt principal
-        total_debt = sum(debt.balance for debt in self.debts)
+        # Total interest should be non-negative
         assert result.total_interest_paid >= 0
 
         # Months to freedom should be reasonable
