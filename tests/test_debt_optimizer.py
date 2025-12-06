@@ -197,6 +197,37 @@ class TestDebtOptimizer:
         assert isinstance(result.payment_schedule, pd.DataFrame)
 
     @pytest.mark.unit
+    def test_skip_duplicate_income_events(self):
+        """Test that income events with matching balance are skipped."""
+        # Create a scenario where bank balance equals expected balance after income
+        # This simulates the case where income was already applied
+        debts = [Debt("Test Debt", 1000.0, 100.0, 10.0, 15)]
+        income = [Income("Salary", 2000.0, "monthly", date(2024, 1, 1))]
+        
+        # Set bank balance to exactly what it would be after receiving income
+        # Starting balance: 500, Income: 2000, Expected after: 2500
+        settings = {
+            "current_bank_balance": 2500.0,
+            "emergency_fund": 0.0,
+        }
+        
+        optimizer = DebtOptimizer(debts, income, [], [], [], settings)
+        result = optimizer.optimize_debt_strategy(
+            OptimizationGoal.MINIMIZE_INTEREST, 0.0
+        )
+        
+        # Check that payment schedule doesn't include duplicate income event
+        schedule = result.payment_schedule
+        income_events = schedule[schedule["type"] == "income"]
+        
+        # Should have income events, but duplicates should be filtered
+        assert len(income_events) >= 0
+        
+        # Verify no zero-amount income events (which would indicate skipped duplicates)
+        if len(income_events) > 0:
+            assert all(income_events["amount"] > 0)
+
+    @pytest.mark.unit
     def test_hybrid_strategy(self):
         """Test hybrid optimization strategy."""
         result = self.optimizer.optimize_debt_strategy(

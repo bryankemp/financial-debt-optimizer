@@ -611,24 +611,40 @@ class DebtOptimizer:
                     f"Invalid due_date for debt '{debt.name}': {debt.due_date}"
                 )
 
-        # Add opening balance
+        # Generate all events chronologically
+        events = self._generate_chronological_events(start_date, end_date)
+        
+        # Calculate total income that occurs on start_date (today)
+        # The current bank balance likely already includes this income
+        # so we subtract it to get the true opening balance
+        income_today = sum(
+            event_data["amount"]
+            for event_date, event_type, event_data in events
+            if event_type == "income" and event_date == start_date
+        )
+        
+        # Adjust opening balance by subtracting today's income
+        # This prevents double-counting when balance was updated from Quicken
+        opening_balance = bank_balance - income_today
+        
+        # Add opening balance entry
         payment_schedule.append(
             {
                 "date": start_date,
                 "type": "opening_balance",
-                "description": "Opening Bank Balance",
+                "description": "Opening Bank Balance (before today's income)",
                 "amount": 0.0,
                 "interest_portion": 0.0,
                 "principal_portion": 0.0,
                 "remaining_balance": sum(balance for _, balance in current_debts),
-                "bank_balance": bank_balance,
+                "bank_balance": opening_balance,
                 "debt_balance": "",  # Blank for opening balance
                 "debt_name": "",  # Blank for opening balance
             }
         )
-
-        # Generate all events chronologically
-        events = self._generate_chronological_events(start_date, end_date)
+        
+        # Reset bank balance to opening balance so income events will be applied
+        bank_balance = opening_balance
 
         # Process events in chronological order, but group same-day events together
         i = 0
