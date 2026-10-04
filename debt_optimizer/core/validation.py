@@ -153,10 +153,11 @@ def validate_income_data(income_data) -> List[str]:
 
 
 def validate_expense_data(expense_data) -> List[str]:
-    """Validate expense data - can handle both dictionaries and lists of RecurringExpense objects.  # noqa: E501
+    """Validate expense data - handles dictionaries and lists of RecurringExpense.
 
     Args:
-        expense_data: Dictionary containing expense information or list of RecurringExpense objects  # noqa: E501
+        expense_data: Dictionary containing expense information or list of
+            RecurringExpense objects
 
     Returns:
         List of validation error messages (empty if valid)

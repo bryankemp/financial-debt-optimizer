@@ -2,9 +2,8 @@
 
 import sqlite3
 import tempfile
-from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import openpyxl
 import pytest
@@ -55,7 +54,9 @@ def temp_db():
     # Insert test accounts
     cur.execute(
         """
-        INSERT INTO ZACCOUNT (Z_PK, ZNAME, ZTYPENAME, ZACTIVE, ZONLINEBANKINGLEDGERBALANCEAMOUNT)
+        INSERT INTO ZACCOUNT (
+            Z_PK, ZNAME, ZTYPENAME, ZACTIVE, ZONLINEBANKINGLEDGERBALANCEAMOUNT
+        )
         VALUES (1, 'PECU Checking', 'CHECKING', 1, 5000.00)
     """
     )
@@ -72,14 +73,18 @@ def temp_db():
 
     cur.execute(
         """
-        INSERT INTO ZACCOUNT (Z_PK, ZNAME, ZTYPENAME, ZACTIVE, ZONLINEBANKINGLEDGERBALANCEAMOUNT)
+        INSERT INTO ZACCOUNT (
+            Z_PK, ZNAME, ZTYPENAME, ZACTIVE, ZONLINEBANKINGLEDGERBALANCEAMOUNT
+        )
         VALUES (3, 'Ally Savings', 'SAVINGS', 1, 10000.00)
     """
     )
 
     cur.execute(
         """
-        INSERT INTO ZACCOUNT (Z_PK, ZNAME, ZTYPENAME, ZACTIVE, ZONLINEBANKINGLEDGERBALANCEAMOUNT)
+        INSERT INTO ZACCOUNT (
+            Z_PK, ZNAME, ZTYPENAME, ZACTIVE, ZONLINEBANKINGLEDGERBALANCEAMOUNT
+        )
         VALUES (4, 'Inactive Account', 'CHECKING', 0, 100.00)
     """
     )
