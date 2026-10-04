@@ -122,6 +122,7 @@ class BalanceUpdater:
                     a.ZNAME AS name,
                     a.ZTYPENAME AS type,
                     a.ZACTIVE AS active,
+                    a.ZCREDITLIMIT AS credit_limit,
                     COALESCE(
                         (
                             SELECT SUM(t2.ZAMOUNT)
@@ -149,10 +150,12 @@ class BalanceUpdater:
                 name = r["name"]
                 acc_type = (r["type"] or "").upper().strip()
                 bal = float(r["balance"] or 0.0)
+                credit_limit = float(r["credit_limit"]) if r["credit_limit"] else None
                 accounts_by_name[name] = {
                     "id": r["id"],
                     "type": acc_type,
                     "balance": bal,
+                    "credit_limit": credit_limit,
                 }
                 if acc_type == "CREDITCARD":
                     credit_card_names.append(name)
@@ -185,10 +188,30 @@ class BalanceUpdater:
             ans = default
         return ans in ("y", "yes")
 
+    def _find_column_by_header(self, ws, header_name: str, default_col: int) -> int:
+        """Find column index by header name (case-insensitive).
+
+        Args:
+            ws: openpyxl worksheet
+            header_name: Header text to search for
+            default_col: Default column index if header not found
+
+        Returns:
+            1-indexed column number
+        """
+        header_lower = header_name.lower().replace(" ", "_")
+        for col in range(1, ws.max_column + 1):
+            cell_value = ws.cell(row=1, column=col).value
+            if cell_value:
+                normalized = str(cell_value).lower().replace(" ", "_")
+                if normalized == header_lower:
+                    return col
+        return default_col
+
     def update_debts_sheet(
         self, ws, accounts_by_name: Dict[str, Dict], credit_card_names: List[str]
     ) -> List[Dict]:
-        """Update debt balances in Debts sheet.
+        """Update debt balances and credit limits in Debts sheet.
 
         Args:
             ws: openpyxl worksheet
@@ -206,38 +229,58 @@ class BalanceUpdater:
         if not credit_card_names:
             return updates
 
+        # Find column indices (with defaults for standard layout)
+        credit_limit_col = self._find_column_by_header(ws, "Credit Limit", 6)
+
         # Iterate rows starting from row 2
         for row in range(2, ws.max_row + 1):
             excel_name_cell = ws.cell(row=row, column=1)  # Column A
             balance_cell = ws.cell(row=row, column=2)  # Column B
+            credit_limit_cell = ws.cell(row=row, column=credit_limit_col)
 
             excel_name = (excel_name_cell.value or "").strip()
             if not excel_name:
                 continue
 
             old_balance = balance_cell.value
+            old_credit_limit = credit_limit_cell.value
 
             # If exact match, update without prompt
             if excel_name in credit_card_names:
                 qname = excel_name
-                qb = accounts_by_name[qname]["balance"]
+                account_data = accounts_by_name[qname]
+                qb = account_data["balance"]
                 new_balance = abs(qb)
+                new_credit_limit = account_data.get("credit_limit")
 
-                # Only update if balance changed (use tolerance for floating point comparison)
-                if abs((old_balance or 0.0) - new_balance) > 0.01:
-                    balance_cell.value = float(new_balance)
+                # Check what changed
+                balance_changed = abs((old_balance or 0.0) - new_balance) > 0.01
+                credit_limit_changed = (
+                    new_credit_limit is not None
+                    and new_credit_limit > 0
+                    and abs((old_credit_limit or 0.0) - new_credit_limit) > 0.01
+                )
+
+                if balance_changed or credit_limit_changed:
+                    if balance_changed:
+                        balance_cell.value = float(new_balance)
+                    if credit_limit_changed:
+                        credit_limit_cell.value = float(new_credit_limit)
                     excel_name_cell.value = qname
-                    updates.append(
-                        {
-                            "row": row,
-                            "excel_name_old": excel_name,
-                            "excel_name_new": qname,
-                            "old_balance": old_balance,
-                            "new_balance": new_balance,
-                            "score": 100,
-                            "auto": True,
-                        }
-                    )
+
+                    update_record = {
+                        "row": row,
+                        "excel_name_old": excel_name,
+                        "excel_name_new": qname,
+                        "old_balance": old_balance,
+                        "new_balance": new_balance if balance_changed else old_balance,
+                        "score": 100,
+                        "auto": True,
+                    }
+                    if credit_limit_changed:
+                        update_record["old_credit_limit"] = old_credit_limit
+                        update_record["new_credit_limit"] = new_credit_limit
+                    updates.append(update_record)
                 continue
 
             # Fuzzy match to credit card names
@@ -262,30 +305,44 @@ class BalanceUpdater:
             print(f"  Score        : {score}")
 
             if self._prompt_yes_no("Approve this match?", default_no=True):
-                qb = accounts_by_name[candidate]["balance"]
+                account_data = accounts_by_name[candidate]
+                qb = account_data["balance"]
                 new_balance = abs(qb)
+                new_credit_limit = account_data.get("credit_limit")
 
-                # Update cell if balance or name changed
+                # Check what changed
                 balance_changed = abs((old_balance or 0.0) - new_balance) > 0.01
+                credit_limit_changed = (
+                    new_credit_limit is not None
+                    and new_credit_limit > 0
+                    and abs((old_credit_limit or 0.0) - new_credit_limit) > 0.01
+                )
                 name_changed = excel_name != candidate
-                
-                if balance_changed or name_changed:
-                    balance_cell.value = float(new_balance)
-                    excel_name_cell.value = candidate
-                    
-                    # Only report as update if balance actually changed
+
+                if balance_changed or name_changed or credit_limit_changed:
                     if balance_changed:
-                        updates.append(
-                            {
-                                "row": row,
-                                "excel_name_old": excel_name,
-                                "excel_name_new": candidate,
-                                "old_balance": old_balance,
-                                "new_balance": new_balance,
-                                "score": score,
-                                "auto": False,
-                            }
-                        )
+                        balance_cell.value = float(new_balance)
+                    if credit_limit_changed:
+                        credit_limit_cell.value = float(new_credit_limit)
+                    excel_name_cell.value = candidate
+
+                    # Only report as update if balance or credit limit changed
+                    if balance_changed or credit_limit_changed:
+                        update_record = {
+                            "row": row,
+                            "excel_name_old": excel_name,
+                            "excel_name_new": candidate,
+                            "old_balance": old_balance,
+                            "new_balance": (
+                                new_balance if balance_changed else old_balance
+                            ),
+                            "score": score,
+                            "auto": False,
+                        }
+                        if credit_limit_changed:
+                            update_record["old_credit_limit"] = old_credit_limit
+                            update_record["new_credit_limit"] = new_credit_limit
+                        updates.append(update_record)
 
         return updates
 

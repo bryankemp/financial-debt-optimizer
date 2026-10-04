@@ -32,7 +32,8 @@ def temp_db():
             ZNAME TEXT,
             ZTYPENAME TEXT,
             ZACTIVE INTEGER,
-            ZONLINEBANKINGLEDGERBALANCEAMOUNT REAL
+            ZONLINEBANKINGLEDGERBALANCEAMOUNT REAL,
+            ZCREDITLIMIT REAL
         )
     """
     )
@@ -61,8 +62,11 @@ def temp_db():
 
     cur.execute(
         """
-        INSERT INTO ZACCOUNT (Z_PK, ZNAME, ZTYPENAME, ZACTIVE, ZONLINEBANKINGLEDGERBALANCEAMOUNT)
-        VALUES (2, 'Chase Freedom', 'CREDITCARD', 1, -1500.00)
+        INSERT INTO ZACCOUNT (
+            Z_PK, ZNAME, ZTYPENAME, ZACTIVE,
+            ZONLINEBANKINGLEDGERBALANCEAMOUNT, ZCREDITLIMIT
+        )
+        VALUES (2, 'Chase Freedom', 'CREDITCARD', 1, -1500.00, 10000.00)
     """
     )
 
@@ -210,6 +214,10 @@ class TestBalanceUpdaterDatabase:
             assert accounts["PECU Checking"]["balance"] == 5000.00
             assert accounts["Chase Freedom"]["balance"] == -1500.00
             assert accounts["Ally Savings"]["balance"] == 10000.00
+
+            # Verify credit limits (None when not set)
+            assert accounts["Chase Freedom"]["credit_limit"] == 10000.00
+            assert accounts["PECU Checking"]["credit_limit"] is None
 
             # Verify account types
             assert accounts["PECU Checking"]["type"] == "CHECKING"

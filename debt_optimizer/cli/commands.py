@@ -277,16 +277,28 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
             click.echo(f"\n💳 Updated {len(result['debt_updates'])} debt(s):")
             for update in result["debt_updates"]:
                 auto_str = "(auto)" if update["auto"] else "(approved)"
+                name_display = update["excel_name_new"]
                 if update["excel_name_old"] != update["excel_name_new"]:
-                    click.echo(
-                        f"  • Row {update['row']}: {update['excel_name_old']} → {update['excel_name_new']} "  # noqa: E501
-                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"  # noqa: E501
+                    name_display = (
+                        f"{update['excel_name_old']} → {update['excel_name_new']}"
                     )
-                else:
-                    click.echo(
-                        f"  • Row {update['row']}: {update['excel_name_new']} "
-                        f"${update['old_balance']:.2f} → ${update['new_balance']:.2f} {auto_str}"  # noqa: E501
-                    )
+
+                # Build update details
+                details = []
+                old_bal = update.get("old_balance") or 0
+                new_bal = update.get("new_balance") or 0
+                if abs(old_bal - new_bal) > 0.01:
+                    details.append(f"Balance: ${old_bal:.2f} → ${new_bal:.2f}")
+
+                if "new_credit_limit" in update:
+                    old_cl = update.get("old_credit_limit") or 0
+                    new_cl = update["new_credit_limit"]
+                    details.append(f"Credit Limit: ${old_cl:.2f} → ${new_cl:.2f}")
+
+                details_str = ", ".join(details) if details else "(no changes)"
+                click.echo(
+                    f"  • Row {update['row']}: {name_display} - {details_str} {auto_str}"
+                )
         else:
             click.echo("  No debt updates (all balances current or no matches found)")
 
@@ -356,6 +368,11 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
     is_flag=True,
     help="Compare all available strategies in the report",
 )
+@click.option(
+    "--target-only",
+    is_flag=True,
+    help="Stop simulation when all debts reach their paydown target percentage",
+)
 @click.pass_context
 def analyze(
     ctx,
@@ -366,6 +383,7 @@ def analyze(
     extra_payment: float,
     simple_report: bool,
     compare_strategies: bool,
+    target_only: bool,
 ):
     """Analyze debt and generate optimized repayment plan.
 
@@ -373,7 +391,7 @@ def analyze(
     strategy, and generates a detailed analysis report.
 
     Use -u/--update-balances to sync balances from Quicken before analysis.
-    """
+    Use --target-only to stop when all debts reach their paydown target %."""
 
     logger = get_logger("cli.analyze")
     cfg = ctx.obj["config"]
@@ -406,7 +424,7 @@ def analyze(
                     auto_backup=cfg.get("auto_backup"),
                 )
                 balance_update_result = updater.update_workbook(input_path)
-                
+
                 # Display detailed balance changes
                 debt_count = len(balance_update_result["debt_updates"])
                 if debt_count > 0:
@@ -418,13 +436,11 @@ def analyze(
                         )
                 else:
                     click.echo("  No debt balance changes")
-                
+
                 if balance_update_result["settings_update"]:
                     su = balance_update_result["settings_update"]
-                    click.echo(
-                        f"\n🏦 Bank balance updated: ${su['balance']:.2f}"
-                    )
-                
+                    click.echo(f"\n🏦 Bank balance updated: ${su['balance']:.2f}")
+
                 click.echo()
             except (FileNotFoundError, BalanceUpdaterError, ImportError) as e:
                 click.echo(f"✗ Balance update failed: {e}", err=True)
@@ -482,6 +498,7 @@ def analyze(
         if extra_payment_val > 0:
             settings["extra_payment"] = extra_payment_val
         settings["optimization_goal"] = goal
+        settings["target_only"] = target_only
 
         # Initialize optimizer
         optimizer = DebtOptimizer(

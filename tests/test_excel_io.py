@@ -350,6 +350,21 @@ class TestExcelReader:
             assert isinstance(expense.start_date, date)
 
     @pytest.mark.excel
+    def test_read_future_expenses_blank_amount_raises_clear_error(self):
+        """A blank Amount cell must raise a descriptive ValueError, not NaN."""
+        workbook = load_workbook(self.template_path)
+        sheet = workbook["Future Expenses"]
+        sheet.cell(row=2, column=1).value = "Paying some bills"
+        sheet.cell(row=2, column=2).value = None
+        sheet.cell(row=2, column=3).value = "2099-01-01"
+        sheet.cell(row=2, column=4).value = "once"
+        bad_path = self.temp_dir / "blank_amount.xlsx"
+        workbook.save(bad_path)
+
+        with pytest.raises(ValueError, match="Paying some bills.*blank|blank.*row 2"):
+            ExcelReader(str(bad_path)).read_future_expenses()
+
+    @pytest.mark.excel
     def test_read_settings_sheet(self):
         """Test reading settings from Excel file."""
         settings = self.reader.read_settings()
@@ -509,6 +524,7 @@ class TestExcelWriter:
             "Total Debt Balance",
             "Debt Name",
             "Debt Balance",
+            "Usage %",
             "Bank Balance",
         ]
         for col, expected_header in enumerate(expected_headers, 1):

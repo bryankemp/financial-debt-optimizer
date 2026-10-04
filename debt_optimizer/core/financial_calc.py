@@ -364,6 +364,8 @@ class Debt:
     minimum_payment: float
     interest_rate: float  # Annual percentage rate
     due_date: int  # Day of the month (1-31)
+    credit_limit: Optional[float] = None  # Credit limit for revolving credit
+    paydown_target_pct: Optional[float] = None  # Target balance as % of credit limit
 
     def __post_init__(self):
         """Validate debt parameters after initialization."""
@@ -375,6 +377,35 @@ class Debt:
             raise ValueError("Interest rate cannot be negative")
         if not 1 <= self.due_date <= 31:
             raise ValueError("Due date must be between 1 and 31")
+        if self.credit_limit is not None and self.credit_limit < 0:
+            raise ValueError("Credit limit cannot be negative")
+        if self.paydown_target_pct is not None:
+            if not 0 <= self.paydown_target_pct <= 100:
+                raise ValueError("Paydown target percentage must be between 0 and 100")
+
+    @property
+    def target_balance(self) -> Optional[float]:
+        """Calculate target balance based on credit limit and paydown percentage.
+
+        Returns:
+            Target balance if both credit_limit and paydown_target_pct are set,
+            otherwise None (meaning pay down to $0).
+        """
+        if self.credit_limit is not None and self.paydown_target_pct is not None:
+            return self.credit_limit * self.paydown_target_pct / 100
+        return None
+
+    @property
+    def paydown_amount(self) -> float:
+        """Calculate amount to pay down to reach target balance.
+
+        Returns:
+            Amount needed to reach target balance, or full balance if no target set.
+        """
+        target = self.target_balance
+        if target is not None:
+            return max(0, self.balance - target)
+        return self.balance
 
     @property
     def monthly_interest_rate(self) -> float:

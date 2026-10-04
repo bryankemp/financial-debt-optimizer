@@ -168,13 +168,13 @@ def compute_min_payment_reserves(
         #
         # For example, if we need $805 on Nov 19, and will receive $590 on Nov 12,
         # we must reserve $215 NOW (on Nov 11) to ensure we have enough.
-        
+
         # Calculate shortfall: what portion of the minimum payment is NOT covered by future income
         income_shortfall = max(Decimal("0.00"), min_amount - income_by_due_date)
-        
+
         # But we can't reserve more than we have available after previous reservations
         available_cash_now = cash_on_hand - cumulative_reserved
-        
+
         # Reserve the lesser of the shortfall and available cash
         # (if available cash is less than shortfall, we're in trouble, but reserve what we can)
         shortfall = min(income_shortfall, available_cash_now)
@@ -228,6 +228,7 @@ class DebtOptimizer:
 
         # Default settings
         self.current_bank_balance = self.settings.get("current_bank_balance", 2000.0)
+        self.target_only = self.settings.get("target_only", False)
 
         # Calculate available cash flow after minimum payments AND recurring expenses
         self.available_cash_flow = (
@@ -613,7 +614,7 @@ class DebtOptimizer:
 
         # Generate all events chronologically
         events = self._generate_chronological_events(start_date, end_date)
-        
+
         # Calculate total income that occurs on start_date (today)
         # The current bank balance likely already includes this income
         # so we subtract it to get the true opening balance
@@ -622,11 +623,11 @@ class DebtOptimizer:
             for event_date, event_type, event_data in events
             if event_type == "income" and event_date == start_date
         )
-        
+
         # Adjust opening balance by subtracting today's income
         # This prevents double-counting when balance was updated from Quicken
         opening_balance = bank_balance - income_today
-        
+
         # Add opening balance entry
         payment_schedule.append(
             {
@@ -642,7 +643,7 @@ class DebtOptimizer:
                 "debt_name": "",  # Blank for opening balance
             }
         )
-        
+
         # Reset bank balance to opening balance so income events will be applied
         bank_balance = opening_balance
 
@@ -748,17 +749,22 @@ class DebtOptimizer:
                         required_payment = min(
                             debt.minimum_payment, current_balance + interest_charge
                         )
-                        min_principal = max(0, required_payment - interest_charge)
-                        min_principal = min(min_principal, current_balance)
 
                         # Make the payment if we have funds available
                         actual_payment = min(required_payment, bank_balance)
 
+                        # Calculate how much of actual payment goes to interest vs principal
+                        # Interest is paid first, then remaining goes to principal
+                        actual_interest = min(interest_charge, actual_payment)
+                        actual_principal = min(
+                            actual_payment - actual_interest, current_balance
+                        )
+
                         # Update balances
                         if actual_payment > 0.01:
-                            current_balance -= min_principal
+                            current_balance -= actual_principal
                             bank_balance -= actual_payment
-                            total_interest_paid += interest_charge
+                            total_interest_paid += actual_interest
 
                         current_balance = max(
                             0, current_balance
@@ -774,14 +780,15 @@ class DebtOptimizer:
                                 "type": "payment",
                                 "description": f"{debt.name} Payment",
                                 "amount": -actual_payment,
-                                "interest_portion": interest_charge,
-                                "principal_portion": min_principal,
+                                "interest_portion": actual_interest,
+                                "principal_portion": actual_principal,
                                 "remaining_balance": sum(
                                     balance for _, balance in current_debts
                                 ),
                                 "bank_balance": bank_balance,
                                 "debt_balance": current_balance,  # Balance of this specific debt after payment  # noqa: E501
                                 "debt_name": debt.name,  # Name of the debt being paid
+                                "credit_limit": debt.credit_limit,  # Credit limit for utilization calc
                             }
                         )
 
@@ -789,21 +796,24 @@ class DebtOptimizer:
             # Only do this if we received income today or have sufficient cash flow
             if daily_income > 0 or bank_balance > 0:
                 # DEBUG - write to file for November 2025
-                if current_date.year == 2025 and current_date.month == 11 and current_date.day == 11:
-                    with open('/tmp/debug_nov11.txt', 'a') as f:
+                if (
+                    current_date.year == 2025
+                    and current_date.month == 11
+                    and current_date.day == 11
+                ):
+                    with open("/tmp/debug_nov11.txt", "a") as f:
                         f.write(f"\n=== Processing Nov 11, 2025 ===\n")
                         f.write(f"Bank balance: {bank_balance}\n")
                         f.write(f"Daily income: {daily_income}\n")
-                
+
                 # Use the new compute_min_payment_reserves function to calculate reserves
                 # Collect future income events
                 future_incomes = []
                 for event_date, event_type, event_data in events[i:]:
                     if event_type == "income":
-                        future_incomes.append({
-                            "date": event_date,
-                            "amount": event_data["amount"]
-                        })
+                        future_incomes.append(
+                            {"date": event_date, "amount": event_data["amount"]}
+                        )
 
                 # Collect future minimum payment obligations
                 future_obligations = []
@@ -819,28 +829,32 @@ class DebtOptimizer:
 
                         # Only include debts that still have balances
                         if current_balance > 0.01:
-                            interest_charge = debt.calculate_interest_charge(current_balance)
+                            interest_charge = debt.calculate_interest_charge(
+                                current_balance
+                            )
                             min_payment_needed = min(
                                 debt.minimum_payment,
                                 current_balance + interest_charge,
                             )
-                            future_obligations.append({
-                                "debt_name": debt.name,
-                                "due_date": event_date,
-                                "min_amount": min_payment_needed,
-                            })
+                            future_obligations.append(
+                                {
+                                    "debt_name": debt.name,
+                                    "due_date": event_date,
+                                    "min_amount": min_payment_needed,
+                                }
+                            )
 
                 # Collect future expense obligations
                 future_expenses = []
                 for event_date, event_type, event_data in events[i:]:
                     if event_type == "expense":
-                        future_expenses.append({
-                            "date": event_date,
-                            "amount": event_data["amount"]
-                        })
+                        future_expenses.append(
+                            {"date": event_date, "amount": event_data["amount"]}
+                        )
 
                 # Calculate minimum payment reserves using the new function
                 from decimal import Decimal
+
                 total_min_reserve, per_debt_reserve = compute_min_payment_reserves(
                     now=current_date,
                     cash_on_hand=Decimal(str(bank_balance)),
@@ -848,7 +862,7 @@ class DebtOptimizer:
                     obligations=future_obligations,
                 )
                 reserved_for_minimums = float(total_min_reserve)
-                
+
                 # Calculate expense reserves using same logic as minimum payment reserves
                 # Convert future_expenses to obligations format
                 expense_obligations = [
@@ -859,11 +873,12 @@ class DebtOptimizer:
                     }
                     for idx, expense in enumerate(future_expenses)
                 ]
-                
+
                 # Calculate expense reserves (account for cash already reserved for minimums)
                 total_expense_reserve, _ = compute_min_payment_reserves(
                     now=current_date,
-                    cash_on_hand=Decimal(str(bank_balance)) - Decimal(str(reserved_for_minimums)),
+                    cash_on_hand=Decimal(str(bank_balance))
+                    - Decimal(str(reserved_for_minimums)),
                     incomes=future_incomes,
                     obligations=expense_obligations,
                 )
@@ -872,10 +887,14 @@ class DebtOptimizer:
                 total_reserved = reserved_for_minimums + reserved_for_expenses
                 # Calculate available cash for extra payments (after reserving for minimum payments AND expenses)  # noqa: E501
                 available_for_extra = max(0, bank_balance - total_reserved)
-                
+
                 # Debug print for Nov 11
-                if current_date.year == 2025 and current_date.month == 11 and current_date.day == 11:
-                    with open('/tmp/debug_nov11.txt', 'a') as f:
+                if (
+                    current_date.year == 2025
+                    and current_date.month == 11
+                    and current_date.day == 11
+                ):
+                    with open("/tmp/debug_nov11.txt", "a") as f:
                         f.write(f"Future incomes: {future_incomes}\n")
                         f.write(f"Future obligations: {future_obligations}\n")
                         f.write(f"Reserved for minimums: {reserved_for_minimums}\n")
@@ -884,25 +903,60 @@ class DebtOptimizer:
                         f.write(f"Available for extra: {available_for_extra}\n")
 
                 if available_for_extra > 0.01:
-                    # Find the priority debt (first debt in ordered list with remaining balance)  # noqa: E501
+                    # Two-phase payment strategy:
+                    # Phase 1: Prioritize debts ABOVE their paydown target percentage
+                    # Phase 2: Once all debts are at/below target, optimize remaining balances
+
                     priority_debt = None
                     priority_debt_index = None
                     priority_balance = 0.0
+                    paydown_limit = None  # How much to pay down (to reach target)
 
-                    for priority_debt_candidate in ordered_debts:
-                        for idx, (d, bal) in enumerate(current_debts):
-                            if d.name == priority_debt_candidate.name and bal > 0.01:
-                                priority_debt = d
-                                priority_debt_index = idx
-                                priority_balance = float(bal)
+                    # Phase 1: Find debts above their paydown target
+                    debts_above_target = []
+                    for idx, (d, bal) in enumerate(current_debts):
+                        if bal > 0.01:
+                            target = d.target_balance
+                            if target is not None and bal > target:
+                                # This debt is above its target percentage
+                                debts_above_target.append((d, idx, float(bal), target))
+
+                    if debts_above_target:
+                        # Among debts above target, pick according to strategy order
+                        for priority_debt_candidate in ordered_debts:
+                            for d, idx, bal, target in debts_above_target:
+                                if d.name == priority_debt_candidate.name:
+                                    priority_debt = d
+                                    priority_debt_index = idx
+                                    priority_balance = bal
+                                    # Only pay down to the target, not below
+                                    paydown_limit = bal - target
+                                    break
+                            if priority_debt:
                                 break
-                        if priority_debt:
-                            break
+                    else:
+                        # Phase 2: All debts at/below target, use normal strategy
+                        for priority_debt_candidate in ordered_debts:
+                            for idx, (d, bal) in enumerate(current_debts):
+                                if (
+                                    d.name == priority_debt_candidate.name
+                                    and bal > 0.01
+                                ):
+                                    priority_debt = d
+                                    priority_debt_index = idx
+                                    priority_balance = float(bal)
+                                    paydown_limit = priority_balance  # Pay full balance
+                                    break
+                            if priority_debt:
+                                break
 
                     # Apply extra payment if we have a priority debt
                     if priority_debt and priority_debt_index is not None:
-                        # Use available extra cash (limited by debt balance)
-                        max_extra_payment = min(available_for_extra, priority_balance)
+                        # Use available extra cash (limited by debt balance and paydown target)
+                        effective_limit = (
+                            paydown_limit if paydown_limit else priority_balance
+                        )
+                        max_extra_payment = min(available_for_extra, effective_limit)
 
                         if max_extra_payment > 0.01:
                             # Log the extra payment decision with detailed rationale
@@ -986,12 +1040,35 @@ class DebtOptimizer:
                                     "bank_balance": bank_balance,
                                     "debt_balance": new_balance,  # Balance of this specific debt after payment  # noqa: E501
                                     "debt_name": priority_debt.name,  # Name of the debt being paid  # noqa: E501
+                                    "credit_limit": priority_debt.credit_limit,  # Credit limit for utilization calc
                                 }
                             )
 
             # Check if all debts are paid off AFTER processing all events for this day
             if not any(balance > 0.01 for _, balance in current_debts):
                 break
+
+            # If target_only mode, stop when all debts are at or below their paydown target
+            if self.target_only:
+                all_at_target = True
+                for d, bal in current_debts:
+                    if bal > 0.01:  # Debt still has balance
+                        target = d.target_balance
+                        if target is not None and bal > target:
+                            # This debt is still above its target
+                            all_at_target = False
+                            break
+                        elif target is None:
+                            # Debt has no target, so it's not "at target" yet
+                            # Only stop if ALL debts with targets are met
+                            pass
+                if all_at_target:
+                    # Check if at least one debt had a target (otherwise this mode is pointless)
+                    has_any_target = any(
+                        d.target_balance is not None for d, _ in current_debts
+                    )
+                    if has_any_target:
+                        break
 
         # Generate monthly summaries
         monthly_summary = self._generate_monthly_summaries(payment_schedule)
@@ -1387,16 +1464,15 @@ class DebtOptimizer:
     def _calculate_monthly_extra_funds(
         self, month_tuple, total_income, total_expenses, minimum_payments
     ):
-        """Calculate available and allocated extra funds for a specific month using monthly extra funds data."""  # noqa: E501
-        # Try to find matching monthly extra funds data
+        """Calculate available and allocated extra funds for a specific month."""
+        available_extra = max(0, total_income - total_expenses - minimum_payments)
+        allocated_extra = 0.0
+
         month_year = (
             date(month_tuple[0], month_tuple[1], 1) if month_tuple else date.today()
         )
 
-        # Look for monthly extra funds entries that match this month
-        allocated_extra = 0.0
         for mef in self.monthly_extra_funds:
-            # Check if this monthly extra fund entry is for this month
             if (
                 hasattr(mef, "date")
                 and mef.date.year == month_year.year
@@ -1404,11 +1480,6 @@ class DebtOptimizer:
             ):
                 allocated_extra += mef.allocated_extra
 
-        # Calculate available extra funds
-        # Available = Total Income - Total Expenses - Minimum Payments
-        available_extra = max(0, total_income - total_expenses - minimum_payments)
-
-        # If we don't have monthly extra funds data, use the calculated amount as both available and allocated  # noqa: E501
         if allocated_extra == 0 and available_extra > 0:
             allocated_extra = available_extra
 

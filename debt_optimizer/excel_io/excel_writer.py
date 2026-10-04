@@ -215,7 +215,7 @@ class ExcelReportWriter:
 
         # Title
         worksheet.merge_range(
-            "A1:J1",
+            "A1:K1",
             "Detailed Payment Schedule with Cash Flow & Debt Balances",
             self.formats["title"],
         )
@@ -235,6 +235,7 @@ class ExcelReportWriter:
             "Total Debt Balance",
             "Debt Name",
             "Debt Balance",
+            "Usage %",
             "Bank Balance",
         ]
         for col, header in enumerate(headers):
@@ -315,8 +316,23 @@ class ExcelReportWriter:
                 debt_format,
             )
 
+            # Calculate and write usage percentage
+            credit_limit = row.get("credit_limit")
+            if credit_limit and credit_limit > 0 and debt_balance_numeric > 0:
+                usage_pct = debt_balance_numeric / credit_limit
+                # Color code: green if under 30%, yellow 30-50%, red over 50%
+                if usage_pct <= 0.30:
+                    usage_format = self.formats["success"]
+                elif usage_pct <= 0.50:
+                    usage_format = self.formats["warning"]
+                else:
+                    usage_format = self.formats["percentage"]
+                worksheet.write(idx + 3, 9, usage_pct, usage_format)
+            else:
+                worksheet.write(idx + 3, 9, "", self.formats["header"])
+
             worksheet.write(
-                idx + 3, 9, row.get("bank_balance", 0), self.formats["currency"]
+                idx + 3, 10, row.get("bank_balance", 0), self.formats["currency"]
             )
 
         # Set column widths
@@ -327,7 +343,8 @@ class ExcelReportWriter:
         worksheet.set_column("G:G", 18)  # Total Debt Balance
         worksheet.set_column("H:H", 25)  # Debt Name
         worksheet.set_column("I:I", 15)  # Debt Balance
-        worksheet.set_column("J:J", 15)  # Bank Balance
+        worksheet.set_column("J:J", 10)  # Usage %
+        worksheet.set_column("K:K", 15)  # Bank Balance
 
     def _create_monthly_summary_sheet(self, monthly_summary: pd.DataFrame):
         """Create enhanced monthly summary sheet with detailed income, expenses, and extra funds tracking."""  # noqa: E501
@@ -1499,6 +1516,26 @@ class ExcelReportWriter:
             col for col in debt_progression.columns if col not in ["month", "date"]
         ]
 
+        # Calculate payoff months for each debt
+        payoff_data = []
+        for debt_name in debt_columns:
+            payoff_month = None
+            for idx, row in debt_progression.iterrows():
+                if row[debt_name] <= 0.01:
+                    payoff_month = row["month"]
+                    break
+
+            if payoff_month is not None:
+                payoff_data.append(
+                    (debt_name[:15], payoff_month)
+                )  # Truncate long names
+
+        if not payoff_data:
+            return
+
+        # Sort by payoff month
+        payoff_data.sort(key=lambda x: x[1])
+
         # Create chart
         workbook = self._ensure_workbook()
         chart = workbook.add_chart({"type": "column"})
@@ -1520,56 +1557,37 @@ class ExcelReportWriter:
             }
         )
 
-        # Calculate payoff months for each debt
-        payoff_data = []
-        for debt_name in debt_columns:
-            payoff_month = None
-            for idx, row in debt_progression.iterrows():
-                if row[debt_name] <= 0.01:
-                    payoff_month = row["month"]
-                    break
+        # Write data to worksheet for chart reference (starting at row 80 to avoid conflicts)  # noqa: E501
+        start_row = 80
+        worksheet.write(start_row, 0, "Debt Name", self.formats["header"])
+        worksheet.write(start_row, 1, "Payoff Month", self.formats["header"])
 
-            if payoff_month is not None:
-                payoff_data.append(
-                    (debt_name[:15], payoff_month)
-                )  # Truncate long names
+        for idx, (debt_name, payoff_month) in enumerate(payoff_data):
+            worksheet.write(start_row + 1 + idx, 0, debt_name)
+            worksheet.write(start_row + 1 + idx, 1, payoff_month)
 
-        # Sort by payoff month
-        payoff_data.sort(key=lambda x: x[1])
-
-        # Create temporary data in the worksheet for chart reference
-        if payoff_data:
-            # Write data to worksheet for chart reference (starting at row 80 to avoid conflicts)  # noqa: E501
-            start_row = 80
-            worksheet.write(start_row, 0, "Debt Name", self.formats["header"])
-            worksheet.write(start_row, 1, "Payoff Month", self.formats["header"])
-
-            for idx, (debt_name, payoff_month) in enumerate(payoff_data):
-                worksheet.write(start_row + 1 + idx, 0, debt_name)
-                worksheet.write(start_row + 1 + idx, 1, payoff_month)
-
-            # Add chart series using worksheet references
-            chart.add_series(
-                {
-                    "name": "Payoff Month",
-                    "categories": [
-                        "Charts",
-                        start_row + 1,
-                        0,
-                        start_row + len(payoff_data),
-                        0,
-                    ],
-                    "values": [
-                        "Charts",
-                        start_row + 1,
-                        1,
-                        start_row + len(payoff_data),
-                        1,
-                    ],
-                    "fill": {"color": "#4472C4"},
-                    "border": {"color": "#4472C4", "width": 1},
-                }
-            )
+        # Add chart series using worksheet references
+        chart.add_series(
+            {
+                "name": "Payoff Month",
+                "categories": [
+                    "Charts",
+                    start_row + 1,
+                    0,
+                    start_row + len(payoff_data),
+                    0,
+                ],
+                "values": [
+                    "Charts",
+                    start_row + 1,
+                    1,
+                    start_row + len(payoff_data),
+                    1,
+                ],
+                "fill": {"color": "#4472C4"},
+                "border": {"color": "#4472C4", "width": 1},
+            }
+        )
 
         # Set chart size and position
         chart.set_size({"width": 480, "height": 320})

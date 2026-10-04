@@ -58,6 +58,33 @@ class ExcelReader:
             settings,
         )
 
+    @staticmethod
+    def _parse_amount(value: Any, description: Any, sheet_name: str, row: int) -> float:
+        """Parse and validate a monetary amount from an Excel cell.
+
+        Args:
+            value: Raw cell value from the DataFrame.
+            description: Row description/source, used in the error message.
+            sheet_name: Name of the sheet being read, used in the error message.
+            row: Excel row number (1-based, including the header row).
+
+        Returns:
+            The amount as a finite float.
+
+        Raises:
+            ValueError: If the amount is blank, non-numeric, or not finite.
+        """
+        location = f"{sheet_name} sheet, row {row} ('{str(description).strip()}')"
+        if pd.isna(value):
+            raise ValueError(f"Amount is blank in {location}. Enter a number.")
+        try:
+            amount = float(value)
+        except (TypeError, ValueError):
+            raise ValueError(f"Amount '{value}' is not a number in {location}.")
+        if amount != amount or amount in (float("inf"), float("-inf")):
+            raise ValueError(f"Amount is not a finite number in {location}.")
+        return amount
+
     def read_debts(self, sheet_name: str = "Debts") -> List[Debt]:
         """Read debt information from Excel file."""
         try:
@@ -83,6 +110,11 @@ class ExcelReader:
                 f"Missing required columns in {sheet_name} sheet: {missing_columns}"
             )
 
+        # Check for optional columns
+        has_credit_limit = "credit_limit" in df.columns
+        has_paydown_pct = "paydown_%" in df.columns or "paydown_pct" in df.columns
+        paydown_col = "paydown_%" if "paydown_%" in df.columns else "paydown_pct"
+
         # Filter out rows with empty names or instruction text
         df = df.dropna(subset=["name"])
         df = df[~df["name"].astype(str).str.contains("Instructions:", na=False)]
@@ -91,6 +123,10 @@ class ExcelReader:
         debts = []
         for index, row in df.iterrows():
             try:
+                # Skip rows with missing required fields
+                if pd.isna(row["balance"]):
+                    continue  # Skip debts with no balance
+
                 # Handle interest rate format detection
                 raw_interest_rate = float(row["interest_rate"])
                 # If the rate is between 0 and 1, it's already in decimal format (from Excel %)  # noqa: E501
@@ -101,12 +137,29 @@ class ExcelReader:
                     # Otherwise assume it's in percentage format already
                     interest_rate = raw_interest_rate
 
+                # Parse optional credit limit
+                credit_limit = None
+                if has_credit_limit and pd.notna(row.get("credit_limit")):
+                    credit_limit = float(row["credit_limit"])
+
+                # Parse optional paydown target percentage
+                paydown_target_pct = None
+                if has_paydown_pct and pd.notna(row.get(paydown_col)):
+                    raw_pct = float(row[paydown_col])
+                    # If the value is between 0 and 1, it's in decimal format (from Excel %)
+                    if 0 <= raw_pct <= 1:
+                        paydown_target_pct = raw_pct * 100
+                    else:
+                        paydown_target_pct = raw_pct
+
                 debt = Debt(
                     name=str(row["name"]).strip(),
                     balance=float(row["balance"]),
                     minimum_payment=float(row["min_payment"]),
                     interest_rate=interest_rate,
                     due_date=int(row["due_date"]),
+                    credit_limit=credit_limit,
+                    paydown_target_pct=paydown_target_pct,
                 )
                 debts.append(debt)
             except (ValueError, TypeError) as e:
@@ -174,7 +227,9 @@ class ExcelReader:
 
                 income = Income(
                     source=str(row["source"]).strip(),
-                    amount=float(row["amount"]),
+                    amount=self._parse_amount(
+                        row["amount"], row["source"], sheet_name, index + 2
+                    ),
                     frequency=str(row["frequency"]).strip().lower(),
                     start_date=start_date_val,
                 )
@@ -250,7 +305,9 @@ class ExcelReader:
 
                 expense = RecurringExpense(
                     description=str(row["description"]).strip(),
-                    amount=float(row["amount"]),
+                    amount=self._parse_amount(
+                        row["amount"], row["description"], sheet_name, index + 2
+                    ),
                     frequency=str(row["frequency"]).strip().lower(),
                     due_date=int(row["due_date"]),
                     start_date=start_date_val,
@@ -332,7 +389,9 @@ class ExcelReader:
 
                     income = FutureIncome(
                         description=str(row["description"]).strip(),
-                        amount=float(row["amount"]),
+                        amount=self._parse_amount(
+                            row["amount"], row["description"], sheet_name, index + 2
+                        ),
                         start_date=start_date,
                         frequency=frequency,
                         end_date=end_date,
@@ -347,7 +406,9 @@ class ExcelReader:
 
                     income = FutureIncome(
                         description=str(row["description"]).strip(),
-                        amount=float(row["amount"]),
+                        amount=self._parse_amount(
+                            row["amount"], row["description"], sheet_name, index + 2
+                        ),
                         start_date=income_date,  # Legacy: use date as start_date
                         date=income_date,  # Also set legacy date field for compatibility
                     )
@@ -472,7 +533,9 @@ class ExcelReader:
 
                     expense = FutureExpense(
                         description=str(row["description"]).strip(),
-                        amount=float(row["amount"]),
+                        amount=self._parse_amount(
+                            row["amount"], row["description"], sheet_name, index + 2
+                        ),
                         start_date=start_date,
                         frequency=frequency,
                         end_date=end_date,
@@ -487,7 +550,9 @@ class ExcelReader:
 
                     expense = FutureExpense(
                         description=str(row["description"]).strip(),
-                        amount=float(row["amount"]),
+                        amount=self._parse_amount(
+                            row["amount"], row["description"], sheet_name, index + 2
+                        ),
                         start_date=expense_date,  # Legacy: use date as start_date
                         date=expense_date,  # Also set legacy date field for compatibility
                     )
@@ -577,7 +642,15 @@ class ExcelTemplateGenerator:
         sheet = workbook.create_sheet("Debts", 0)
 
         # Headers
-        headers = ["Name", "Balance", "Min Payment", "Interest Rate", "Due Date"]
+        headers = [
+            "Name",
+            "Balance",
+            "Min Payment",
+            "Interest Rate",
+            "Due Date",
+            "Credit Limit",
+            "Paydown %",
+        ]
         for col, header in enumerate(headers, 1):
             cell = sheet.cell(row=1, column=col)
             cell.value = header
@@ -594,24 +667,27 @@ class ExcelTemplateGenerator:
             )
 
         if include_sample:
-            # Sample data
+            # Sample data (credit limit and paydown % are optional)
             sample_data = [
-                ["Credit Card 1", 5000.00, 150.00, 18.99, 15],
-                ["Auto Loan", 12000.00, 325.00, 4.50, 10],
-                ["Personal Loan", 3000.00, 120.00, 12.50, 25],
+                ["Credit Card 1", 5000.00, 150.00, 18.99, 15, 10000.00, 29],
+                ["Auto Loan", 12000.00, 325.00, 4.50, 10, None, None],
+                ["Personal Loan", 3000.00, 120.00, 12.50, 25, None, None],
             ]
 
             for row_idx, row_data in enumerate(sample_data, 2):
                 for col_idx, value in enumerate(row_data, 1):
                     cell = sheet.cell(row=row_idx, column=col_idx)
                     cell.value = value
-                    if col_idx in [2, 3]:  # Balance and Min Payment columns
+                    if col_idx in [2, 3, 6]:  # Balance, Min Payment, Credit Limit
                         cell.number_format = "$#,##0.00"
                     elif col_idx == 4:  # Interest Rate column
                         cell.number_format = "0.00%"
+                    elif col_idx == 7:  # Paydown % column
+                        if value is not None:
+                            cell.number_format = '0"%"'
 
         # Column widths
-        column_widths = [20, 15, 15, 15, 12]
+        column_widths = [20, 15, 15, 15, 12, 15, 12]
         for col, width in enumerate(column_widths, 1):
             sheet.column_dimensions[
                 sheet.cell(row=1, column=col).column_letter
@@ -626,6 +702,11 @@ class ExcelTemplateGenerator:
             "• Min Payment: Required minimum monthly payment",
             "• Interest Rate: Annual percentage rate (e.g., 18.99 for 18.99%)",
             "• Due Date: Day of month payment is due (1-31)",
+            "• Credit Limit: (Optional) Credit limit for revolving credit accounts",
+            "• Paydown %: (Optional) Target balance as % of credit limit (e.g., 29 for 29%)",
+            "",
+            "Note: If Paydown % is set, the optimizer will stop extra payments once",
+            "the balance reaches that percentage of the credit limit.",
         ]
 
         for idx, instruction in enumerate(instructions):
