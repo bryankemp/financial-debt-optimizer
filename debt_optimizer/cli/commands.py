@@ -297,7 +297,7 @@ def update_balances(ctx, db, xlsx, threshold, bank_account, no_backup):
 
                 details_str = ", ".join(details) if details else "(no changes)"
                 click.echo(
-                    f"  • Row {update['row']}: {name_display} - {details_str} {auto_str}"
+                    f"  • Row {update['row']}: {name_display} - {details_str} {auto_str}"  # noqa: E501
                 )
         else:
             click.echo("  No debt updates (all balances current or no matches found)")
@@ -432,7 +432,7 @@ def analyze(
                     for update in balance_update_result["debt_updates"]:
                         click.echo(
                             f"  • {update['excel_name_new']}: "
-                            f"${update['old_balance']:.2f} → ${update['new_balance']:.2f}"
+                            f"${update['old_balance']:.2f} → ${update['new_balance']:.2f}"  # noqa: E501
                         )
                 else:
                     click.echo("  No debt balance changes")
@@ -532,7 +532,7 @@ def analyze(
 
         if debt_summary["available_cash_flow"] < 0:
             click.echo(
-                "❌ Warning: Negative cash flow - income is less than minimum payments!",
+                "❌ Warning: Negative cash flow - income is less than minimum payments!",  # noqa: E501
                 err=True,
             )
             click.echo("   Consider increasing income or debt consolidation options.")

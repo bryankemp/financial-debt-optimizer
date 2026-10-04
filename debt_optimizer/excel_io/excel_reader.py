@@ -3,7 +3,7 @@
 This module is part of the Financial Debt Optimizer project.
 """
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, cast
 
@@ -146,7 +146,7 @@ class ExcelReader:
                 paydown_target_pct = None
                 if has_paydown_pct and pd.notna(row.get(paydown_col)):
                     raw_pct = float(row[paydown_col])
-                    # If the value is between 0 and 1, it's in decimal format (from Excel %)
+                    # A value between 0 and 1 is in decimal format (from Excel %)
                     if 0 <= raw_pct <= 1:
                         paydown_target_pct = raw_pct * 100
                     else:
@@ -410,7 +410,7 @@ class ExcelReader:
                             row["amount"], row["description"], sheet_name, index + 2
                         ),
                         start_date=income_date,  # Legacy: use date as start_date
-                        date=income_date,  # Also set legacy date field for compatibility
+                        date=income_date,  # Also set legacy date field
                     )
 
                 future_income.append(income)
@@ -554,7 +554,7 @@ class ExcelReader:
                             row["amount"], row["description"], sheet_name, index + 2
                         ),
                         start_date=expense_date,  # Legacy: use date as start_date
-                        date=expense_date,  # Also set legacy date field for compatibility
+                        date=expense_date,  # Also set legacy date field
                     )
 
                 future_expenses.append(expense)
@@ -703,7 +703,7 @@ class ExcelTemplateGenerator:
             "• Interest Rate: Annual percentage rate (e.g., 18.99 for 18.99%)",
             "• Due Date: Day of month payment is due (1-31)",
             "• Credit Limit: (Optional) Credit limit for revolving credit accounts",
-            "• Paydown %: (Optional) Target balance as % of credit limit (e.g., 29 for 29%)",
+            "• Paydown %: (Optional) Target balance as % of credit limit (e.g., 29 for 29%)",  # noqa: E501
             "",
             "Note: If Paydown % is set, the optimizer will stop extra payments once",
             "the balance reaches that percentage of the credit limit.",
@@ -863,34 +863,41 @@ class ExcelTemplateGenerator:
             )
 
         if include_sample:
-            # Sample data showing both one-time and recurring income
+            # Sample data showing both one-time and recurring income.
+            # Dates are relative to today so the samples are always in the future
+            # (past-dated rows are ignored by the reader).
+            today = date.today()
+
+            def _in_days(days: int) -> str:
+                return (today + timedelta(days=days)).isoformat()
+
             sample_data = [
                 [
                     "Annual Bonus",
                     5000.00,
-                    "2026-03-15",
+                    _in_days(180),
                     "",
                     "",
                 ],  # One-time (no frequency)
-                ["Tax Refund", 1200.00, "2025-04-01", "", ""],  # One-time
+                ["Tax Refund", 1200.00, _in_days(60), "", ""],  # One-time
                 [
                     "Salary Increase",
                     500.00,
-                    "2026-01-19",
+                    _in_days(30),
                     "monthly",
                     "",
                 ],  # Your requested increase
                 [
                     "Side Income",
                     250.00,
-                    "2025-12-01",
+                    _in_days(45),
                     "weekly",
-                    "2026-06-30",
+                    _in_days(270),
                 ],  # Recurring with end
                 [
                     "Quarterly Bonus",
                     1000.00,
-                    "2025-12-15",
+                    _in_days(90),
                     "quarterly",
                     "",
                 ],  # Recurring indefinitely
@@ -963,25 +970,44 @@ class ExcelTemplateGenerator:
             )
 
         if include_sample:
-            # Sample data showing both one-time and recurring expenses
+            # Sample data showing both one-time and recurring expenses.
+            # Dates are relative to today so the samples are always in the future
+            # (past-dated rows are ignored by the reader).
+            today = date.today()
+
+            def _in_days(days: int) -> str:
+                return (today + timedelta(days=days)).isoformat()
+
             sample_data = [
-                ["Car Repair", 800.00, "2025-12-15", "", ""],  # One-time expense
-                ["Home Improvement", 2500.00, "2026-03-01", "", ""],  # One-time expense
+                ["Car Repair", 800.00, _in_days(60), "", ""],  # One-time expense
+                [
+                    "Home Improvement",
+                    2500.00,
+                    _in_days(150),
+                    "",
+                    "",
+                ],  # One-time expense
                 [
                     "New Subscription",
                     9.99,
-                    "2025-11-01",
+                    _in_days(14),
                     "monthly",
                     "",
                 ],  # Monthly subscription
                 [
                     "Insurance Increase",
                     25.00,
-                    "2026-01-01",
+                    _in_days(30),
                     "monthly",
-                    "2026-12-31",
+                    _in_days(395),
                 ],  # Limited recurring
-                ["Annual Fee", 99.00, "2025-12-01", "annually", ""],  # Annual recurring
+                [
+                    "Annual Fee",
+                    99.00,
+                    _in_days(75),
+                    "annually",
+                    "",
+                ],  # Annual recurring
             ]
 
             for row_idx, row_data in enumerate(sample_data, 2):

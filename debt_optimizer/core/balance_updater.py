@@ -96,16 +96,20 @@ class BalanceUpdater:
         """Load account balances from Quicken database.
 
         Calculates balance as Quicken register shows it:
-        - Prioritizes register balance (sum of all transactions dated today or earlier)
+        - Prioritizes register balance (sum of all transactions dated today or
+          earlier)
         - Falls back to ZONLINEBANKINGLEDGERBALANCEAMOUNT if no transactions exist
-        - Includes ALL transactions (reconciled, cleared, and uncleared) dated today or earlier
+        - Includes ALL transactions (reconciled, cleared, and uncleared) dated
+          today or earlier
         - Excludes only future-dated transactions
 
-        This matches Quicken's register balance which includes all transaction statuses
-        dated on or before today. Uses Apple Cocoa timestamp format (seconds since 2001-01-01).
+        This matches Quicken's register balance which includes all transaction
+        statuses dated on or before today. Uses Apple Cocoa timestamp format
+        (seconds since 2001-01-01).
 
         Returns:
-            Tuple of (accounts_by_name, credit_card_names, checking_names, savings_names)  # noqa: E501
+            Tuple of (accounts_by_name, credit_card_names, checking_names,
+            savings_names)
         """
         conn = self.connect_db()
         conn.row_factory = sqlite3.Row
@@ -369,7 +373,7 @@ class BalanceUpdater:
             bal = float(accounts_by_name[target_name]["balance"])
             old_balance = ws.cell(row=3, column=2).value
 
-            # Only update if balance changed (use tolerance for floating point comparison)
+            # Only update if balance changed (tolerance for float comparison)
             if abs((old_balance or 0.0) - bal) > 0.01:
                 ws.cell(row=3, column=2).value = bal
                 return {"name": target_name, "balance": bal, "matched": "exact"}
